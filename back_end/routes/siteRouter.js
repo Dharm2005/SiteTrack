@@ -1,11 +1,10 @@
 const express = require('express');
 
-const todoItemsRouter = express.Router();
-const todoItemsController = require('../controllers/todoItemsControllers')
+const siteRouter = express.Router();
+const siteController = require('../controllers/siteController')
 
-todoItemsRouter.get('/',todoItemsController.getTodoItems)
-todoItemsRouter.post('/',todoItemsController.createTodoItem)
-todoItemsRouter.delete('/:id',todoItemsController.deleteTodoItem)
-todoItemsRouter.put('/:id/completed',todoItemsController.markCompleted)
+siteRouter.get('/',siteController.getSites)
+siteRouter.post('/add-site',siteController.postAddSite)
+// siteRouter.delete('/:id',siteController.deleteSite)
 
-module.exports = todoItemsRouter;
+module.exports = siteRouter;

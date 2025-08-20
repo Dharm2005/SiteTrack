@@ -1,19 +1,48 @@
 const mongoose = require('mongoose');
-const { timestamp } = require('rxjs');
 
-const todoItemSchema = mongoose.Schema({
-  task : {
+const siteSchema = mongoose.Schema({
+  siteName : {
     type : String,
-    required : true,
+    required : true
   },
-  date : Date,
+  location : {
+    type : String,
+    required : true
+  },
+  siteImage : {
+    type : String,
+    // required : true
+  },
+  siteManagerName : {
+    type : String,
+    required : true
+  },
+  siteManagerContact : {
+    type : String,
+    required : true
+  },
 
-  completed : {
-    type : Boolean,
-    default : false
-  },
+  // workers : [
+  //   {
+  //     type : mongoose.Schema.ObjectId,
+  //     reg : "Worker"
+  //   }
+  // ],
+  // materials : [
+  //   {
+  //     type : mongoose.Schema.ObjectId,
+  //     reg : "Materials"
+  //   }
+  // ],
+  // gallery : [
+  //   {
+  //     type : mongoose.Schema.ObjectId,
+  //     reg : "Gallery"
+  //   }
+  // ],
+
 },
 {timestamps : true}
 )
 
-module.exports = mongoose.model("TodoItem",todoItemSchema)
+module.exports = mongoose.model("Site",siteSchema)

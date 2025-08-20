@@ -1,24 +1,33 @@
 // external module
 const express = require('express');
 const { default: mongoose } = require('mongoose');
-const path = require('path');
 const cors = require('cors');
-const { data } = require('autoprefixer');
+
+// local module
+const siteRouter = require('./routes/siteRouter');
 const errors = require('./controllers/errors');
-const todoItemsRouter = require('./routes/todoItemsRouter');
-const bodyParser = require('body-parser');
-const DB_PATH = 'mongodb+srv://root:shaktimaanMongo1@cluster1.ctvxcgv.mongodb.net/todo?retryWrites=true&w=majority&appName=Cluster1'
+
+// mongo connection string
+const DB_PATH = 'mongodb+srv://root:shaktimaanMongo1@cluster1.ctvxcgv.mongodb.net/site_management?retryWrites=true&w=majority&appName=Cluster1'
 
 
 const app = express();
 
-app.use(bodyParser.urlencoded({extended : true}));
+// middlewere
 app.use(cors())
 app.use(express.json())
+app.use(express.urlencoded({ extended: true })); // only if you use form data
 
-app.use('/api/todo',todoItemsRouter)
 
+// Routers
+app.use('/',siteRouter)
+
+
+// Error Handling
 app.use(errors.getNotFound);
+
+
+// Connect DB and start server
 
 const PORT = 3000;
 
