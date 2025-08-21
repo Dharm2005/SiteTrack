@@ -1,40 +1,57 @@
-import React from 'react';
+import React from 'react'
+import { Link, NavLink } from 'react-router-dom'
 
-const Navbar = () => {
-  const navItems = [
-    { name: 'Home', href: '#home' },
-    { name: 'Add Site', href: '#add-site' }
-  ];
-
+export default function NavBar() {
   return (
-    <nav className="bg-white shadow-md border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo/Brand */}
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <h1 className="text-xl font-bold text-gray-800">
-                YourApp
-              </h1>
-            </div>
-          </div>
+    <header className="sticky top-0 z-50 bg-white shadow-md">
+      <nav className="px-4 py-3 lg:px-8">
+        <div className="flex items-center justify-between max-w-screen-xl mx-auto">
+          {/* Logo */}
+          <Link 
+            to="/" 
+            className="flex items-center transition-transform duration-300 hover:scale-105"
+          >
+            {/* <img
+              src="" // 
+              className="h-10 mr-2"
+              alt="Logo"
+            /> */}
+            <span className="font-bold text-xl text-gray-800">Construction Sites</span>
+          </Link>
 
-          {/* Desktop Navigation */}
-          <div className="flex items-center space-x-6">
-            {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="text-gray-600 hover:text-blue-600 hover:bg-gray-50 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+          {/* Nav Items */}
+          <ul className="flex space-x-8 font-medium">
+            <li>
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  `transition-colors duration-200 ${
+                    isActive
+                      ? 'text-orange-600 font-semibold'
+                      : 'text-gray-700 hover:text-orange-600'
+                  }`
+                }
               >
-                {item.name}
-              </a>
-            ))}
-          </div>
+                Home
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/add-site"
+                className={({ isActive }) =>
+                  `transition-colors duration-200 ${
+                    isActive
+                      ? 'text-orange-600 font-semibold'
+                      : 'text-gray-700 hover:text-orange-600'
+                  }`
+                }
+              >
+                Add Site
+              </NavLink>
+            </li>
+          </ul>
         </div>
-      </div>
-    </nav>
-  );
-};
-
-export default Navbar;
+      </nav>
+    </header>
+  )
+}
