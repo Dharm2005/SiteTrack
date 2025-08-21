@@ -1,7 +1,11 @@
 import React from 'react';
 import Site from './Site';
+import { useSelector } from 'react-redux';
 
-function Sites({ allSites }) {
+function Sites() {
+  const allSites = useSelector((state) => state.site.sites)
+  console.log(allSites);
+  
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-6">
       <div className="max-w-7xl mx-auto">
