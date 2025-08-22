@@ -11,8 +11,10 @@ exports.getSites = async (req , res , next) => {
 
 exports.postAddSite = async (req , res , next) => {
   try {
-    const {siteName, location, siteImage, siteManagerName, siteManagerContact} = req.body;
-
+    const {siteName, location, siteManagerName, siteManagerContact} = req.body;
+    const siteImage = req.file
+      ? `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
+      : null;
     const site = new Site({
       siteName,
       location,

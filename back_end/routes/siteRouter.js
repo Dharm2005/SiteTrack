@@ -1,10 +1,11 @@
 const express = require('express');
 
 const siteRouter = express.Router();
-const siteController = require('../controllers/siteController')
+const siteController = require('../controllers/siteController');
+const upload = require('../middleware/imageUpload');
 
 siteRouter.get('/',siteController.getSites)
-siteRouter.post('/add-site',siteController.postAddSite)
+siteRouter.post('/add-site',upload.single("siteImage"),siteController.postAddSite)
 // siteRouter.delete('/:id',siteController.deleteSite)
 
 module.exports = siteRouter;

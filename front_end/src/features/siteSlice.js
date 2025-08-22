@@ -11,11 +11,11 @@ export const siteSlice = createSlice({
     setSites: (state , action) => {
       state.sites = action.payload;      
     },
-    addSite: (state , action) => {
+    addNewSite: (state , action) => {
       state.sites.push(action.payload)
     }
   }
 })
 
-export const {setSites , addSite} = siteSlice.actions
+export const {setSites , addNewSite} = siteSlice.actions
 export default siteSlice.reducer;

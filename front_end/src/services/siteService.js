@@ -6,6 +6,8 @@ export const getAllSite = async () => {
 }
 
 export const addSite = async (siteData) => {
-  const response = await axios.post("http://localhost:3000/add-site",siteData)
+  const response = await axios.post("http://localhost:3000/add-site",siteData,{
+      headers: { "Content-Type": "multipart/form-data" },
+    })
   return response.data;
 }

@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux';
 
 function Sites() {
   const allSites = useSelector((state) => state.site.sites)
-  console.log(allSites);
   
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-6">

@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { addSite } from '../services/siteService';
 import {useNavigate} from 'react-router-dom'
+import { useDispatch } from 'react-redux';
+import { addNewSite } from '../features/siteSlice';
 
 function AddSite() {
   const [form, setForm] = useState({
@@ -11,17 +13,28 @@ function AddSite() {
     siteManagerContact: ''
   })
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setForm({...form, [e.target.name]: e.target.value})
+    if(e.target.name !== 'siteImage')
+      setForm({...form, [e.target.name]: e.target.value})
+    else
+      setForm({...form, [e.target.name]: e.target.files[0]})
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const newSite = await addSite(form);
-      console.log("site added", newSite);
+      const formData = new FormData();
+      formData.append("siteName",form.siteName);
+      formData.append("location",form.location);
+      formData.append("siteImage",form.siteImage);
+      formData.append("siteManagerName",form.siteManagerName);
+      formData.append("siteManagerContact",form.siteManagerContact);
+
+      const newSite = await addSite(formData);
+      dispatch(addNewSite(newSite))
       navigate('/')
       alert("new site added")
     } catch (error) {
@@ -68,13 +81,13 @@ function AddSite() {
 
         <div className="space-y-2">
           <label htmlFor="siteImage" className="block text-sm font-semibold text-gray-700">
-            Site Image URL
+            Site Image
           </label>
           <input
-            type="url"
+            type="file"
             id="siteImage"
             name="siteImage"
-            value={form.siteImage}
+            accept='image/jpg, image/jpeg, image/png'
             onChange={handleChange}
             placeholder="https://example.com/image.jpg"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 outline-none"
@@ -101,12 +114,12 @@ function AddSite() {
             Site Manager Contact <span className="text-red-500">*</span>
           </label>
           <input
-            type="tel"
+            type="number"
             id="siteManagerContact"
             name="siteManagerContact"
             value={form.siteManagerContact}
             onChange={handleChange}
-            placeholder="Phone number or email"
+            placeholder="Phone number"
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 outline-none"
           />
