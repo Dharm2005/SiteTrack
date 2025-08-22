@@ -13,6 +13,7 @@ function Site({ name, location, image, managerName, managerContact, createdAt })
         day: 'numeric'
       });
     } catch (error) {
+      console.error(error);
       return 'Invalid Date';
     }
   };

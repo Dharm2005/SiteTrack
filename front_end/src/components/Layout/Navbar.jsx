@@ -27,8 +27,8 @@ export default function NavBar() {
                 className={({ isActive }) =>
                   `transition-colors duration-200 ${
                     isActive
-                      ? 'text-orange-600 font-semibold'
-                      : 'text-gray-700 hover:text-orange-600'
+                      ? 'text-blue-600 font-semibold'
+                      : 'text-gray-700 hover:text-blue-700'
                   }`
                 }
               >
@@ -41,8 +41,8 @@ export default function NavBar() {
                 className={({ isActive }) =>
                   `transition-colors duration-200 ${
                     isActive
-                      ? 'text-orange-600 font-semibold'
-                      : 'text-gray-700 hover:text-orange-600'
+                      ? 'text-blue-600 font-semibold'
+                      : 'text-gray-700 hover:text-blue-700'
                   }`
                 }
               >

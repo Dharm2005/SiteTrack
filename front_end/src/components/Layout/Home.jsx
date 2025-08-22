@@ -1,9 +1,9 @@
 import React from 'react'
 import { useState , useEffect } from 'react';
-import { getAllSite } from '../services/siteService';
-import { Sites } from '../components'
+import { getAllSite } from '../../services/siteService';
+import { Sites } from '../../components'
 import { useDispatch } from 'react-redux';
-import {setSites} from '../features/siteSlice'
+import {setSites} from '../../features/siteSlice';
 
 
 function Home() {

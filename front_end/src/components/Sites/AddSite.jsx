@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import { addSite } from '../services/siteService';
+import { addSite } from '../../services/siteService';
 import {useNavigate} from 'react-router-dom'
 import { useDispatch } from 'react-redux';
-import { addNewSite } from '../features/siteSlice';
+import { addNewSite } from '../../features/siteSlice';
+import {toast} from 'react-toastify';
 
 function AddSite() {
   const [form, setForm] = useState({
@@ -36,11 +37,11 @@ function AddSite() {
       const newSite = await addSite(formData);
       dispatch(addNewSite(newSite))
       navigate('/')
-      alert("new site added")
+      toast.success("✅ New site added successfully!");
     } catch (error) {
       console.error("error while adding new site", error);
       navigate('/')
-      alert("failed to add site")
+      toast.success("✅ New site added successfully!");
     }
   };
 
