@@ -22,6 +22,8 @@ function Sites() {
             {allSites.map(site => (
               <div key={site._id} className="w-full">
                 <Site
+                  key={site._id}
+                  id={site._id}
                   name={site.siteName}
                   location={site.location}
                   image={site.siteImage}

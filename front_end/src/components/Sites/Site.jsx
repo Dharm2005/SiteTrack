@@ -1,7 +1,10 @@
 import React from 'react';
 import { MapPin, User, Phone, Calendar, ImageIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-function Site({ name, location, image, managerName, managerContact, createdAt }) {
+const API_URL = "http://localhost:3000";
+
+function Site({ id ,name, location, image, managerName, managerContact, createdAt }) {
   // Format the date if it exists
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -31,7 +34,7 @@ function Site({ name, location, image, managerName, managerContact, createdAt })
         {image ? (
           <>
             <img 
-              src={image} 
+              src={`${API_URL}/uploads/${image}`} 
               alt={name || 'Site Image'}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               onError={handleImageError}
@@ -115,12 +118,18 @@ function Site({ name, location, image, managerName, managerContact, createdAt })
 
         {/* Action Buttons */}
         <div className="flex space-x-3 mt-6">
-          <button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg">
+          <Link 
+            to={`/site/${id}`}
+            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-center"
+          >
             View Details
-          </button>
-          <button className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+          </Link>
+          <Link 
+            to=""
+            className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 text-center"
+          >
             Edit
-          </button>
+          </Link>
         </div>
       </div>
     </div>
