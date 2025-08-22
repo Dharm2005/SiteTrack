@@ -34,7 +34,7 @@ function Site({ id ,name, location, image, managerName, managerContact, createdA
         {image ? (
           <>
             <img 
-              src={`${API_URL}/uploads/${image}`} 
+              src={`${API_URL}/uploads/sites/${image}`} 
               alt={name || 'Site Image'}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               onError={handleImageError}

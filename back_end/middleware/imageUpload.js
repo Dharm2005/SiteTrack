@@ -3,12 +3,22 @@ const multer = require('multer');
 const path = require('path')
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../uploads"));
+  destination: function (req, file, cb) {
+    let folder = "uploads/others"; // default
+    
+    if (req.body.type === "site") folder = "uploads/sites";
+    if (req.body.type === "manager") folder = "uploads/managers";
+    if (req.body.type === "worker") folder = "uploads/workers";
+    if (req.body.type === "bill") folder = "uploads/bills";
+    
+    cb(null, folder);
   },
-   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+  filename: function (req, file, cb) {
+    const name = path.parse(file.originalname).name; // 👉 just "myphoto"
+    const ext = path.extname(file.originalname);     // 👉 ".png"
+    const safeName = name.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_-]/g, "");
+
+    cb(null, Date.now() + "-" + safeName + ext);
   }
 })
 

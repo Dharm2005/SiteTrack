@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon } from 'lucide-react'
 import { getSite } from '../../services/siteService';
+import { Workers } from '../index';
+import { getWorkersBySite } from '../../services/workerService'
+import { setWorkers } from '../../features/workerSlice';
+import { useDispatch } from 'react-redux';
 
 const API_URL = "http://localhost:3000";
 
@@ -10,6 +14,20 @@ function SiteDetail() {
   const navigate = useNavigate();
   const [site, setSite] = useState(null)
   const [loading, setLoading] = useState(true)
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    const fetchWorkers = async () => {
+      try {
+        const data = await getWorkersBySite(id);
+        dispatch(setWorkers(data));
+      } catch (error) {
+        console.error("Error fetching workers:", error);
+      }
+    };
+    
+    fetchWorkers();
+  }, [id]);
 
   useEffect(() => {
     let isMounted = true;
@@ -110,7 +128,7 @@ function SiteDetail() {
                 {site.siteImage ? (
                   <>
                     <img 
-                      src={`${API_URL}/uploads/${site.siteImage}`} 
+                      src={`${API_URL}/uploads/sites/${site.siteImage}`} 
                       alt={site.siteName || 'Site Image'}
                       className="w-full h-full object-cover"
                       onError={handleImageError}
@@ -210,6 +228,33 @@ function SiteDetail() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Bottom Section - Workers and Materials */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+            
+            {/* Workers List - Bottom Left */}
+            <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+              <div className="border-b border-gray-200 px-6 py-4">
+                <h2 className="text-2xl font-bold text-gray-900">Worker List</h2>
+                <p className="text-gray-600 mt-1">Manage site workers and assignments</p>
+              </div>
+              <div className="p-6">
+                <Workers siteId={id} />
+              </div>
+            </div>
+
+            {/* Materials List - Bottom Right */}
+            {/* <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+              <div className="border-b border-gray-200 px-6 py-4">
+                <h2 className="text-2xl font-bold text-gray-900">Material List</h2>
+                <p className="text-gray-600 mt-1">Track materials and inventory</p>
+              </div>
+              <div className="p-6">
+                <Materials siteId={id} />
+              </div>
+            </div> */}
+            
           </div>
         </div>
       </div>

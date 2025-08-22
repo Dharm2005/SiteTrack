@@ -28,16 +28,16 @@ const siteSchema = mongoose.Schema({
   //     reg : "Worker"
   //   }
   // ],
-  // materials : [
-  //   {
-  //     type : mongoose.Schema.ObjectId,
-  //     reg : "Materials"
-  //   }
-  // ],
-  // gallery : [
+  // manager : [
   //   {
   //     type : mongoose.Schema.ObjectId,
   //     reg : "Gallery"
+  //   }
+  // ],
+  // materials : [
+  //  {
+  //     type : mongoose.Schema.ObjectId,
+  //     reg : "Materials"
   //   }
   // ],
 
