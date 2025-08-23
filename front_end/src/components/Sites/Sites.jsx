@@ -18,7 +18,7 @@ function Sites() {
 
         {/* Sites Grid */}
         {allSites && allSites.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 auto-rows-fr">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 auto-rows-fr">
             {allSites.map(site => (
               <div key={site._id} className="w-full">
                 <Site
