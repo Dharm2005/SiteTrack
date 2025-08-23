@@ -1,12 +1,19 @@
 import React from 'react'
-import { Package, Calendar, DollarSign, User, ChevronDown, ChevronUp, Edit3, Trash2, MoreVertical, Truck, Hash, Scale } from 'lucide-react'
-import { useState } from 'react'
+import { Package, Calendar, DollarSign, User, ChevronDown, ChevronUp, Edit3, Trash2, MoreVertical, Truck, Hash, Scale, X, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
 
 const API_URL = "http://localhost:3000";
 
-function Material({ id, name, quantity, unit, costPerUnit, totalCost, purchasedDate, sellerName, vahicleNumber, createdAt }) {
+function Material({ id, name, billImage, quantity, unit, costPerUnit, totalCost, purchasedDate, sellerName, vahicleNumber, createdAt }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showActions, setShowActions] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const imageRef = useRef(null);
+  const containerRef = useRef(null);
 
   // Format the date
   const formatDate = (dateString) => {
@@ -60,6 +67,109 @@ function Material({ id, name, quantity, unit, costPerUnit, totalCost, purchasedD
     setIsExpanded(!isExpanded);
   };
 
+  const openImageModal = () => {
+    setShowImageModal(true);
+    setZoom(1);
+    setPosition({ x: 0, y: 0 });
+  };
+
+  const closeImageModal = () => {
+    setShowImageModal(false);
+    setZoom(1);
+    setPosition({ x: 0, y: 0 });
+  };
+
+  const handleZoomIn = () => {
+    setZoom(prev => Math.min(prev * 1.5, 5)); // Max zoom 5x
+  };
+
+  const handleZoomOut = () => {
+    setZoom(prev => {
+      const newZoom = Math.max(prev / 1.5, 0.5); // Min zoom 0.5x
+      if (newZoom <= 1) {
+        setPosition({ x: 0, y: 0 }); // Reset position when zooming out to fit
+      }
+      return newZoom;
+    });
+  };
+
+  const handleResetZoom = () => {
+    setZoom(1);
+    setPosition({ x: 0, y: 0 });
+  };
+
+  const handleMouseDown = (e) => {
+    if (zoom > 1) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.clientX - position.x,
+        y: e.clientY - position.y
+      });
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging && zoom > 1) {
+      setPosition({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleWheel = (e) => {
+    e.preventDefault();
+    if (e.deltaY < 0) {
+      handleZoomIn();
+    } else {
+      handleZoomOut();
+    }
+  };
+
+  // Add event listeners for mouse events
+  useEffect(() => {
+    if (showImageModal) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [showImageModal, isDragging, dragStart, zoom]);
+
+  // Add keyboard support for ESC key
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key === 'Escape' && showImageModal) {
+        closeImageModal();
+      }
+    };
+
+    if (showImageModal) {
+      document.addEventListener('keydown', handleKeyPress);
+      return () => document.removeEventListener('keydown', handleKeyPress);
+    }
+  }, [showImageModal]);
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (showImageModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showImageModal]);
+
   return (
     <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 overflow-hidden">
       {/* Compact Header - Always Visible */}
@@ -67,11 +177,30 @@ function Material({ id, name, quantity, unit, costPerUnit, totalCost, purchasedD
         <div className="flex items-center justify-between">
           {/* Left Section - Material Basic Info */}
           <div className="flex items-center space-x-3 flex-1">
-            {/* Material Icon/Image */}
+            {/* Material Image/Icon */}
             <div className="relative flex-shrink-0">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                <Package className="w-6 h-6 text-white" />
-              </div>
+              {billImage ? (
+                <div className="relative group">
+                  <img 
+                    src={`${API_URL}/uploads/bills/${billImage}`} 
+                    alt={`${name} bill`}
+                    className="w-12 h-12 rounded-lg object-cover border-2 border-gray-100 cursor-pointer hover:border-green-300 transition-colors"
+                    onError={handleImageError}
+                    onClick={openImageModal}
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <ZoomIn className="w-4 h-4 text-white" />
+                  </div>
+                  {/* Fallback icon - hidden by default, shown on image error */}
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center hidden">
+                    <Package className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+              ) : (
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                  <Package className="w-6 h-6 text-white" />
+                </div>
+              )}
             </div>
 
             {/* Material Name and Info */}
@@ -274,6 +403,104 @@ function Material({ id, name, quantity, unit, costPerUnit, totalCost, purchasedD
                   Update Stock
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Modal */}
+      {showImageModal && billImage && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
+          onClick={(e) => e.target === e.currentTarget && closeImageModal()}
+        >
+          <div className="relative w-full h-full flex items-center justify-center">
+            {/* Close Button */}
+            <button
+              onClick={closeImageModal}
+              className="absolute top-4 right-4 z-10 bg-black bg-opacity-50 text-white hover:bg-opacity-70 transition-all duration-200 rounded-full p-2"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {/* Zoom Controls */}
+            <div className="absolute top-4 left-4 z-10 flex flex-col space-y-2">
+              <button
+                onClick={handleZoomIn}
+                disabled={zoom >= 5}
+                className="bg-black bg-opacity-50 text-white hover:bg-opacity-70 transition-all duration-200 rounded-full p-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Zoom In"
+              >
+                <ZoomIn className="w-5 h-5" />
+              </button>
+              
+              <button
+                onClick={handleZoomOut}
+                disabled={zoom <= 0.5}
+                className="bg-black bg-opacity-50 text-white hover:bg-opacity-70 transition-all duration-200 rounded-full p-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Zoom Out"
+              >
+                <ZoomOut className="w-5 h-5" />
+              </button>
+              
+              <button
+                onClick={handleResetZoom}
+                className="bg-black bg-opacity-50 text-white hover:bg-opacity-70 transition-all duration-200 rounded-full p-2"
+                title="Reset Zoom"
+              >
+                <RotateCcw className="w-5 h-5" />
+              </button>
+              
+              {/* Zoom Level Indicator */}
+              <div className="bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded text-center">
+                {Math.round(zoom * 100)}%
+              </div>
+            </div>
+
+            {/* Image Container */}
+            <div 
+              ref={containerRef}
+              className="relative w-full h-full overflow-hidden cursor-grab active:cursor-grabbing"
+              onWheel={handleWheel}
+            >
+              <img
+                ref={imageRef}
+                src={`${API_URL}/uploads/bills/${billImage}`}
+                alt={`${name} bill - Full size`}
+                className="absolute top-1/2 left-1/2 max-w-none transition-transform duration-200 ease-out select-none"
+                style={{
+                  transform: `translate(-50%, -50%) translate(${position.x}px, ${position.y}px) scale(${zoom})`,
+                  cursor: zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default'
+                }}
+                onMouseDown={handleMouseDown}
+                onLoad={() => {
+                  // Ensure image fits initially
+                  if (imageRef.current && containerRef.current) {
+                    const img = imageRef.current;
+                    const container = containerRef.current;
+                    const imgAspect = img.naturalWidth / img.naturalHeight;
+                    const containerAspect = container.clientWidth / container.clientHeight;
+                    
+                    if (imgAspect > containerAspect) {
+                      img.style.width = '90vw';
+                      img.style.height = 'auto';
+                    } else {
+                      img.style.height = '90vh';
+                      img.style.width = 'auto';
+                    }
+                  }
+                }}
+                draggable={false}
+              />
+            </div>
+
+            {/* Image Info */}
+            <div className="absolute bottom-4 left-4 right-4 bg-gradient-to-t from-black via-black to-transparent text-white p-4 rounded-lg bg-opacity-60">
+              <h3 className="text-lg font-semibold">{name}</h3>
+              <p className="text-sm text-gray-300">Bill/Receipt - Purchased on {formatDate(purchasedDate)}</p>
+              <p className="text-xs text-gray-400 mt-1">
+                Use mouse wheel to zoom • Click and drag to pan when zoomed • ESC to close
+              </p>
             </div>
           </div>
         </div>

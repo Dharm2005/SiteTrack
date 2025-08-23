@@ -3,13 +3,13 @@ import AddMaterialForm from './AddMaterialForm'
 import { useSelector } from 'react-redux'
 import { Material } from '../index'
 import { useState } from 'react'
-import { Plus, Users } from 'lucide-react'
+import { Plus, Users, Package } from 'lucide-react'
 
 function Materials({siteId}) {
   const [showAddForm, setShowAddForm] = useState(false);
   const allMaterials = useSelector((state) => state.material.materials);
   console.log(allMaterials);
-  
+    
 
   const handleCloseForm = () => {
     setShowAddForm(false);
@@ -25,7 +25,7 @@ function Materials({siteId}) {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-blue-100 rounded-lg">
-            <Users className="w-6 h-6 text-blue-600" />
+            <Package className="w-6 h-6 text-blue-600" />
           </div>
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Materials</h2>
@@ -63,6 +63,7 @@ function Materials({siteId}) {
                 key={material._id}
                 id={material._id}
                 name={material.materialName}
+                billImage={material.billImage}
                 quantity={material.quantity}
                 unit={material.unit}
                 costPerUnit={material.costPerUnit}
@@ -79,7 +80,7 @@ function Materials({siteId}) {
         /* Empty State */
         <div className="flex flex-col items-center justify-center py-16 bg-white rounded-xl shadow-sm">
           <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-            <Users className="w-12 h-12 text-gray-400" />
+            <Package className="w-12 h-12 text-gray-400" />
           </div>
           <h3 className="text-xl font-medium text-gray-900 mb-2">No material found</h3>
           <p className="text-gray-500 text-center max-w-md mb-6">

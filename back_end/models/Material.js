@@ -48,7 +48,7 @@ const materialSchema = new mongoose.Schema({
       ref: "Site",   // link to your Site schema
     },
   ],
-});
+}, { timestamps: true })
 
 // middleware to auto-calc totalCost
 materialSchema.pre("save", function (next) {
