@@ -36,25 +36,14 @@ function AddWorkerForm({siteId, onClose}) {
       newErrors.workerName = 'Worker name should only contain letters and spaces';
     }
 
-    // Mobile validation
-    if (!form.workerMobile.trim()) {
-      newErrors.workerMobile = 'Mobile number is required';
-    } else if (!/^[6-9]\d{9}$/.test(form.workerMobile.trim())) {
-      newErrors.workerMobile = 'Please enter a valid 10-digit Indian mobile number';
-    }
-
     // Advance validation
     if (form.workerAdvance < 0) {
       newErrors.workerAdvance = 'Advance amount cannot be negative';
-    } else if (form.workerAdvance > 100000) {
-      newErrors.workerAdvance = 'Advance amount seems too high (max: ₹1,00,000)';
     }
 
     // Per diem validation
     if (form.workerPerDiem < 0) {
       newErrors.workerPerDiem = 'Per diem amount cannot be negative';
-    } else if (form.workerPerDiem > 10000) {
-      newErrors.workerPerDiem = 'Per diem amount seems too high (max: ₹10,000)';
     }
 
     // Image validation
@@ -217,7 +206,7 @@ function AddWorkerForm({siteId, onClose}) {
         {/* Mobile Number */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Mobile Number *
+            Mobile Number
           </label>
           <div className="relative">
             <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -226,16 +215,10 @@ function AddWorkerForm({siteId, onClose}) {
               name="workerMobile"
               value={form.workerMobile}
               onChange={handleChange}
-              placeholder="Enter 10-digit mobile number"
-              maxLength="10"
-              className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-                errors.workerMobile ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-              }`}
+              placeholder="Enter mobile number"
+              className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
           </div>
-          {errors.workerMobile && (
-            <p className="text-red-500 text-sm mt-1">{errors.workerMobile}</p>
-          )}
         </div>
 
         {/* Advance and Per Diem */}
@@ -356,7 +339,7 @@ function AddWorkerForm({siteId, onClose}) {
             >
               Cancel
             </button>
-          )}
+            )}
         </div>
       </form>
     </div>

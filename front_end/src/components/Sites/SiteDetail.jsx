@@ -3,8 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon } from 'lucide-react'
 import { getSite } from '../../services/siteService';
 import { Workers } from '../index';
+import { Materials } from '../index'
 import { getWorkersBySite } from '../../services/workerService'
+import { getMaterialsBySite } from '../../services/materialService'
 import { setWorkers } from '../../features/workerSlice';
+import { setMaterials } from '../../features/materialSlice'
 import { useDispatch } from 'react-redux';
 
 const API_URL = "http://localhost:3000";
@@ -19,14 +22,25 @@ function SiteDetail() {
   useEffect(() => {
     const fetchWorkers = async () => {
       try {
-        const data = await getWorkersBySite(id);
-        dispatch(setWorkers(data));
+        const workerData = await getWorkersBySite(id);
+        dispatch(setWorkers(workerData));
       } catch (error) {
         console.error("Error fetching workers:", error);
       }
     };
-    
     fetchWorkers();
+  }, [id]);
+  
+  useEffect(() => {
+    const fetchMaterials = async () => {
+      try {
+        const materialData = await getMaterialsBySite(id);
+        dispatch(setMaterials(materialData));
+      } catch (error) {
+        console.error("Error fetching materials:", error);
+      }
+    };
+    fetchMaterials();
   }, [id]);
 
   useEffect(() => {
@@ -121,16 +135,16 @@ function SiteDetail() {
       <div className="px-6 pb-6">
         <div className="max-w-7xl mx-auto">
           <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-            <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[600px]">
+            <div className="grid grid-cols-1 lg:grid-cols-2">
               
               {/* Left Side - Image */}
-              <div className="relative bg-gradient-to-br from-blue-500 to-purple-600">
+              <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 min-h-[400px] lg:min-h-[600px]">
                 {site.siteImage ? (
                   <>
                     <img 
                       src={`${API_URL}/uploads/sites/${site.siteImage}`} 
                       alt={site.siteName || 'Site Image'}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain bg-gradient-to-br from-blue-500 to-purple-600"
                       onError={handleImageError}
                     />
                     {/* Fallback icon - hidden by default */}
@@ -198,7 +212,7 @@ function SiteDetail() {
                       <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Manager Name</span>
                     </div>
                     <p className="text-xl font-semibold text-gray-900">
-                      {site.managerName || 'Not assigned'}
+                      {site.siteManagerName || 'Not assigned'}
                     </p>
                   </div>
 
@@ -211,7 +225,7 @@ function SiteDetail() {
                       <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Manager Phone</span>
                     </div>
                     <p className="text-xl font-semibold text-gray-900">
-                      {site.managerContact || 'N/A'}
+                      {site.siteManagerContact || 'N/A'}
                     </p>
                   </div>
                   
@@ -245,7 +259,7 @@ function SiteDetail() {
             </div>
 
             {/* Materials List - Bottom Right */}
-            {/* <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+            <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
               <div className="border-b border-gray-200 px-6 py-4">
                 <h2 className="text-2xl font-bold text-gray-900">Material List</h2>
                 <p className="text-gray-600 mt-1">Track materials and inventory</p>
@@ -253,7 +267,7 @@ function SiteDetail() {
               <div className="p-6">
                 <Materials siteId={id} />
               </div>
-            </div> */}
+            </div>
             
           </div>
         </div>

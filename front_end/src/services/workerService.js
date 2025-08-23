@@ -14,7 +14,6 @@ export const addWorker = async (workerData) => {
     const response = await axios.post("http://localhost:3000/add-worker",workerData,  {
       headers: { "Content-Type": "multipart/form-data" },
     })
-    console.log(response.data);
     
     return response.data;
   }catch (err) {

@@ -34,6 +34,14 @@ const materialSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  sellerName : {
+    type : String,
+    required: true,
+  },
+  vahicleNumber : {
+    type : String,
+    required: true,
+  },
   sites: [
     {
       type: mongoose.Schema.Types.ObjectId,

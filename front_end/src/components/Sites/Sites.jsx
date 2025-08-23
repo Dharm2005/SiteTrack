@@ -1,6 +1,7 @@
 import React from 'react';
 import Site from './Site';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 function Sites() {
   const allSites = useSelector((state) => state.site.sites)
@@ -46,9 +47,9 @@ function Sites() {
             <p className="text-gray-500 text-center max-w-md">
               There are no sites to display at the moment. Add your first site to get started.
             </p>
-            <button className="mt-6 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105">
+            <Link to='/add-site' className="mt-6 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105">
               Add First Site
-            </button>
+            </Link>
           </div>
         )}
       </div>

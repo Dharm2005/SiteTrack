@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
     if (req.body.type === "site") folder = "uploads/sites";
     if (req.body.type === "manager") folder = "uploads/managers";
     if (req.body.type === "worker") folder = "uploads/workers";
-    if (req.body.type === "bill") folder = "uploads/bills";
+    if (req.body.type === "material") folder = "uploads/bills";
     
     cb(null, folder);
   },

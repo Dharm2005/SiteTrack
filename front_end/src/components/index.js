@@ -11,4 +11,8 @@ export {default as Workers} from "./Workers/Workers"
 export {default as Worker} from "./Workers/Worker"
 export {default as AddWorkerForm} from './Workers/AddWorkerForm'
 
+export {default as Materials} from "./Materials/Materials"
+export {default as Material} from "./Materials/Material"
+export {default as AddMaterialForm} from "./Materials/AddMaterialForm"
+
 export {default as NotFound} from "./Errors/NotFound"

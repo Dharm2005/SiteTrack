@@ -14,7 +14,7 @@ exports.getMaterialsBySite = async (req , res , next) => {
 
 exports.postAddMaterial = async (req, res, next) => {
   try {
-    let { materialName, quantity, unit, costPerUnit, totalCost, purchasedDate , sites } = req.body;
+    let { materialName, quantity, unit, costPerUnit, totalCost, purchasedDate, sellerName, vahicleNumber, sites } = req.body;
     const billImage = req.file ? req.file.filename : null;
 
     // Parse sites correctly
@@ -34,6 +34,8 @@ exports.postAddMaterial = async (req, res, next) => {
       costPerUnit,
       totalCost,
       purchasedDate,
+      sellerName,
+      vahicleNumber,
       sites: Array.isArray(sites) ? sites : [sites],
     });
 
