@@ -6,6 +6,7 @@ const cors = require('cors');
 // local module
 const siteRouter = require('./routes/siteRouter');
 const workerRouter = require('./routes/workerRouter');
+const materialRouter = require('./routes/materialRouter');
 const errors = require('./controllers/errors');
 
 // mongo connection string
@@ -24,6 +25,7 @@ app.use("/uploads", express.static("uploads"));
 // Routers
 app.use('/',siteRouter)
 app.use('/', workerRouter);
+app.use('/', materialRouter);
 
 
 // Error Handling
