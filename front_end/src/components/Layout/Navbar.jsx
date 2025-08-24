@@ -32,7 +32,21 @@ export default function NavBar() {
                   }`
                 }
               >
-                Home
+                Sites
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/all-manager"
+                className={({ isActive }) =>
+                  `transition-colors duration-200 ${
+                    isActive
+                      ? 'text-blue-600 font-semibold'
+                      : 'text-gray-700 hover:text-blue-700'
+                  }`
+                }
+              >
+                Managers
               </NavLink>
             </li>
             <li>
@@ -47,6 +61,20 @@ export default function NavBar() {
                 }
               >
                 Add Site
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/add-manager"
+                className={({ isActive }) =>
+                  `transition-colors duration-200 ${
+                    isActive
+                      ? 'text-blue-600 font-semibold'
+                      : 'text-gray-700 hover:text-blue-700'
+                  }`
+                }
+              >
+                Add Manager
               </NavLink>
             </li>
           </ul>

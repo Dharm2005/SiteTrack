@@ -15,4 +15,9 @@ export {default as Materials} from "./Materials/Materials"
 export {default as Material} from "./Materials/Material"
 export {default as AddMaterialForm} from "./Materials/AddMaterialForm"
 
+export {default as AddManager} from "./Managers/AddManager"
+export {default as AllManager} from "./Managers/AllManager"
+export {default as Managers} from "./Managers/Managers"
+export {default as Manager} from "./Managers/Manager"
+
 export {default as NotFound} from "./Errors/NotFound"

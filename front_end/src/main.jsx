@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import {Home , AddSite , NotFound , SiteDetail} from "./components"
+import {Home , AddSite , NotFound , SiteDetail , AddManager , AllManager} from "./components"
 import App from './App.jsx'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import { store } from './app/store.js'
@@ -14,6 +14,8 @@ const router = createBrowserRouter(
     <Route path = '/' element = {<App />}>
       <Route path = '' element = {<Home />} />
       <Route path = 'add-site' element = {<AddSite />} />
+      <Route path = 'add-manager' element = {<AddManager />} />
+      <Route path = 'all-manager' element = {<AllManager />} />
       <Route path = 'site/:id' element = {<SiteDetail />} />
       <Route path = '*' element = {<NotFound />} />
     </Route>
