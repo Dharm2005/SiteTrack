@@ -9,6 +9,8 @@ import { setWorkers } from '../../features/workerSlice';
 import { setMaterials } from '../../features/materialSlice'
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
+import { getAllManager } from '../../services/managerService';
+import { setManagers } from '../../features/managerSlice';
 
 const API_URL = "http://localhost:3000";
 
@@ -20,7 +22,8 @@ function SiteDetail() {
   const dispatch = useDispatch()
   const managers = useSelector(state => state.manager.managers)
   const [manager, setManager] = useState(null)
-
+  console.log(managers);
+  
   useEffect(() => {
     const fetchWorkers = async () => {
       try {
@@ -44,6 +47,19 @@ function SiteDetail() {
     };
     fetchMaterials();
   }, [id]);
+
+  useEffect(() => {
+    getAllManager()
+    .then(managers => {
+      dispatch(setManagers(managers))
+    })
+    .catch((err) => {
+      console.error("Error while fetching managers" , err);
+    })
+  }, [dispatch])
+
+  console.log(managers);
+  
 
   useEffect(() => {
     let isMounted = true;
