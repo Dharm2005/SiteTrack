@@ -4,6 +4,8 @@ import { getAllSite } from '../../services/siteService';
 import { Sites } from '../../components'
 import { useDispatch } from 'react-redux';
 import {setSites} from '../../features/siteSlice';
+import { getAllManager } from '../../services/managerService';
+import { setManagers } from '../../features/managerSlice';
 
 
 function Home() {
@@ -21,6 +23,18 @@ function Home() {
       setLoading(false)
     })
   }, [dispatch])
+
+  useEffect(() => {
+    const fetchManagers = async () => {
+      try {
+        const res = await getAllManager();
+        dispatch(setManagers(res));
+      } catch (err) {
+        console.error("Error fetching managers", err);
+      }
+    };
+    fetchManagers();
+  }, [dispatch]);
 
   if (loading) return <p className="text-center py-10">Loading...</p>;
   

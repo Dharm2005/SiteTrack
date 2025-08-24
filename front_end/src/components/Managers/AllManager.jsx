@@ -1,32 +1,19 @@
 import React from 'react'
-import { getAllManager } from '../../services/managerService';
-import { setManagers } from '../../features/managerSlice';
 import Managers from './Managers';
-import { useState , useEffect } from 'react';
-import {useDispatch} from 'react-redux';
+import { useSelector } from 'react-redux';
 
 function AllManager() {
+  // Read managers from Redux
+  const managers = useSelector((state) => state.manager.managers);
+  console.log(managers);
 
-  const dispatch =  useDispatch();
-  const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    getAllManager()
-    .then(managers => {
-      dispatch(setManagers(managers))
-      setLoading(false)
-    })
-    .catch(err => {
-      console.error("Error while fetching managers from DB :" , err)
-      setLoading(false)
-    })
-  }, [dispatch])
+  // If managers are not loaded yet
+  if (!managers || managers.length === 0) {
+    return <p className="text-center py-10">Loading...</p>;
+  }
 
-  if (loading) return <p className="text-center py-10">Loading...</p>;
-
-  return (
-    <Managers />
-  )
+  return <Managers />;
 }
 
-export default AllManager
+export default AllManager;

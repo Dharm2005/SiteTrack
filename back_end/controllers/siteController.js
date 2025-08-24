@@ -1,4 +1,5 @@
 const Site = require('../models/Site')
+const Manager = require('../models/Manager')
 
 exports.getSites = async (req , res , next) => {
    try {
@@ -11,20 +12,22 @@ exports.getSites = async (req , res , next) => {
 
 exports.postAddSite = async (req , res , next) => {
   try {
-    const {siteName, location, siteManagerName, siteManagerContact} = req.body;
+    const { siteName, location, managerId } = req.body;
     const siteImage = req.file ? req.file.filename : null;
 
     const site = new Site({
       siteName,
       location,
       siteImage,
-      siteManagerName,
-      siteManagerContact
-    });
+      manager: managerId
+    })
 
-    const savedSite = await site.save()
-    res.status(201).json(savedSite)
-  } catch (err) {
+    await site.save();
+    await Manager.findByIdAndUpdate(managerId, { $push: { sites: site._id } });
+
+
+    res.status(201).json({ message: "Site created successfully", site });
+  }catch (err) {
      res.status(500).json({ message: "Error creating sites", error: err.message });
   }
 }
@@ -32,7 +35,8 @@ exports.postAddSite = async (req , res , next) => {
 exports.getSiteDetails = async (req ,res, next) => {
   try{
     const siteId = req.params.id;
-    const site = await Site.findById(siteId);
+     const site = await Site.findById(siteId)
+     
     if (!site) 
       return res.status(404).json({ error: "Site not found" });
     res.json(site);

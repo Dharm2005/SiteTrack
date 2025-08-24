@@ -13,34 +13,11 @@ const siteSchema = mongoose.Schema({
     type : String,
     // required : true
   },
-  siteManagerName : {
-    type : String,
-    required : true
+  manager : {
+    type : mongoose.Schema.ObjectId,
+    reg : "Manager"
   },
-  siteManagerContact : {
-    type : String,
-    required : true
-  },
-
-  // workers : [
-  //   {
-  //     type : mongoose.Schema.ObjectId,
-  //     reg : "Worker"
-  //   }
-  // ],
-  // manager : [
-  //   {
-  //     type : mongoose.Schema.ObjectId,
-  //     reg : "Gallery"
-  //   }
-  // ],
-  // materials : [
-  //  {
-  //     type : mongoose.Schema.ObjectId,
-  //     reg : "Materials"
-  //   }
-  // ],
-
+  
 },
 {timestamps : true}
 )
