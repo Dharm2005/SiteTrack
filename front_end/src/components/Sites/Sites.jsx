@@ -28,8 +28,7 @@ function Sites() {
                   name={site.siteName}
                   location={site.location}
                   image={site.siteImage}
-                  managerName={site.siteManagerName}
-                  managerContact={site.siteManagerContact}
+                  managerId={site.manager}
                   createdAt={site.createdAt}
                 />
               </div>

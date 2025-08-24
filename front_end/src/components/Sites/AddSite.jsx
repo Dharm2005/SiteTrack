@@ -6,6 +6,7 @@ import { addNewSite } from '../../features/siteSlice';
 import { toast } from 'react-toastify';
 function AddSite() {
   const [form, setForm] = useState({
+    type: '',
     siteName: '',
     location: '',
     siteImage: '',
@@ -78,6 +79,7 @@ function AddSite() {
     e.preventDefault();
     try {
       const formData = new FormData();
+      formData.append("type", "site");
       formData.append("siteName", form.siteName);
       formData.append("location", form.location);
       formData.append("managerId", form.managerId); // ✅ sending managerId only

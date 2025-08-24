@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon } from 'lucide-react'
+import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon, UserCheck } from 'lucide-react'
 import { getSite } from '../../services/siteService';
-import { Workers } from '../index';
-import { Materials } from '../index'
+import { Workers, Materials, Manager } from '../index';
 import { getWorkersBySite } from '../../services/workerService'
 import { getMaterialsBySite } from '../../services/materialService'
 import { setWorkers } from '../../features/workerSlice';
 import { setMaterials } from '../../features/materialSlice'
 import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const API_URL = "http://localhost:3000";
 
@@ -18,6 +18,8 @@ function SiteDetail() {
   const [site, setSite] = useState(null)
   const [loading, setLoading] = useState(true)
   const dispatch = useDispatch()
+  const managers = useSelector(state => state.manager.managers)
+  const [manager, setManager] = useState(null)
 
   useEffect(() => {
     const fetchWorkers = async () => {
@@ -30,7 +32,7 @@ function SiteDetail() {
     };
     fetchWorkers();
   }, [id]);
-  
+
   useEffect(() => {
     const fetchMaterials = async () => {
       try {
@@ -50,6 +52,9 @@ function SiteDetail() {
         if (isMounted) {
           console.log(site);
           setSite(site);
+          const manager = managers.find((m) => m._id === site.manager)
+          setManager(manager)
+
           setLoading(false);
         }
       })
@@ -86,6 +91,12 @@ function SiteDetail() {
     e.target.nextSibling.style.display = 'flex';
   };
 
+  // Handle missing manager image
+  const handleManagerImageError = (e) => {
+    e.target.style.display = 'none';
+    e.target.nextSibling.style.display = 'flex';
+  };
+
   const handleBack = () => {
     navigate(-1); // Go back to previous page
   };
@@ -107,7 +118,7 @@ function SiteDetail() {
         <div className="text-center">
           <div className="text-6xl mb-4">🏗️</div>
           <p className="text-xl text-gray-600 mb-4">Site not found</p>
-          <button 
+          <button
             onClick={handleBack}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
@@ -122,7 +133,7 @@ function SiteDetail() {
     <div className="min-h-screen bg-gray-50">
       {/* Back Button */}
       <div className="p-6">
-        <button 
+        <button
           onClick={handleBack}
           className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors group"
         >
@@ -134,119 +145,222 @@ function SiteDetail() {
       {/* Main Content */}
       <div className="px-6 pb-6">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-            <div className="grid grid-cols-1 lg:grid-cols-2">
+          
+          {/* Top Row - Site Details and Manager */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            
+            {/* Site Details Card */}
+            <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
               
-              {/* Left Side - Image */}
-              <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 min-h-[400px] lg:min-h-[600px]">
+              {/* Site Image */}
+              <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 h-56">
                 {site.siteImage ? (
                   <>
-                    <img 
-                      src={`${API_URL}/uploads/sites/${site.siteImage}`} 
+                    <img
+                      src={`${API_URL}/uploads/sites/${site.siteImage}`}
                       alt={site.siteName || 'Site Image'}
-                      className="w-full h-full object-contain bg-gradient-to-br from-blue-500 to-purple-600"
+                      className="w-full h-full object-cover"
                       onError={handleImageError}
                     />
                     {/* Fallback icon - hidden by default */}
-                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 hidden">
-                      <ImageIcon className="w-24 h-24 text-white/70" />
-                      <div className="absolute bottom-8 left-8 right-8 text-center">
-                        <p className="text-white/80 text-lg">No image available</p>
-                      </div>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 hidden">
+                      <ImageIcon className="w-16 h-16 text-white/70 mb-2" />
+                      <p className="text-white/80 text-sm">No image available</p>
                     </div>
                   </>
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
-                    <ImageIcon className="w-24 h-24 text-white/70 mb-4" />
-                    <p className="text-white/80 text-lg">No image available</p>
+                    <ImageIcon className="w-16 h-16 text-white/70 mb-2" />
+                    <p className="text-white/80 text-sm">No image available</p>
                   </div>
                 )}
               </div>
 
-              {/* Right Side - Details */}
-              <div className="p-8 lg:p-12 flex flex-col justify-center">
+              {/* Site Info */}
+              <div className="p-6">
                 
                 {/* Site Name */}
-                <div className="mb-8">
-                  <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
+                <div className="mb-6">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2 leading-tight">
                     {site.siteName || 'Unnamed Site'}
                   </h1>
-                  <div className="w-20 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
+                  <div className="w-12 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
                 </div>
 
-                {/* Details Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {/* Site Details */}
+                <div className="space-y-4 mb-6">
                   
                   {/* Location */}
-                  <div className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <div className="p-2 bg-blue-100 rounded-lg">
-                        <MapPin className="w-6 h-6 text-blue-600" />
-                      </div>
-                      <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Location</span>
+                  <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <MapPin className="w-5 h-5 text-blue-600" />
                     </div>
-                    <p className="text-xl font-semibold text-gray-900">
-                      {site.location || 'Not specified'}
-                    </p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-medium text-gray-500 mb-1">Location</p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {site.location || 'Not specified'}
+                      </p>
+                    </div>
                   </div>
 
                   {/* Created At */}
-                  <div className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <div className="p-2 bg-orange-100 rounded-lg">
-                        <Calendar className="w-6 h-6 text-orange-600" />
-                      </div>
-                      <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Created At</span>
+                  <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <Calendar className="w-5 h-5 text-green-600" />
                     </div>
-                    <p className="text-xl font-semibold text-gray-900">
-                      {formatDate(site.createdAt)}
-                    </p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-medium text-gray-500 mb-1">Created</p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {formatDate(site.createdAt)}
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Manager Name */}
-                  <div className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <div className="p-2 bg-green-100 rounded-lg">
-                        <User className="w-6 h-6 text-green-600" />
-                      </div>
-                      <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Manager Name</span>
-                    </div>
-                    <p className="text-xl font-semibold text-gray-900">
-                      {site.siteManagerName || 'Not assigned'}
-                    </p>
-                  </div>
-
-                  {/* Manager Phone */}
-                  <div className="bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <div className="p-2 bg-purple-100 rounded-lg">
-                        <Phone className="w-6 h-6 text-purple-600" />
-                      </div>
-                      <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Manager Phone</span>
-                    </div>
-                    <p className="text-xl font-semibold text-gray-900">
-                      {site.siteManagerContact || 'N/A'}
-                    </p>
-                  </div>
-                  
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex space-x-4 mt-8">
-                  <button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-2xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg">
+                <div className="flex gap-3">
+                  <button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2.5 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-sm">
                     Edit Site
                   </button>
-                  <button className="px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-2xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+                  <button className="flex-1 px-4 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 text-sm">
                     Delete
                   </button>
                 </div>
+
               </div>
             </div>
+
+            {/* Manager Details Card */}
+            <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+              
+              {/* Manager Image */}
+              <div className="relative bg-gradient-to-br from-emerald-500 to-teal-600 h-56">
+                {manager && manager.managerImage ? (
+                  <>
+                    <img
+                      src={`${API_URL}/uploads/managers/${manager.managerImage}`}
+                      alt={manager.managerName || 'Manager Image'}
+                      className="w-full h-full object-cover"
+                      onError={handleManagerImageError}
+                    />
+                    {/* Fallback icon - hidden by default */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 hidden">
+                      <User className="w-16 h-16 text-white/70 mb-2" />
+                      <p className="text-white/80 text-sm">No image available</p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600">
+                    <User className="w-16 h-16 text-white/70 mb-2" />
+                    <p className="text-white/80 text-sm">No manager assigned</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Manager Info */}
+              <div className="p-6">
+                
+                {/* Manager Name */}
+                <div className="mb-6">
+                  <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2 leading-tight">
+                    {manager ? manager.managerName : 'No Manager Assigned'}
+                  </h2>
+                  <div className="w-12 h-1 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full"></div>
+                </div>
+
+                {manager ? (
+                  <>
+                    {/* Manager Details - 2x2 Grid Layout */}
+                    <div className="mb-6">
+                      
+                      {/* Top Row - Name and Mobile */}
+                      <div className="grid grid-cols-2 gap-3 mb-3">
+                        {/* Name */}
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
+                          <div className="p-2 bg-emerald-100 rounded-lg">
+                            <UserCheck className="w-4 h-4 text-emerald-600" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-medium text-gray-500 mb-1">Name</p>
+                            <p className="text-sm font-semibold text-gray-900 truncate">
+                              {manager.managerName || 'Not specified'}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Mobile */}
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
+                          <div className="p-2 bg-blue-100 rounded-lg">
+                            <Phone className="w-4 h-4 text-blue-600" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-medium text-gray-500 mb-1">Mobile</p>
+                            <p className="text-sm font-semibold text-gray-900 truncate">
+                              {manager.managerMobile || 'Not specified'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Bottom Row - DOB and Gender */}
+                      <div className="grid grid-cols-2 gap-3">
+                        {/* Date of Birth */}
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
+                          <div className="p-2 bg-purple-100 rounded-lg">
+                            <Calendar className="w-4 h-4 text-purple-600" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-medium text-gray-500 mb-1">DOB</p>
+                            <p className="text-sm font-semibold text-gray-900 truncate">
+                              {formatDate(manager.managerDob)}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Gender */}
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
+                          <div className="p-2 bg-orange-100 rounded-lg">
+                            <User className="w-4 h-4 text-orange-600" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-medium text-gray-500 mb-1">Gender</p>
+                            <p className="text-sm font-semibold text-gray-900 truncate">
+                              {manager.managerGender || 'Not specified'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    {/* Manager Action Buttons */}
+                    <div className="flex gap-3">
+                      <button className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2.5 rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-sm">
+                        View Manager
+                      </button>
+                      <button className="flex-1 px-4 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 text-sm">
+                        Change
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500 mb-4">No manager has been assigned to this site yet.</p>
+                    <button className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 transform hover:scale-105 shadow-lg">
+                      Assign Manager
+                    </button>
+                  </div>
+                )}
+
+              </div>
+            </div>
+
           </div>
 
           {/* Bottom Section - Workers and Materials */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-            
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
             {/* Workers List - Bottom Left */}
             <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
               <div className="border-b border-gray-200 px-6 py-4">
@@ -268,7 +382,7 @@ function SiteDetail() {
                 <Materials siteId={id} />
               </div>
             </div>
-            
+
           </div>
         </div>
       </div>

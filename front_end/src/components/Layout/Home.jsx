@@ -13,28 +13,25 @@ function Home() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    getAllSite()
-    .then(sites => {
-      dispatch(setSites(sites))
-      setLoading(false)
-    })
-    .catch(err => {
-      console.error("Error while fetching home from DB :" , err)
-      setLoading(false)
-    })
-  }, [dispatch])
-
-  useEffect(() => {
-    const fetchManagers = async () => {
+    const fetchData = async () => {
       try {
-        const res = await getAllManager();
-        dispatch(setManagers(res));
+        const [sites, managers] = await Promise.all([
+          getAllSite(),
+          getAllManager()
+        ]);
+
+        dispatch(setSites(sites));
+        dispatch(setManagers(managers));
       } catch (err) {
-        console.error("Error fetching managers", err);
+        console.error("Error while fetching data for Home:", err);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchManagers();
+
+    fetchData();
   }, [dispatch]);
+
 
   if (loading) return <p className="text-center py-10">Loading...</p>;
   

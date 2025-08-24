@@ -1,10 +1,15 @@
 import React from 'react';
 import { MapPin, User, Phone, Calendar, ImageIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const API_URL = "http://localhost:3000";
 
-function Site({ id ,name, location, image, managerName, managerContact, createdAt }) {
+function Site({ id ,name, location, image, managerId, createdAt }) {
+
+  const managers = useSelector(state => state.manager.managers)
+  const manager = managers.find((m) => m._id === managerId)
+
   // Format the date if it exists
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -85,7 +90,7 @@ function Site({ id ,name, location, image, managerName, managerContact, createdA
                 <span className="text-sm font-medium text-gray-500">Manager</span>
               </div>
               <p className="text-gray-900 font-medium truncate">
-                {managerName || 'Not assigned'}
+                {manager.managerName || 'Not assigned'}
               </p>
             </div>
           </div>
@@ -93,15 +98,7 @@ function Site({ id ,name, location, image, managerName, managerContact, createdA
           {/* Right Column */}
           <div className="space-y-4">
             {/* Contact */}
-            <div>
-              <div className="flex items-center space-x-2 mb-1">
-                <Phone className="w-4 h-4 text-purple-600" />
-                <span className="text-sm font-medium text-gray-500">Contact</span>
-              </div>
-              <p className="text-gray-900 font-medium truncate">
-                {managerContact || 'N/A'}
-              </p>
-            </div>
+            
 
             {/* Created Date */}
             <div>
