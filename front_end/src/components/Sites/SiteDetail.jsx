@@ -22,7 +22,8 @@ function SiteDetail() {
   const dispatch = useDispatch()
   const managers = useSelector(state => state.manager.managers)
   const [manager, setManager] = useState(null)
-  console.log(managers);
+
+  // const 
   
   useEffect(() => {
     const fetchWorkers = async () => {
@@ -34,7 +35,7 @@ function SiteDetail() {
       }
     };
     fetchWorkers();
-  }, [id]);
+  }, [id , dispatch]);
 
   useEffect(() => {
     const fetchMaterials = async () => {
@@ -46,7 +47,7 @@ function SiteDetail() {
       }
     };
     fetchMaterials();
-  }, [id]);
+  }, [id , dispatch]);
 
   useEffect(() => {
     getAllManager()
@@ -58,9 +59,6 @@ function SiteDetail() {
     })
   }, [dispatch])
 
-  console.log(managers);
-  
-
   useEffect(() => {
     let isMounted = true;
     getSite(id)
@@ -69,6 +67,8 @@ function SiteDetail() {
           console.log(site);
           setSite(site);
           const manager = managers.find((m) => m._id === site.manager)
+          console.log(manager);
+          
           setManager(manager)
 
           setLoading(false);
@@ -83,7 +83,7 @@ function SiteDetail() {
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [dispatch , id , managers]);
 
   // Format the date if it exists
   const formatDate = (dateString) => {

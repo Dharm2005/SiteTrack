@@ -94,11 +94,11 @@ function AddManager() {
   
       const newManager = await addManager(formData);
       dispatch(addNewManager(newManager))
-      navigate('/managers')
+      navigate('/all-manager')
       toast.success("✅ New manager added successfully!");
     } catch (error) {
       console.error("error while adding new manager", error);
-      navigate('/managers')
+      navigate('/all-manager')
       toast.error("❌ Error while adding manager!");
     }
   };
