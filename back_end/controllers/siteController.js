@@ -24,7 +24,7 @@ exports.postAddSite = async (req , res , next) => {
 
     const savedSite = await site.save()
     res.status(201).json(savedSite)
-  } catch (error) {
+  } catch (err) {
      res.status(500).json({ message: "Error creating sites", error: err.message });
   }
 }
