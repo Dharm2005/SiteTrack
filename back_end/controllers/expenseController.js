@@ -12,6 +12,23 @@ exports.getExpensesBySite = async (req, res, next) => {
   }
 };
 
+exports.getLastFewExpenses = async (req, res, next) => {
+
+  try {
+    const {siteId} = req.params;
+    const {limit} = req.query;
+  
+    const expenses = await Expense.find({sites : siteId})
+      .sort({createdAt: -1})
+      .limit(parseInt(limit) || 5);
+  
+    res.status(200).json(expenses)
+  } catch (error) {
+    console.log("error while fetching last few expenses");
+    res.status(500).json({ err: "Failed to fetch few expenses" });    
+  }
+}
+
 
 exports.postAddExpense = async (req, res, next) => {
   try {
