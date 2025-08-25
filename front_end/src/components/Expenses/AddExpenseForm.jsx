@@ -8,6 +8,7 @@ import { Package, Upload, X, DollarSign, Calendar, Truck, Hash, Scale, Tag } fro
 
 function AddExpenseForm({siteId, onClose}) {
   const [form, setForm] = useState({
+    type:'expense',
     expenseType: 'other',
     billImage: null,
     quantity: 0,
@@ -41,6 +42,14 @@ function AddExpenseForm({siteId, onClose}) {
     return !['vehicleBorrow', 'other'].includes(form.expenseType);
   };
 
+  // Get allowed units based on expense type
+  const getAllowedUnits = () => {
+    if (form.expenseType === 'petrol' || form.expenseType === 'diesel') {
+      return ['litre'];
+    }
+    return unitOptions;
+  };
+
   // Validation functions
   const validateForm = () => {
     const newErrors = {};
@@ -58,6 +67,11 @@ function AddExpenseForm({siteId, onClose}) {
     // Unit validation - required only for specific expense types
     if (isUnitRequired() && !form.unit) {
       newErrors.unit = 'Unit is required for this expense type';
+    }
+
+    // Special validation for petrol/diesel - unit must be litre
+    if ((form.expenseType === 'petrol' || form.expenseType === 'diesel') && form.unit !== 'litre') {
+      newErrors.unit = `Unit must be "litre" for ${form.expenseType}`;
     }
 
     // Total cost validation
@@ -125,26 +139,41 @@ function AddExpenseForm({siteId, onClose}) {
         processedValue = value.replace(/\s+/g, ' ').toUpperCase().trim();
       }
       
-      setForm({
+      let updatedForm = {
         ...form,
         [name]: processedValue
-      });
+      };
 
-      // Reset unit and quantity when expense type changes to vehicleBorrow or other
-      if (name === 'expenseType' && ['vehicleBorrow', 'other'].includes(processedValue)) {
-        setForm(prev => ({
-          ...prev,
-          [name]: processedValue,
-          unit: 'other',
-          quantity: 0
-        }));
-        // Clear related errors
-        setErrors(prev => ({ 
-          ...prev, 
-          unit: '', 
-          quantity: '' 
-        }));
+      // Handle expense type changes
+      if (name === 'expenseType') {
+        if (['vehicleBorrow', 'other'].includes(processedValue)) {
+          // Reset unit and quantity when expense type changes to vehicleBorrow or other
+          updatedForm = {
+            ...updatedForm,
+            unit: 'other',
+            quantity: 0
+          };
+          // Clear related errors
+          setErrors(prev => ({ 
+            ...prev, 
+            unit: '', 
+            quantity: '' 
+          }));
+        } else if (processedValue === 'petrol' || processedValue === 'diesel') {
+          // Automatically set unit to litre for petrol/diesel
+          updatedForm = {
+            ...updatedForm,
+            unit: 'litre'
+          };
+          // Clear unit error if exists
+          setErrors(prev => ({ 
+            ...prev, 
+            unit: ''
+          }));
+        }
       }
+      
+      setForm(updatedForm);
     }
   };
 
@@ -163,6 +192,7 @@ function AddExpenseForm({siteId, onClose}) {
     
     try {
       const formData = new FormData();
+      formData.append("type", "expense");
       formData.append("expenseType", form.expenseType);
       if (form.billImage) {
         formData.append("billImage", form.billImage);
@@ -225,6 +255,8 @@ function AddExpenseForm({siteId, onClose}) {
     return new Date().toISOString().split('T')[0];
   };
 
+  const allowedUnits = getAllowedUnits();
+
   return (
     <div className="bg-white rounded-xl shadow-sm border p-4">
       <div className="flex items-center justify-between mb-4">
@@ -247,9 +279,9 @@ function AddExpenseForm({siteId, onClose}) {
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* First Row: Expense Type & Total Cost */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
+        {/* First Row: Expense Type, Total Cost, Arrival Date */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Expense Type *
@@ -299,65 +331,7 @@ function AddExpenseForm({siteId, onClose}) {
               <p className="text-red-500 text-xs mt-1">{errors.totalCost}</p>
             )}
           </div>
-        </div>
 
-        {/* Second Row: Quantity & Unit (Conditional) */}
-        {isUnitRequired() && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Quantity *
-              </label>
-              <div className="relative">
-                <Hash className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="number"
-                  name="quantity"
-                  value={form.quantity}
-                  onChange={handleChange}
-                  min="0"
-                  step="0.01"
-                  placeholder="Enter quantity"
-                  className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${
-                    errors.quantity ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                />
-              </div>
-              {errors.quantity && (
-                <p className="text-red-500 text-xs mt-1">{errors.quantity}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Unit *
-              </label>
-              <div className="relative">
-                <Scale className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <select
-                  name="unit"
-                  value={form.unit}
-                  onChange={handleChange}
-                  className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${
-                    errors.unit ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                >
-                  {unitOptions.map(unit => (
-                    <option key={unit} value={unit}>
-                      {unit.charAt(0).toUpperCase() + unit.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {errors.unit && (
-                <p className="text-red-500 text-xs mt-1">{errors.unit}</p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Third Row: Arrival Date & Vehicle Number */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Arrival Date *
@@ -379,6 +353,69 @@ function AddExpenseForm({siteId, onClose}) {
               <p className="text-red-500 text-xs mt-1">{errors.arrivalDate}</p>
             )}
           </div>
+        </div>
+
+        {/* Second Row: Quantity, Unit, Vehicle Number (Conditional quantity and unit) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {isUnitRequired() ? (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Quantity *
+                </label>
+                <div className="relative">
+                  <Hash className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="number"
+                    name="quantity"
+                    value={form.quantity}
+                    onChange={handleChange}
+                    min="0"
+                    step="0.01"
+                    placeholder="Enter quantity"
+                    className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${
+                      errors.quantity ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                  />
+                </div>
+                {errors.quantity && (
+                  <p className="text-red-500 text-xs mt-1">{errors.quantity}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Unit *
+                  {(form.expenseType === 'petrol' || form.expenseType === 'diesel') && (
+                    <span className="text-blue-600 text-xs ml-1">(Auto-set to Litre)</span>
+                  )}
+                </label>
+                <div className="relative">
+                  <Scale className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <select
+                    name="unit"
+                    value={form.unit}
+                    onChange={handleChange}
+                    disabled={form.expenseType === 'petrol' || form.expenseType === 'diesel'}
+                    className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${
+                      errors.unit ? 'border-red-300' : 'border-gray-300'
+                    } ${(form.expenseType === 'petrol' || form.expenseType === 'diesel') ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                  >
+                    {allowedUnits.map(unit => (
+                      <option key={unit} value={unit}>
+                        {unit.charAt(0).toUpperCase() + unit.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {errors.unit && (
+                  <p className="text-red-500 text-xs mt-1">{errors.unit}</p>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="md:col-span-2"></div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -405,7 +442,7 @@ function AddExpenseForm({siteId, onClose}) {
 
         {/* Bill Image Upload */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             Bill/Receipt Photo
           </label>
           
@@ -421,11 +458,11 @@ function AddExpenseForm({siteId, onClose}) {
               />
               <label
                 htmlFor="billImageInput"
-                className={`flex flex-col items-center justify-center w-full h-24 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 transition-colors ${
+                className={`flex flex-col items-center justify-center w-full h-20 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 transition-colors ${
                   errors.billImage ? 'border-red-300' : 'border-gray-300 hover:border-gray-400'
                 }`}
               >
-                <Upload className="w-6 h-6 text-gray-400 mb-1" />
+                <Upload className="w-5 h-5 text-gray-400 mb-1" />
                 <p className="text-sm text-gray-600">Upload bill/receipt</p>
                 <p className="text-xs text-gray-400">PNG, JPG, WebP up to 5MB</p>
               </label>
@@ -435,7 +472,7 @@ function AddExpenseForm({siteId, onClose}) {
               <img
                 src={imagePreview}
                 alt="Bill preview"
-                className="w-24 h-24 object-cover rounded-lg border-2 border-gray-300"
+                className="w-20 h-20 object-cover rounded-lg border-2 border-gray-300"
               />
               <button
                 type="button"
@@ -452,7 +489,7 @@ function AddExpenseForm({siteId, onClose}) {
           )}
         </div>
 
-        {/* Info Note for Optional Fields */}
+        {/* Info Note for Optional Fields or Petrol/Diesel */}
         {!isUnitRequired() && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
             <div className="flex items-center space-x-2">
@@ -462,6 +499,19 @@ function AddExpenseForm({siteId, onClose}) {
               <p className="text-sm text-blue-700">
                 For <strong>{expenseTypeOptions.find(opt => opt.value === form.expenseType)?.label}</strong> expenses, 
                 quantity and unit fields are optional.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {(form.expenseType === 'petrol' || form.expenseType === 'diesel') && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-amber-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold">!</span>
+              </div>
+              <p className="text-sm text-amber-700">
+                For <strong>{form.expenseType}</strong> expenses, the unit is automatically set to <strong>litre</strong> and cannot be changed.
               </p>
             </div>
           </div>

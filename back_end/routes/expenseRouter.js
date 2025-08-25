@@ -6,6 +6,7 @@ const upload = require('../middleware/imageUpload');
 
 expenseRouter.get('/expense/:siteId',expenseController.getExpensesBySite)
 expenseRouter.post('/add-expense',upload.single("billImage"),expenseController.postAddExpense)
+expenseRouter.get('/expense/:siteId/filter',expenseController.getLastFewExpenses)
 // expenseRouter.delete('expense/:id',expenseController.deleteMaterial)
 // expenseRouter.get('/expense/:id',expenseController.getMaterialDetails)
 
