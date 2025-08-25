@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon, UserCheck } from 'lucide-react'
 import { getSite } from '../../services/siteService';
-import { Workers } from '../index';
+import { Workers , LastFewExpenses} from '../index';
 import { getWorkersBySite } from '../../services/workerService'
 import { setWorkers } from '../../features/workerSlice';
 import { useDispatch } from 'react-redux';
@@ -379,13 +379,9 @@ function SiteDetail() {
                 <p className="text-gray-600 mt-1">Track Expenses</p>
               </div>
               <div className="p-6">
-                <Link
-                  to={`/site/${id}/expenses`}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-center"
-                >
-                  View Details
-                </Link>
-                {/* <Expenses siteId={id} /> */}
+                <LastFewExpenses 
+                  id = {id}
+                />
               </div>
             </div>
 

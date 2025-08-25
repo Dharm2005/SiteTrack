@@ -9,6 +9,15 @@ export const getExpensesBySite = async (id) => {
   }
 }
 
+export const getLastFewExpenses = async (id) => {
+  try{
+    const response = await axios.get(`http://localhost:3000/expense/${id}/filter?limit=5`);
+    return response.data;
+  }catch (err) {
+    throw new Error(err.response?.data?.message || "Failed to fetch last expenses");
+  }
+}
+
 export const addExpens = async (materialData) => {
   try{
     const response = await axios.post("http://localhost:3000/add-expense",materialData,  {
