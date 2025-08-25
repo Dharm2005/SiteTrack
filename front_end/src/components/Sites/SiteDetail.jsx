@@ -2,16 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon, UserCheck } from 'lucide-react'
 import { getSite } from '../../services/siteService';
-import { Workers, Expenses} from '../index';
+import { Workers } from '../index';
 import { getWorkersBySite } from '../../services/workerService'
-import { getExpensesBySite } from '../../services/expenseService'
 import { setWorkers } from '../../features/workerSlice';
-import { setExpenses } from '../../features/expenseSlice'
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { getAllManager } from '../../services/managerService';
 import { setManagers } from '../../features/managerSlice';
-
+import { Link } from 'react-router-dom';
 const API_URL = "http://localhost:3000";
 
 function SiteDetail() {
@@ -23,8 +21,6 @@ function SiteDetail() {
   const managers = useSelector(state => state.manager.managers)
   const [manager, setManager] = useState(null)
 
-  // const 
-  
   useEffect(() => {
     const fetchWorkers = async () => {
       try {
@@ -35,28 +31,16 @@ function SiteDetail() {
       }
     };
     fetchWorkers();
-  }, [id , dispatch]);
-
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      try {
-        const expenseData = await getExpensesBySite(id);
-        dispatch(setExpenses(expenseData));
-      } catch (error) {
-        console.error("Error fetching expense:", error);
-      }
-    };
-    fetchExpenses();
-  }, [id , dispatch]);
+  }, [id, dispatch]);
 
   useEffect(() => {
     getAllManager()
-    .then(managers => {
-      dispatch(setManagers(managers))
-    })
-    .catch((err) => {
-      console.error("Error while fetching managers" , err);
-    })
+      .then(managers => {
+        dispatch(setManagers(managers))
+      })
+      .catch((err) => {
+        console.error("Error while fetching managers", err);
+      })
   }, [dispatch])
 
   useEffect(() => {
@@ -68,7 +52,7 @@ function SiteDetail() {
           setSite(site);
           const manager = managers.find((m) => m._id === site.manager)
           console.log(manager);
-          
+
           setManager(manager)
 
           setLoading(false);
@@ -83,7 +67,7 @@ function SiteDetail() {
     return () => {
       isMounted = false;
     };
-  }, [dispatch , id , managers]);
+  }, [dispatch, id, managers]);
 
   // Format the date if it exists
   const formatDate = (dateString) => {
@@ -161,13 +145,13 @@ function SiteDetail() {
       {/* Main Content */}
       <div className="px-6 pb-6">
         <div className="max-w-7xl mx-auto">
-          
+
           {/* Top Row - Site Details and Manager */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            
+
             {/* Site Details Card */}
             <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-              
+
               {/* Site Image */}
               <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 h-56">
                 {site.siteImage ? (
@@ -194,7 +178,7 @@ function SiteDetail() {
 
               {/* Site Info */}
               <div className="p-6">
-                
+
                 {/* Site Name */}
                 <div className="mb-6">
                   <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2 leading-tight">
@@ -205,7 +189,7 @@ function SiteDetail() {
 
                 {/* Site Details */}
                 <div className="space-y-4 mb-6">
-                  
+
                   {/* Location */}
                   <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
                     <div className="p-2 bg-blue-100 rounded-lg">
@@ -249,7 +233,7 @@ function SiteDetail() {
 
             {/* Manager Details Card */}
             <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-              
+
               {/* Manager Image */}
               <div className="relative bg-gradient-to-br from-emerald-500 to-teal-600 h-56">
                 {manager && manager.managerImage ? (
@@ -276,7 +260,7 @@ function SiteDetail() {
 
               {/* Manager Info */}
               <div className="p-6">
-                
+
                 {/* Manager Name */}
                 <div className="mb-6">
                   <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2 leading-tight">
@@ -289,7 +273,7 @@ function SiteDetail() {
                   <>
                     {/* Manager Details - 2x2 Grid Layout */}
                     <div className="mb-6">
-                      
+
                       {/* Top Row - Name and Mobile */}
                       <div className="grid grid-cols-2 gap-3 mb-3">
                         {/* Name */}
@@ -395,7 +379,13 @@ function SiteDetail() {
                 <p className="text-gray-600 mt-1">Track Expenses</p>
               </div>
               <div className="p-6">
-                <Expenses siteId={id} />
+                <Link
+                  to={`/site/${id}/expenses`}
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-center"
+                >
+                  View Details
+                </Link>
+                {/* <Expenses siteId={id} /> */}
               </div>
             </div>
 

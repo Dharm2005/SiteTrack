@@ -1,4 +1,3 @@
-// models/Expense.js
 const mongoose = require("mongoose");
 
 const expenseSchema = new mongoose.Schema(
@@ -14,7 +13,6 @@ const expenseSchema = new mongoose.Schema(
         "diesel",
         "iron",
         "vehicleBorrow",
-        "small",
         "other",
       ], // flexible categories
     },

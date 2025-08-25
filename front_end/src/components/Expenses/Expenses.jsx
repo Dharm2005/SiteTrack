@@ -3,13 +3,36 @@ import AddExpenseForm from './AddExpenseForm'
 import { useSelector } from 'react-redux'
 import { Expense } from '../index'
 import { useState } from 'react'
-import { Plus, Users, Package } from 'lucide-react'
+import { Plus, Package } from 'lucide-react'
+import { useParams } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { getExpensesBySite } from '../../services/expenseService'
+import { setExpenses } from '../../features/expenseSlice'
+import { useEffect } from 'react'
 
-function Expenses({siteId}) {
+function Expenses() {
+
+  const {id} = useParams()
+
   const [showAddForm, setShowAddForm] = useState(false);
   const allExpenses = useSelector((state) => state.expense.expenses);
-  console.log(allExpenses);
-    
+  
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const expenseData = await getExpensesBySite(id);
+        console.log(expenseData);
+        
+        dispatch(setExpenses(expenseData));
+      } catch (error) {
+        console.error("Error fetching expense:", error);
+      }
+    };
+    fetchExpenses();
+  }, [id, dispatch]);
+
 
   const handleCloseForm = () => {
     setShowAddForm(false);
@@ -34,7 +57,7 @@ function Expenses({siteId}) {
             </p>
           </div>
         </div>
-        
+
         {!showAddForm && (
           <button
             onClick={handleShowForm}
@@ -47,12 +70,13 @@ function Expenses({siteId}) {
       </div>
 
       {showAddForm && (
-        <AddExpenseForm 
-          siteId={siteId}
+        <AddExpenseForm
+          siteId={id}
           onClose={handleCloseForm}
         />
       )}
-
+      {console.log(allExpenses)}
+      
       {allExpenses && allExpenses.length > 0 ? (
         <div className="grid gap-4">
           {allExpenses.map(expense => (
@@ -60,15 +84,13 @@ function Expenses({siteId}) {
               <Expense
                 key={expense._id}
                 id={expense._id}
-                name={expense.materialName}
+                expenseType={expense.expenseType}
                 billImage={expense.billImage}
                 quantity={expense.quantity}
                 unit={expense.unit}
-                costPerUnit={expense.costPerUnit}
                 totalCost={expense.totalCost}
-                purchasedDate={expense.purchasedDate}
-                sellerName={expense.sellerName}
-                vahicleNumber={expense.vahicleNumber}
+                arrivalDate={expense.arrivalDate}
+                vehicleNumber={expense.vehicleNumber}
                 createdAt={expense.createdAt}
               />
             </div>
