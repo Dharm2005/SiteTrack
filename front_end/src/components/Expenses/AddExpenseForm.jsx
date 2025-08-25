@@ -1,14 +1,14 @@
 import React from 'react'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { addMaterial } from  '../../services/materialService'
+import { addExpens } from  '../../services/expenseService'
 import {toast} from 'react-toastify';
-import { addNewMaterial } from '../../features/materialSlice';
+import { addNewExpense } from '../../features/expenseSlice';
 import { Package, Upload, X, DollarSign, Calendar, User, Truck, Hash, Scale } from 'lucide-react';
 
-function AddMaterialForm({siteId, onClose}) {
+function AddExpenseForm({siteId, onClose}) {
   const [form, setForm] = useState({
-    type: 'material',
+    type: 'expense',
     materialName: '',
     billImage: null,
     quantity: 0,
@@ -33,11 +33,11 @@ function AddMaterialForm({siteId, onClose}) {
   const validateForm = () => {
     const newErrors = {};
 
-    // Material Name validation
+    // Expense Name validation
     if (!form.materialName.trim()) {
-      newErrors.materialName = 'Material name is required';
+      newErrors.materialName = 'Expense name is required';
     } else if (form.materialName.trim().length < 2) {
-      newErrors.materialName = 'Material name must be at least 2 characters';
+      newErrors.materialName = 'Expense name must be at least 2 characters';
     }
 
     // Quantity validation
@@ -171,10 +171,10 @@ function AddMaterialForm({siteId, onClose}) {
       formData.append("vahicleNumber", form.vahicleNumber.trim());
       formData.append("sites", JSON.stringify([siteId]));
 
-      const newMaterial = await addMaterial(formData);
+      const newMaterial = await addExpens(formData);
       console.log(newMaterial);
       
-      dispatch(addNewMaterial(newMaterial));
+      dispatch(addNewExpense(newMaterial));
       toast.success("✅ New material added successfully!");
       
       // Reset form
@@ -224,7 +224,7 @@ function AddMaterialForm({siteId, onClose}) {
             <Package className="w-6 h-6 text-green-600" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-900">Add New Material</h3>
+            <h3 className="text-xl font-bold text-gray-900">Add New Expense</h3>
             <p className="text-sm text-gray-600">Fill in the material details</p>
           </div>
         </div>
@@ -239,10 +239,10 @@ function AddMaterialForm({siteId, onClose}) {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Material Name */}
+        {/* Expense Name */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Material Name *
+            Expense Name *
           </label>
           <div className="relative">
             <Package className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -503,7 +503,7 @@ function AddMaterialForm({siteId, onClose}) {
             disabled={isSubmitting}
             className={`flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100`}
           >
-            {isSubmitting ? 'Adding Material...' : 'Add Material'}
+            {isSubmitting ? 'Adding Expense...' : 'Add Expense'}
           </button>
           
           {onClose && (
@@ -521,4 +521,4 @@ function AddMaterialForm({siteId, onClose}) {
   )
 }
 
-export default AddMaterialForm
+export default AddExpenseForm

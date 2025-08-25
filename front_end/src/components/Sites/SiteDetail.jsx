@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon, UserCheck } from 'lucide-react'
 import { getSite } from '../../services/siteService';
-import { Workers, Materials, Manager } from '../index';
+import { Workers, Expenses} from '../index';
 import { getWorkersBySite } from '../../services/workerService'
-import { getMaterialsBySite } from '../../services/materialService'
+import { getExpensesBySite } from '../../services/expenseService'
 import { setWorkers } from '../../features/workerSlice';
-import { setMaterials } from '../../features/materialSlice'
+import { setExpenses } from '../../features/expenseSlice'
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { getAllManager } from '../../services/managerService';
@@ -38,15 +38,15 @@ function SiteDetail() {
   }, [id , dispatch]);
 
   useEffect(() => {
-    const fetchMaterials = async () => {
+    const fetchExpenses = async () => {
       try {
-        const materialData = await getMaterialsBySite(id);
-        dispatch(setMaterials(materialData));
+        const expenseData = await getExpensesBySite(id);
+        dispatch(setExpenses(expenseData));
       } catch (error) {
-        console.error("Error fetching materials:", error);
+        console.error("Error fetching expense:", error);
       }
     };
-    fetchMaterials();
+    fetchExpenses();
   }, [id , dispatch]);
 
   useEffect(() => {
@@ -374,7 +374,7 @@ function SiteDetail() {
 
           </div>
 
-          {/* Bottom Section - Workers and Materials */}
+          {/* Bottom Section - Workers and Expenses */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
             {/* Workers List - Bottom Left */}
@@ -388,14 +388,14 @@ function SiteDetail() {
               </div>
             </div>
 
-            {/* Materials List - Bottom Right */}
+            {/* Expenses List - Bottom Right */}
             <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
               <div className="border-b border-gray-200 px-6 py-4">
-                <h2 className="text-2xl font-bold text-gray-900">Material List</h2>
-                <p className="text-gray-600 mt-1">Track materials and inventory</p>
+                <h2 className="text-2xl font-bold text-gray-900">Expense List</h2>
+                <p className="text-gray-600 mt-1">Track Expenses</p>
               </div>
               <div className="p-6">
-                <Materials siteId={id} />
+                <Expenses siteId={id} />
               </div>
             </div>
 

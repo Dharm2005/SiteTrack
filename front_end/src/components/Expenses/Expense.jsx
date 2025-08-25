@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 
 const API_URL = "http://localhost:3000";
 
-function Material({ id, name, billImage, quantity, unit, costPerUnit, totalCost, purchasedDate, sellerName, vahicleNumber, createdAt }) {
+function Expense({ id, name, billImage, quantity, unit, costPerUnit, totalCost, purchasedDate, sellerName, vahicleNumber, createdAt }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
@@ -175,9 +175,9 @@ function Material({ id, name, billImage, quantity, unit, costPerUnit, totalCost,
       {/* Compact Header - Always Visible */}
       <div className="p-4">
         <div className="flex items-center justify-between">
-          {/* Left Section - Material Basic Info */}
+          {/* Left Section - Expense Basic Info */}
           <div className="flex items-center space-x-3 flex-1">
-            {/* Material Image/Icon */}
+            {/* Expense Image/Icon */}
             <div className="relative flex-shrink-0">
               {billImage ? (
                 <div className="relative group">
@@ -203,10 +203,10 @@ function Material({ id, name, billImage, quantity, unit, costPerUnit, totalCost,
               )}
             </div>
 
-            {/* Material Name and Info */}
+            {/* Expense Name and Info */}
             <div className="flex-1 min-w-0">
               <h3 className="text-base font-semibold text-gray-900 truncate">
-                {name || 'Unnamed Material'}
+                {name || 'Unnamed Expense'}
               </h3>
               <div className="flex items-center space-x-4 text-gray-500 text-sm">
                 <div className="flex items-center">
@@ -305,7 +305,7 @@ function Material({ id, name, billImage, quantity, unit, costPerUnit, totalCost,
       {isExpanded && (
         <div className="border-t border-gray-100 bg-gray-50">
           <div className="p-4 space-y-4">
-            {/* Material Details Grid */}
+            {/* Expense Details Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               
               {/* Cost Per Unit */}
@@ -392,7 +392,7 @@ function Material({ id, name, billImage, quantity, unit, costPerUnit, totalCost,
             {/* Quick Actions */}
             <div className="flex items-center justify-between pt-2 border-t border-gray-200">
               <div className="text-xs text-gray-500">
-                Material ID: #{id}
+                Expense ID: #{id}
               </div>
               
               <div className="flex items-center space-x-2">
@@ -509,4 +509,4 @@ function Material({ id, name, billImage, quantity, unit, costPerUnit, totalCost,
   )
 }
 
-export default Material
+export default Expense

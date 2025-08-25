@@ -11,9 +11,9 @@ export {default as Workers} from "./Workers/Workers"
 export {default as Worker} from "./Workers/Worker"
 export {default as AddWorkerForm} from './Workers/AddWorkerForm'
 
-export {default as Materials} from "./Materials/Materials"
-export {default as Material} from "./Materials/Material"
-export {default as AddMaterialForm} from "./Materials/AddMaterialForm"
+export {default as Expenses} from "./Expenses/Expenses"
+export {default as Expense} from "./Expenses/Expense"
+export {default as AddExpenseForm} from "./Expenses/AddExpenseForm"
 
 export {default as AddManager} from "./Managers/AddManager"
 export {default as AllManager} from "./Managers/AllManager"

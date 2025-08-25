@@ -1,14 +1,14 @@
 import React from 'react'
-import AddMaterialForm from './AddMaterialForm'
+import AddExpenseForm from './AddExpenseForm'
 import { useSelector } from 'react-redux'
-import { Material } from '../index'
+import { Expense } from '../index'
 import { useState } from 'react'
 import { Plus, Users, Package } from 'lucide-react'
 
-function Materials({siteId}) {
+function Expenses({siteId}) {
   const [showAddForm, setShowAddForm] = useState(false);
-  const allMaterials = useSelector((state) => state.material.materials);
-  console.log(allMaterials);
+  const allExpenses = useSelector((state) => state.expense.expenses);
+  console.log(allExpenses);
     
 
   const handleCloseForm = () => {
@@ -28,9 +28,9 @@ function Materials({siteId}) {
             <Package className="w-6 h-6 text-blue-600" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Materials</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Expenses</h2>
             <p className="text-gray-600">
-              {allMaterials?.length ? `${allMaterials.length} materials found` : 'No materials available'}
+              {allExpenses?.length ? `${allExpenses.length} expenses found` : 'No expenses available'}
             </p>
           </div>
         </div>
@@ -41,37 +41,35 @@ function Materials({siteId}) {
             className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
           >
             <Plus className="w-5 h-5" />
-            <span>Add Material</span>
+            <span>Add Expense</span>
           </button>
         )}
       </div>
 
-      {/* Add Worker Form - Only show when needed */}
       {showAddForm && (
-        <AddMaterialForm 
+        <AddExpenseForm 
           siteId={siteId}
           onClose={handleCloseForm}
         />
       )}
 
-      {/* Workers List */}
-      {allMaterials && allMaterials.length > 0 ? (
+      {allExpenses && allExpenses.length > 0 ? (
         <div className="grid gap-4">
-          {allMaterials.map(material => (
-            <div key={material._id}>
-              <Material
-                key={material._id}
-                id={material._id}
-                name={material.materialName}
-                billImage={material.billImage}
-                quantity={material.quantity}
-                unit={material.unit}
-                costPerUnit={material.costPerUnit}
-                totalCost={material.totalCost}
-                purchasedDate={material.purchasedDate}
-                sellerName={material.sellerName}
-                vahicleNumber={material.vahicleNumber}
-                createdAt={material.createdAt}
+          {allExpenses.map(expense => (
+            <div key={expense._id}>
+              <Expense
+                key={expense._id}
+                id={expense._id}
+                name={expense.materialName}
+                billImage={expense.billImage}
+                quantity={expense.quantity}
+                unit={expense.unit}
+                costPerUnit={expense.costPerUnit}
+                totalCost={expense.totalCost}
+                purchasedDate={expense.purchasedDate}
+                sellerName={expense.sellerName}
+                vahicleNumber={expense.vahicleNumber}
+                createdAt={expense.createdAt}
               />
             </div>
           ))}
@@ -82,9 +80,9 @@ function Materials({siteId}) {
           <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
             <Package className="w-12 h-12 text-gray-400" />
           </div>
-          <h3 className="text-xl font-medium text-gray-900 mb-2">No material found</h3>
+          <h3 className="text-xl font-medium text-gray-900 mb-2">No expenses found</h3>
           <p className="text-gray-500 text-center max-w-md mb-6">
-            There are no materials listed to this site yet. Add your first material to get started.
+            There are no expenses listed to this site yet. Add your first expense to get started.
           </p>
           {!showAddForm && (
             <button
@@ -92,7 +90,7 @@ function Materials({siteId}) {
               className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
             >
               <Plus className="w-5 h-5" />
-              <span>Add First material</span>
+              <span>Add First expense</span>
             </button>
           )}
         </div>
@@ -101,4 +99,4 @@ function Materials({siteId}) {
   )
 }
 
-export default Materials
+export default Expenses
