@@ -21,3 +21,4 @@ export {default as Managers} from "./Managers/Managers"
 export {default as Manager} from "./Managers/Manager"
 
 export {default as NotFound} from "./Errors/NotFound"
+export {default as ScrollToTop} from "./Layout/ScrollToTop"

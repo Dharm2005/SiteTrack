@@ -6,7 +6,7 @@ const cors = require('cors');
 // local module
 const siteRouter = require('./routes/siteRouter');
 const workerRouter = require('./routes/workerRouter');
-const materialRouter = require('./routes/materialRouter');
+const expenseRouter = require('./routes/expenseRouter');
 const managerRouter = require('./routes/managerRouter');
 
 const errors = require('./controllers/errors');
@@ -27,7 +27,7 @@ app.use("/uploads", express.static("uploads"));
 // Routers
 app.use('/',siteRouter)
 app.use('/', workerRouter);
-app.use('/', materialRouter);
+app.use('/', expenseRouter);
 app.use('/', managerRouter);
 
 
