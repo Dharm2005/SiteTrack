@@ -3,7 +3,8 @@ const Expense = require('../models/Expense');
 exports.getExpensesBySite = async (req, res, next) => {
   try {
     const siteId = req.params.siteId;
-    const expenses = await Expense.find({ sites: siteId });
+    const expenses = await Expense.find({ sites: siteId })
+      .sort({createdAt: -1});
 
     res.status(200).json(expenses);
   } catch (err) {
@@ -26,7 +27,8 @@ exports.getFilteredExpenses = async (req, res, next) => {
         $lte : new Date(to)
       }
 
-      expenses = await Expense.find(query);
+      expenses = await Expense.find(query)
+        .sort({createdAt: -1});
     }
 
     else if(limit){

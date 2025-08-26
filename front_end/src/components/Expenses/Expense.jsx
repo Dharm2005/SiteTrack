@@ -1,13 +1,12 @@
 import React, { useState } from 'react'
-import { 
-  Package, Calendar, DollarSign, Truck, Hash, Scale, 
-  Edit3, Trash2, MoreVertical, Tag, Clock, Image as ImageIcon, X 
+import {
+  Package, Calendar, DollarSign, Truck, Hash, Scale,
+  Edit3, Trash2, Tag, Clock, Image as ImageIcon, X
 } from 'lucide-react'
 
 const API_URL = "http://localhost:3000";
 
 function Expense({ id, expenseType, billImage, quantity, unit, totalCost, arrivalDate, vehicleNumber, createdAt }) {
-  const [showActions, setShowActions] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
   // Format the date
@@ -52,7 +51,7 @@ function Expense({ id, expenseType, billImage, quantity, unit, totalCost, arriva
       const now = new Date();
       const diffTime = Math.abs(now - date);
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
+
       if (diffDays === 0) return 'Today';
       if (diffDays === 1) return 'Yesterday';
       if (diffDays < 7) return `${diffDays} days ago`;
@@ -108,12 +107,10 @@ function Expense({ id, expenseType, billImage, quantity, unit, totalCost, arriva
 
   const handleEdit = () => {
     console.log('Edit expense:', id);
-    setShowActions(false);
   };
 
   const handleDelete = () => {
     console.log('Delete expense:', id);
-    setShowActions(false);
   };
 
   // Check if quantity/unit should be displayed
@@ -124,15 +121,15 @@ function Expense({ id, expenseType, billImage, quantity, unit, totalCost, arriva
       <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 overflow-hidden group">
         <div className="p-6">
           <div className="grid grid-cols-12 gap-6 items-center">
-            
+
             {/* Column 1: Image/Icon + Expense Type (4 cols) */}
             <div className="col-span-12 sm:col-span-4 flex items-center space-x-4">
               {/* Expense Image/Icon */}
               <div className="relative flex-shrink-0">
                 {billImage ? (
                   <div className="relative group/image cursor-pointer" onClick={() => setSelectedImage(`${API_URL}/uploads/bills/${billImage}`)}>
-                    <img 
-                      src={`${API_URL}/uploads/bills/${billImage}`} 
+                    <img
+                      src={`${API_URL}/uploads/bills/${billImage}`}
                       alt={`${expenseType} bill`}
                       className="w-14 h-14 rounded-xl object-cover border-2 border-gray-100 shadow-sm"
                       onError={handleImageError}
@@ -209,7 +206,7 @@ function Expense({ id, expenseType, billImage, quantity, unit, totalCost, arriva
                     {formatDate(arrivalDate)}
                   </div>
                 </div>
-                
+
                 {/* Created Date */}
                 <div className="p-2 bg-purple-50 rounded-lg">
                   <div className="flex items-center text-purple-600 mb-1">
@@ -242,42 +239,26 @@ function Expense({ id, expenseType, billImage, quantity, unit, totalCost, arriva
                     </div>
                   </div>
                 )}
-                
-                {/* Actions Menu */}
-                <div className="relative">
+
+                {/* Action Buttons - Centered under vehicle */}
+                <div className="flex items-center justify-center space-x-2">
+                  {/* Edit Button */}
                   <button
-                    onClick={() => setShowActions(!showActions)}
-                    className="w-full p-2 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200 group-hover:border-gray-300"
+                    onClick={handleEdit}
+                    className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-all duration-200 hover:scale-110 border border-blue-200"
+                    title="Edit expense"
                   >
-                    <MoreVertical className="w-4 h-4 text-gray-500 mx-auto" />
+                    <Edit3 className="w-4 h-4" />
                   </button>
 
-                  {showActions && (
-                    <>
-                      <div 
-                        className="fixed inset-0 z-10" 
-                        onClick={() => setShowActions(false)}
-                      ></div>
-                      
-                      <div className="absolute right-0 bottom-full mb-2 bg-white border border-gray-200 rounded-xl shadow-lg py-2 min-w-[140px] z-20">
-                        <button
-                          onClick={handleEdit}
-                          className="w-full px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors"
-                        >
-                          <Edit3 className="w-4 h-4" />
-                          <span>Edit Expense</span>
-                        </button>
-                        <hr className="my-1 border-gray-100" />
-                        <button
-                          onClick={handleDelete}
-                          className="w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50 flex items-center space-x-3 transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                          <span>Delete</span>
-                        </button>
-                      </div>
-                    </>
-                  )}
+                  {/* Delete Button */}
+                  <button
+                    onClick={handleDelete}
+                    className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-all duration-200 hover:scale-110 border border-red-200"
+                    title="Delete expense"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             </div>
