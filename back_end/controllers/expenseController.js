@@ -12,16 +12,32 @@ exports.getExpensesBySite = async (req, res, next) => {
   }
 };
 
-exports.getLastFewExpenses = async (req, res, next) => {
+exports.getFilteredExpenses = async (req, res, next) => {
 
   try {
     const {siteId} = req.params;
-    const {limit} = req.query;
-  
-    const expenses = await Expense.find({sites : siteId})
-      .sort({createdAt: -1})
-      .limit(parseInt(limit) || 5);
-  
+    const {limit , from , to} = req.query;
+    let expenses;
+    let query = {sites : siteId};
+
+    if(from && to){
+      query.arrivalDate = {
+        $gte : new Date(from),
+        $lte : new Date(to)
+      }
+
+      expenses = await Expense.find(query);
+    }
+
+    else if(limit){
+      expenses = await Expense.find(query)
+        .sort({createdAt: -1})
+        .limit(parseInt(limit) || 5);
+    }
+
+    else{
+      console.error("There is no filter applyed");
+    }
     res.status(200).json(expenses)
   } catch (error) {
     console.log("error while fetching last few expenses");
