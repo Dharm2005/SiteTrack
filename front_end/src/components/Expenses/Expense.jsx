@@ -1,5 +1,5 @@
 import React from 'react'
-import { Package, Calendar, DollarSign, Truck, Hash, Scale, Edit3, Trash2, MoreVertical, X, ZoomIn, ZoomOut, RotateCcw, Tag } from 'lucide-react'
+import { Package, Calendar, DollarSign, Truck, Hash, Scale, Edit3, Trash2, MoreVertical, X, ZoomIn, ZoomOut, RotateCcw, Tag, Clock } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 
 const API_URL = "http://localhost:3000";
@@ -30,6 +30,45 @@ function Expense({ id, expenseType, billImage, quantity, unit, totalCost, arriva
     }
   };
 
+  // Format date with time
+  const formatDateTime = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      console.error(error);
+      return 'Invalid Date';
+    }
+  };
+
+  // Calculate days ago
+  const getDaysAgo = (dateString) => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 0) return 'Today';
+      if (diffDays === 1) return 'Yesterday';
+      if (diffDays < 7) return `${diffDays} days ago`;
+      if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+      return `${Math.floor(diffDays / 30)} months ago`;
+    } catch (error) {
+      console.error(error);
+      
+      return '';
+    }
+  };
+
   // Format currency
   const formatCurrency = (amount) => {
     if (!amount && amount !== 0) return '₹0';
@@ -55,13 +94,13 @@ function Expense({ id, expenseType, billImage, quantity, unit, totalCost, arriva
   // Get expense type color
   const getExpenseTypeColor = (type) => {
     const colors = {
-      cement: 'bg-stone-100 text-stone-700',
-      soil: 'bg-yellow-100 text-yellow-700',
-      petrol: 'bg-red-100 text-red-700',
-      diesel: 'bg-orange-100 text-orange-700',
-      iron: 'bg-gray-100 text-gray-700',
-      vehicleBorrow: 'bg-blue-100 text-blue-700',
-      other: 'bg-purple-100 text-purple-700'
+      cement: 'bg-stone-100 text-stone-700 border-stone-200',
+      soil: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+      petrol: 'bg-red-100 text-red-700 border-red-200',
+      diesel: 'bg-orange-100 text-orange-700 border-orange-200',
+      iron: 'bg-gray-100 text-gray-700 border-gray-200',
+      vehicleBorrow: 'bg-blue-100 text-blue-700 border-blue-200',
+      other: 'bg-purple-100 text-purple-700 border-purple-200'
     };
     return colors[type] || colors.other;
   };
@@ -189,59 +228,66 @@ function Expense({ id, expenseType, billImage, quantity, unit, totalCost, arriva
   const shouldShowQuantity = !['vehicleBorrow', 'other'].includes(expenseType);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 overflow-hidden">
-      {/* Single Row Layout */}
-      <div className="p-4">
-        <div className="grid grid-cols-12 gap-4 items-center">
+    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 overflow-hidden group">
+      {/* Enhanced Layout with Better Spacing */}
+      <div className="p-6">
+        <div className="grid grid-cols-12 gap-6 items-center">
           
-          {/* Column 1: Image/Icon + Expense Type (3 cols) */}
-          <div className="col-span-12 sm:col-span-3 flex items-center space-x-3">
+          {/* Column 1: Image/Icon + Expense Type (4 cols) */}
+          <div className="col-span-12 sm:col-span-4 flex items-center space-x-4">
             {/* Expense Image/Icon */}
             <div className="relative flex-shrink-0">
               {billImage ? (
-                <div className="relative group">
+                <div className="relative group/image">
                   <img 
                     src={`${API_URL}/uploads/bills/${billImage}`} 
                     alt={`${expenseType} bill`}
-                    className="w-12 h-12 rounded-lg object-cover border-2 border-gray-100 cursor-pointer hover:border-green-300 transition-colors"
+                    className="w-14 h-14 rounded-xl object-cover border-2 border-gray-100 cursor-pointer hover:border-blue-300 transition-all duration-200 shadow-sm"
                     onError={handleImageError}
                     onClick={openImageModal}
                   />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <ZoomIn className="w-4 h-4 text-white" />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover/image:bg-opacity-30 rounded-xl transition-all duration-200 flex items-center justify-center opacity-0 group-hover/image:opacity-100">
+                    <ZoomIn className="w-5 h-5 text-white" />
                   </div>
                   {/* Fallback icon - hidden by default, shown on image error */}
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center hidden">
-                    <Package className="w-6 h-6 text-white" />
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm hidden">
+                    <Package className="w-7 h-7 text-white" />
                   </div>
                 </div>
               ) : (
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                  <Package className="w-6 h-6 text-white" />
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm">
+                  <Package className="w-7 h-7 text-white" />
                 </div>
               )}
             </div>
 
-            {/* Expense Type */}
+            {/* Expense Type & Details */}
             <div className="flex-1 min-w-0">
-              <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium ${getExpenseTypeColor(expenseType)}`}>
-                <Tag className="w-3 h-3 mr-1.5" />
+              <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold border ${getExpenseTypeColor(expenseType)} mb-2`}>
+                <Tag className="w-3.5 h-3.5 mr-2" />
                 {formatExpenseType(expenseType)}
               </div>
-              <div className="text-xs text-gray-500 mt-1">
-                ID: #{id?.slice(-6) || 'N/A'}
+              <div className="flex items-center space-x-2 text-xs text-gray-500">
+                <span className="bg-gray-100 px-2 py-1 rounded-md font-medium">
+                  #{id?.slice(-6) || 'N/A'}
+                </span>
+                <span className="text-gray-300">•</span>
+                <div className="flex items-center space-x-1">
+                  <Clock className="w-3 h-3" />
+                  <span>{getDaysAgo(createdAt)}</span>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Column 2: Quantity & Unit (2 cols) */}
           <div className="col-span-6 sm:col-span-2">
-            <div className="text-center">
+            <div className="text-center p-3 bg-gray-50 rounded-xl">
               <div className="flex items-center justify-center text-gray-500 mb-1">
-                <Hash className="w-3 h-3 mr-1" />
+                <Hash className="w-4 h-4 mr-1" />
                 <span className="text-xs font-medium uppercase tracking-wide">Quantity</span>
               </div>
-              <div className="text-sm font-semibold text-gray-900">
+              <div className="text-sm font-bold text-gray-900">
                 {shouldShowQuantity ? formatQuantity(quantity, unit) : 'N/A'}
               </div>
             </div>
@@ -249,56 +295,71 @@ function Expense({ id, expenseType, billImage, quantity, unit, totalCost, arriva
 
           {/* Column 3: Total Cost (2 cols) */}
           <div className="col-span-6 sm:col-span-2">
-            <div className="text-center">
-              <div className="flex items-center justify-center text-gray-500 mb-1">
-                <DollarSign className="w-3 h-3 mr-1" />
+            <div className="text-center p-3 bg-green-50 rounded-xl">
+              <div className="flex items-center justify-center text-green-600 mb-1">
+                <DollarSign className="w-4 h-4 mr-1" />
                 <span className="text-xs font-medium uppercase tracking-wide">Total Cost</span>
               </div>
-              <div className="text-sm font-semibold text-gray-900">
+              <div className="text-sm font-bold text-green-700">
                 {formatCurrency(totalCost)}
               </div>
             </div>
           </div>
 
-          {/* Column 4: Arrival Date (2 cols) */}
+          {/* Column 4: Dates (2 cols) */}
           <div className="col-span-6 sm:col-span-2">
-            <div className="text-center">
-              <div className="flex items-center justify-center text-gray-500 mb-1">
-                <Calendar className="w-3 h-3 mr-1" />
-                <span className="text-xs font-medium uppercase tracking-wide">Arrival</span>
+            <div className="space-y-2">
+              {/* Arrival Date */}
+              <div className="p-2 bg-blue-50 rounded-lg">
+                <div className="flex items-center text-blue-600 mb-1">
+                  <Calendar className="w-3 h-3 mr-1" />
+                  <span className="text-xs font-medium">Arrival</span>
+                </div>
+                <div className="text-xs font-semibold text-blue-700">
+                  {formatDate(arrivalDate)}
+                </div>
               </div>
-              <div className="text-sm font-semibold text-gray-900">
-                {formatDate(arrivalDate)}
+              
+              {/* Created Date */}
+              <div className="p-2 bg-purple-50 rounded-lg">
+                <div className="flex items-center text-purple-600 mb-1">
+                  <Clock className="w-3 h-3 mr-1" />
+                  <span className="text-xs font-medium">Added</span>
+                </div>
+                <div className="text-xs font-semibold text-purple-700">
+                  {formatDate(createdAt)}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Column 5: Vehicle Number + Actions (1 col) */}
-          <div className="col-span-6 sm:col-span-1">
-            <div className="flex flex-col items-center space-y-2">
+          {/* Column 5: Vehicle & Actions (2 cols) */}
+          <div className="col-span-6 sm:col-span-2">
+            <div className="flex flex-col space-y-3">
               {/* Vehicle Number */}
               {vehicleNumber ? (
-                <div className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-medium text-center">
-                  <div className="flex items-center">
-                    <Truck className="w-3 h-3 mr-1" />
+                <div className="bg-blue-50 border border-blue-200 text-blue-700 px-3 py-2 rounded-lg text-xs font-semibold text-center">
+                  <div className="flex items-center justify-center">
+                    <Truck className="w-3 h-3 mr-1.5" />
                     <span>{vehicleNumber}</span>
                   </div>
                 </div>
               ) : (
-                <div className="text-xs text-gray-400 text-center">
-                  <Truck className="w-3 h-3 mx-auto mb-1" />
-                  No Vehicle
+                <div className="bg-gray-50 border border-gray-200 text-gray-500 px-3 py-2 rounded-lg text-xs text-center">
+                  <div className="flex items-center justify-center">
+                    <Truck className="w-3 h-3 mr-1.5" />
+                    <span>No Vehicle</span>
+                  </div>
                 </div>
-                
               )}
               
               {/* Actions Menu */}
               <div className="relative">
                 <button
                   onClick={() => setShowActions(!showActions)}
-                  className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="w-full p-2 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200 group-hover:border-gray-300"
                 >
-                  <MoreVertical className="w-4 h-4 text-gray-500" />
+                  <MoreVertical className="w-4 h-4 text-gray-500 mx-auto" />
                 </button>
 
                 {showActions && (
@@ -308,19 +369,20 @@ function Expense({ id, expenseType, billImage, quantity, unit, totalCost, arriva
                       onClick={() => setShowActions(false)}
                     ></div>
                     
-                    <div className="absolute right-0 bottom-full mb-1 bg-white border border-gray-200 rounded-lg shadow-lg py-2 min-w-[120px] z-20">
+                    <div className="absolute right-0 bottom-full mb-2 bg-white border border-gray-200 rounded-xl shadow-lg py-2 min-w-[140px] z-20">
                       <button
                         onClick={handleEdit}
-                        className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
+                        className="w-full px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-3 transition-colors"
                       >
-                        <Edit3 className="w-3 h-3" />
-                        <span>Edit</span>
+                        <Edit3 className="w-4 h-4" />
+                        <span>Edit Expense</span>
                       </button>
+                      <hr className="my-1 border-gray-100" />
                       <button
                         onClick={handleDelete}
-                        className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"
+                        className="w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50 flex items-center space-x-3 transition-colors"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="w-4 h-4" />
                         <span>Delete</span>
                       </button>
                     </div>
@@ -332,15 +394,25 @@ function Expense({ id, expenseType, billImage, quantity, unit, totalCost, arriva
         </div>
 
         {/* Mobile Additional Info Row */}
-        <div className="mt-3 sm:hidden border-t border-gray-100 pt-3">
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div>
-              <span className="text-gray-500">Added:</span>
-              <span className="ml-1 font-medium">{formatDate(createdAt)}</span>
+        <div className="mt-6 sm:hidden border-t border-gray-100 pt-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center text-gray-500 mb-1">
+                <Clock className="w-3 h-3 mr-1" />
+                <span className="text-xs font-medium">Created</span>
+              </div>
+              <div className="text-sm font-semibold text-gray-900">
+                {formatDateTime(createdAt)}
+              </div>
             </div>
-            <div>
-              <span className="text-gray-500">Unit:</span>
-              <span className="ml-1 font-medium capitalize">{unit || 'N/A'}</span>
+            <div className="p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center text-gray-500 mb-1">
+                <Scale className="w-3 h-3 mr-1" />
+                <span className="text-xs font-medium">Unit</span>
+              </div>
+              <div className="text-sm font-semibold text-gray-900 capitalize">
+                {unit || 'N/A'}
+              </div>
             </div>
           </div>
         </div>
@@ -437,7 +509,7 @@ function Expense({ id, expenseType, billImage, quantity, unit, totalCost, arriva
               <h3 className="text-lg font-semibold">{formatExpenseType(expenseType)}</h3>
               <p className="text-sm text-gray-300">Bill/Receipt - Arrival: {formatDate(arrivalDate)}</p>
               <p className="text-xs text-gray-400 mt-1">
-                Use mouse wheel to zoom • Click and drag to pan when zoomed • ESC to close
+                Added: {formatDateTime(createdAt)} • Use mouse wheel to zoom • Click and drag to pan when zoomed • ESC to close
               </p>
             </div>
           </div>

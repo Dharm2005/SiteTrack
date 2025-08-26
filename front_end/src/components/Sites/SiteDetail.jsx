@@ -146,13 +146,13 @@ function SiteDetail() {
       <div className="px-6 pb-6">
         <div className="max-w-7xl mx-auto">
 
-          {/* Top Row - Site Details and Manager */}
+          {/* Top Row - Combined Site & Manager Details and Expenses */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 
-            {/* Site Details Card */}
+            {/* Combined Site & Manager Details Card - Top Left */}
             <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
 
-              {/* Site Image */}
+              {/* Site Image with Manager Image Overlay */}
               <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 h-56">
                 {site.siteImage ? (
                   <>
@@ -174,9 +174,31 @@ function SiteDetail() {
                     <p className="text-white/80 text-sm">No image available</p>
                   </div>
                 )}
+
+                {/* Manager Image Overlay - Top Left Corner */}
+                <div className="absolute top-4 left-4 w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-lg">
+                  {manager && manager.managerImage ? (
+                    <>
+                      <img
+                        src={`${API_URL}/uploads/managers/${manager.managerImage}`}
+                        alt={manager.managerName || 'Manager Image'}
+                        className="w-full h-full object-cover"
+                        onError={handleManagerImageError}
+                      />
+                      {/* Fallback icon - hidden by default */}
+                      <div className="absolute inset-0 flex items-center justify-center bg-emerald-500 hidden">
+                        <User className="w-8 h-8 text-white" />
+                      </div>
+                    </>
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-emerald-500">
+                      <User className="w-8 h-8 text-white" />
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Site Info */}
+              {/* Combined Site & Manager Info */}
               <div className="p-6">
 
                 {/* Site Name */}
@@ -187,17 +209,16 @@ function SiteDetail() {
                   <div className="w-12 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
                 </div>
 
-                {/* Site Details */}
-                <div className="space-y-4 mb-6">
-
+                {/* Site Details - Top Row */}
+                <div className="grid grid-cols-2 gap-3 mb-6">
                   {/* Location */}
                   <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
                     <div className="p-2 bg-blue-100 rounded-lg">
-                      <MapPin className="w-5 h-5 text-blue-600" />
+                      <MapPin className="w-4 h-4 text-blue-600" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-medium text-gray-500 mb-1">Location</p>
-                      <p className="text-sm font-semibold text-gray-900">
+                      <p className="text-sm font-semibold text-gray-900 truncate">
                         {site.location || 'Not specified'}
                       </p>
                     </div>
@@ -206,19 +227,89 @@ function SiteDetail() {
                   {/* Created At */}
                   <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
                     <div className="p-2 bg-green-100 rounded-lg">
-                      <Calendar className="w-5 h-5 text-green-600" />
+                      <Calendar className="w-4 h-4 text-green-600" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-medium text-gray-500 mb-1">Created</p>
-                      <p className="text-sm font-semibold text-gray-900">
+                      <p className="text-sm font-semibold text-gray-900 truncate">
                         {formatDate(site.createdAt)}
                       </p>
                     </div>
                   </div>
-
                 </div>
 
-                {/* Action Buttons */}
+                {/* Manager Section Divider */}
+                <div className="border-t border-gray-200 pt-6 mb-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                    <div className="p-2 bg-emerald-100 rounded-lg mr-3">
+                      <UserCheck className="w-5 h-5 text-emerald-600" />
+                    </div>
+                    Site Manager
+                  </h3>
+
+                  {manager ? (
+                    <div className="grid grid-cols-2 gap-3">
+                      {/* Manager Name */}
+                      <div className="flex items-center space-x-3 p-3 bg-emerald-50 rounded-xl">
+                        <div className="p-2 bg-emerald-100 rounded-lg">
+                          <User className="w-4 h-4 text-emerald-600" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-medium text-gray-500 mb-1">Name</p>
+                          <p className="text-sm font-semibold text-gray-900 truncate">
+                            {manager.managerName || 'Not specified'}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Manager Mobile */}
+                      <div className="flex items-center space-x-3 p-3 bg-emerald-50 rounded-xl">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                          <Phone className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-medium text-gray-500 mb-1">Mobile</p>
+                          <p className="text-sm font-semibold text-gray-900 truncate">
+                            {manager.managerMobile || 'Not specified'}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Manager DOB */}
+                      <div className="flex items-center space-x-3 p-3 bg-emerald-50 rounded-xl">
+                        <div className="p-2 bg-purple-100 rounded-lg">
+                          <Calendar className="w-4 h-4 text-purple-600" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-medium text-gray-500 mb-1">DOB</p>
+                          <p className="text-sm font-semibold text-gray-900 truncate">
+                            {formatDate(manager.managerDob)}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Manager Gender */}
+                      <div className="flex items-center space-x-3 p-3 bg-emerald-50 rounded-xl">
+                        <div className="p-2 bg-orange-100 rounded-lg">
+                          <User className="w-4 h-4 text-orange-600" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-medium text-gray-500 mb-1">Gender</p>
+                          <p className="text-sm font-semibold text-gray-900 truncate">
+                            {manager.managerGender || 'Not specified'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-6 bg-gray-50 rounded-xl">
+                      <User className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                      <p className="text-gray-500">No manager assigned to this site</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Site Action Buttons */}
                 <div className="flex gap-3">
                   <button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2.5 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-sm">
                     Edit Site
@@ -231,134 +322,22 @@ function SiteDetail() {
               </div>
             </div>
 
-            {/* Manager Details Card */}
+            {/* Expenses List - Top Right */}
             <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-
-              {/* Manager Image */}
-              <div className="relative bg-gradient-to-br from-emerald-500 to-teal-600 h-56">
-                {manager && manager.managerImage ? (
-                  <>
-                    <img
-                      src={`${API_URL}/uploads/managers/${manager.managerImage}`}
-                      alt={manager.managerName || 'Manager Image'}
-                      className="w-full h-full object-cover"
-                      onError={handleManagerImageError}
-                    />
-                    {/* Fallback icon - hidden by default */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 hidden">
-                      <User className="w-16 h-16 text-white/70 mb-2" />
-                      <p className="text-white/80 text-sm">No image available</p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600">
-                    <User className="w-16 h-16 text-white/70 mb-2" />
-                    <p className="text-white/80 text-sm">No manager assigned</p>
-                  </div>
-                )}
+              <div className="border-b border-gray-200 px-6 py-4">
+                <h2 className="text-2xl font-bold text-gray-900">Recent Expenses</h2>
+                <p className="text-gray-600 mt-1">Track latest site expenses</p>
               </div>
-
-              {/* Manager Info */}
               <div className="p-6">
-
-                {/* Manager Name */}
-                <div className="mb-6">
-                  <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2 leading-tight">
-                    {manager ? manager.managerName : 'No Manager Assigned'}
-                  </h2>
-                  <div className="w-12 h-1 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full"></div>
-                </div>
-
-                {manager ? (
-                  <>
-                    {/* Manager Details - 2x2 Grid Layout */}
-                    <div className="mb-6">
-
-                      {/* Top Row - Name and Mobile */}
-                      <div className="grid grid-cols-2 gap-3 mb-3">
-                        {/* Name */}
-                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-                          <div className="p-2 bg-emerald-100 rounded-lg">
-                            <UserCheck className="w-4 h-4 text-emerald-600" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium text-gray-500 mb-1">Name</p>
-                            <p className="text-sm font-semibold text-gray-900 truncate">
-                              {manager.managerName || 'Not specified'}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Mobile */}
-                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-                          <div className="p-2 bg-blue-100 rounded-lg">
-                            <Phone className="w-4 h-4 text-blue-600" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium text-gray-500 mb-1">Mobile</p>
-                            <p className="text-sm font-semibold text-gray-900 truncate">
-                              {manager.managerMobile || 'Not specified'}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Bottom Row - DOB and Gender */}
-                      <div className="grid grid-cols-2 gap-3">
-                        {/* Date of Birth */}
-                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-                          <div className="p-2 bg-purple-100 rounded-lg">
-                            <Calendar className="w-4 h-4 text-purple-600" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium text-gray-500 mb-1">DOB</p>
-                            <p className="text-sm font-semibold text-gray-900 truncate">
-                              {formatDate(manager.managerDob)}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Gender */}
-                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-                          <div className="p-2 bg-orange-100 rounded-lg">
-                            <User className="w-4 h-4 text-orange-600" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium text-gray-500 mb-1">Gender</p>
-                            <p className="text-sm font-semibold text-gray-900 truncate">
-                              {manager.managerGender || 'Not specified'}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                    </div>
-
-                    {/* Manager Action Buttons */}
-                    <div className="flex gap-3">
-                      <button className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2.5 rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-sm">
-                        View Manager
-                      </button>
-                      <button className="flex-1 px-4 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 text-sm">
-                        Change
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500 mb-4">No manager has been assigned to this site yet.</p>
-                    <button className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 transform hover:scale-105 shadow-lg">
-                      Assign Manager
-                    </button>
-                  </div>
-                )}
-
+                <LastFewExpenses 
+                  id={id}
+                />
               </div>
             </div>
 
           </div>
 
-          {/* Bottom Section - Workers and Expenses */}
+          {/* Bottom Section - Workers and Future Notes */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
             {/* Workers List - Bottom Left */}
@@ -372,16 +351,22 @@ function SiteDetail() {
               </div>
             </div>
 
-            {/* Expenses List - Bottom Right */}
+            {/* Notes Section - Bottom Right (Empty for future use) */}
             <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
               <div className="border-b border-gray-200 px-6 py-4">
-                <h2 className="text-2xl font-bold text-gray-900">Expense List</h2>
-                <p className="text-gray-600 mt-1">Track Expenses</p>
+                <h2 className="text-2xl font-bold text-gray-900">Notes</h2>
+                <p className="text-gray-600 mt-1">Site notes and observations</p>
               </div>
               <div className="p-6">
-                <LastFewExpenses 
-                  id = {id}
-                />
+                <div className="text-center py-12">
+                  <div className="text-gray-400 mb-4">
+                    <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-500 text-lg">Notes section</p>
+                  <p className="text-gray-400 text-sm mt-2">Coming soon...</p>
+                </div>
               </div>
             </div>
 
