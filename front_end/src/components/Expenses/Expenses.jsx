@@ -136,126 +136,132 @@ function Expenses() {
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         
-        {/* Stats & Chart & Filters Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-6">
+        {/* New Layout: Stats | Chart | Filters */}
+        <div className="grid grid-cols-12 gap-4 mb-6">
           
-          {/* Combined Stats Card */}
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-lg shadow-sm border p-4 h-full">
-              <div className="space-y-4">
+          {/* Left: Combined Stats Card */}
+          <div className="col-span-3">
+            <div className="bg-white rounded-lg shadow-sm border p-6 h-full flex flex-col justify-center">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-500">Total Amount</p>
-                    <p className="text-xl font-bold text-gray-900">
+                    <p className="text-sm text-gray-500 mb-1">Total Amount</p>
+                    <p className="text-2xl font-bold text-gray-900">
                       {isLoading ? '...' : formatCurrency(totalExpenses)}
                     </p>
                   </div>
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <DollarSign className="w-5 h-5 text-green-600" />
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <DollarSign className="w-6 h-6 text-green-600" />
                   </div>
                 </div>
                 
-                <div className="border-t pt-4">
+                <div className="border-t pt-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-500">Total Records</p>
-                      <p className="text-xl font-bold text-gray-900">
+                      <p className="text-sm text-gray-500 mb-1">Total Records</p>
+                      <p className="text-2xl font-bold text-gray-900">
                         {isLoading ? '...' : (allExpenses?.length || 0)}
                       </p>
                     </div>
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <Package className="w-5 h-5 text-blue-600" />
+                    <div className="p-3 bg-blue-100 rounded-lg">
+                      <Package className="w-6 h-6 text-blue-600" />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Chart Section */}
-          <div className="lg:col-span-5">
-            <div className="bg-white rounded-lg shadow-sm border p-4 h-full">
-              <ExpenseChart siteId={id} />
-            </div>
+            
+          {/* Center: Chart Section */}
+          <div className="col-span-6">
+            <ExpenseChart siteId={id} />
           </div>
 
-          {/* Compact Filters */}
-          <div className="lg:col-span-4 bg-white rounded-lg shadow-sm border p-4">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-gray-700">Filters</h3>
-                {(from || to || searchTerm || filterType !== 'all') && (
-                  <button
-                    onClick={() => {
-                      clearDateFilters();
-                      setSearchTerm('');
-                      setFilterType('all');
-                    }}
-                    className="text-xs text-red-600 hover:text-red-700 flex items-center space-x-1"
-                  >
-                    <X className="w-3 h-3" />
-                    <span>Clear All</span>
-                  </button>
-                )}
-              </div>
+          {/* Right: Filters */}
+          <div className="col-span-3">
+            <div className="bg-white rounded-lg shadow-sm border p-6 h-full">
+              <div className="flex flex-col h-full">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-700">Filters</h3>
+                  {(from || to || searchTerm || filterType !== 'all') && (
+                    <button
+                      onClick={() => {
+                        clearDateFilters();
+                        setSearchTerm('');
+                        setFilterType('all');
+                      }}
+                      className="text-sm text-red-600 hover:text-red-700 flex items-center space-x-1"
+                    >
+                      <X className="w-4 h-4" />
+                      <span>Clear</span>
+                    </button>
+                  )}
+                </div>
 
-              {/* Date Range - Compact */}
-              <div className="grid grid-cols-2 gap-2">
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={from}
-                    onChange={(e) => setFrom(e.target.value)}
-                    placeholder="From"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={to}
-                    onChange={(e) => setTo(e.target.value)}
-                    min={from}
-                    placeholder="To"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+                <div className="flex-1 space-y-4">
+                  {/* Date Range */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
+                    <div className="space-y-2">
+                      <input
+                        type="date"
+                        value={from}
+                        onChange={(e) => setFrom(e.target.value)}
+                        placeholder="From"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <input
+                        type="date"
+                        value={to}
+                        onChange={(e) => setTo(e.target.value)}
+                        min={from}
+                        placeholder="To"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Search */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Search expenses..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Filter by Type */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Expense Type</label>
+                    <select
+                      value={filterType}
+                      onChange={(e) => setFilterType(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                    >
+                      {expenseTypes.map(type => (
+                        <option key={type} value={type}>
+                          {type === 'all' ? 'All Types' : type.charAt(0).toUpperCase() + type.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Active filters display */}
+                  {(from || to) && (
+                    <div className="text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">
+                      {from && to ? `${new Date(from).toLocaleDateString()} - ${new Date(to).toLocaleDateString()}` 
+                                  : from ? `From ${new Date(from).toLocaleDateString()}` 
+                                         : `Until ${new Date(to).toLocaleDateString()}`}
+                    </div>
+                  )}
                 </div>
               </div>
-
-              {/* Search & Filter Row */}
-              <div className="grid grid-cols-1 gap-2">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search expenses..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                
-                <select
-                  value={filterType}
-                  onChange={(e) => setFilterType(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                >
-                  {expenseTypes.map(type => (
-                    <option key={type} value={type}>
-                      {type === 'all' ? 'All Types' : type.charAt(0).toUpperCase() + type.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Active filters display */}
-              {(from || to) && (
-                <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                  {from && to ? `${new Date(from).toLocaleDateString()} - ${new Date(to).toLocaleDateString()}` 
-                              : from ? `From ${new Date(from).toLocaleDateString()}` 
-                                     : `Until ${new Date(to).toLocaleDateString()}`}
-                </div>
-              )}
             </div>
           </div>
         </div>
