@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import { getFilteredExpenses } from "../../services/expenseService";
 
-function ExpenseChart({ siteId }) {
+function ExpenseChart({ siteId , refresh}) {
   // Get current month automatically
   const getCurrentMonth = () => {
     const now = new Date();
@@ -58,7 +58,7 @@ function ExpenseChart({ siteId }) {
     };
 
     fetchGraphData();
-  }, [siteId, month]);
+  }, [siteId, month, refresh]);
 
   // Custom tooltip
   const CustomTooltip = ({ active, payload, label }) => {
@@ -87,53 +87,53 @@ function ExpenseChart({ siteId }) {
     <div className="bg-white rounded-lg shadow-sm border h-full">
       <div className="grid grid-cols-12 h-full">
         
-        {/* Left Side: Month Selector + Total Expenses stacked */}
-        <div className="col-span-3 border-r p-6 flex flex-col justify-between">
+        {/* Left Side: Month Selector + Total Expenses stacked - Increased from col-span-3 to col-span-4 */}
+        <div className="col-span-4 border-r p-4 flex flex-col justify-between">
           {/* Month Selector */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs font-medium text-gray-700 mb-2">
               Select Month
             </label>
             <input
               type="month"
               value={month}
               onChange={(e) => setMonth(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white shadow-sm"
+              className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent outline-none bg-white shadow-sm"
             />
             <p className="text-xs text-gray-500 mt-1">{getMonthName(month)}</p>
           </div>
 
           {/* Total Expenses Box */}
-          <div className="mt-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+          <div className="mt-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3 border border-blue-200">
             <div className="text-center">
               <p className="text-xs font-medium text-blue-700 uppercase tracking-wide mb-1">
                 Total Expenses
               </p>
-              <p className="text-xl font-bold text-blue-900">
+              <p className="text-lg font-bold text-blue-900 break-all">
                 ₹{totalExpense.toLocaleString()}
               </p>
               <div className="flex items-center justify-center space-x-1 text-xs text-blue-600 mt-1">
-                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                <span className="w-1 h-1 bg-blue-500 rounded-full"></span>
                 <span>{chartData.length} days</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Side: Chart */}
-        <div className="col-span-9 p-6 flex flex-col">
+        {/* Right Side: Chart - Decreased from col-span-9 to col-span-8 */}
+        <div className="col-span-8 p-4 flex flex-col">
           {/* Chart Header */}
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">
+          <div className="mb-3">
+            <h3 className="text-base font-semibold text-gray-800">
               Daily Expense Trend
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-xs text-gray-600">
               Expense pattern throughout the month
             </p>
           </div>
 
           {/* Chart */}
-          <div className="flex-1 bg-gray-50 rounded-lg p-4">
+          <div className="flex-1 bg-gray-50 rounded-lg p-3">
             {chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
