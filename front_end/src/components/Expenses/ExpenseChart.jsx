@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import { getFilteredExpenses } from "../../services/expenseService";
 
-function ExpenseChart({ siteId , refresh}) {
+function ExpenseChart({ siteId, refresh }) {
   // Get current month automatically
   const getCurrentMonth = () => {
     const now = new Date();
@@ -86,7 +86,7 @@ function ExpenseChart({ siteId , refresh}) {
   return (
     <div className="bg-white rounded-lg shadow-sm border h-full">
       <div className="grid grid-cols-12 h-full">
-        
+
         {/* Left Side: Month Selector + Total Expenses stacked - Increased from col-span-3 to col-span-4 */}
         <div className="col-span-4 border-r p-4 flex flex-col justify-between">
           {/* Month Selector */}
@@ -150,12 +150,12 @@ function ExpenseChart({ siteId , refresh}) {
                     >
                       <stop
                         offset="5%"
-                        stopColor="#3B82F6"
+                        stopColor="#10B981"
                         stopOpacity={0.8}
                       />
                       <stop
                         offset="95%"
-                        stopColor="#3B82F6"
+                        stopColor="#10B981"
                         stopOpacity={0.1}
                       />
                     </linearGradient>
@@ -177,13 +177,13 @@ function ExpenseChart({ siteId , refresh}) {
                   <Area
                     type="monotone"
                     dataKey="spend"
-                    stroke="#3B82F6"
+                    stroke="#10B981"
                     strokeWidth={2}
                     fill="url(#expenseGradient)"
-                    dot={{ fill: "#3B82F6", strokeWidth: 2, r: 3 }}
+                    dot={{ fill: "#10B981", strokeWidth: 2, r: 3 }}
                     activeDot={{
                       r: 5,
-                      stroke: "#3B82F6",
+                      stroke: "#10B981",
                       strokeWidth: 2,
                       fill: "#FFFFFF",
                     }}
