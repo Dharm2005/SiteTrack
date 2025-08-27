@@ -21,6 +21,7 @@ function Expenses() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [refresh , setRefresh] = useState(0);
 
 
   const allExpenses = useSelector((state) => state.expense.expenses);
@@ -52,6 +53,7 @@ function Expenses() {
   const handleCloseForm = () => {
     setShowAddForm(false);
     fetchExpenses();
+    setRefresh(refresh + 1)
   };
 
   const handleShowForm = () => {
@@ -174,15 +176,18 @@ function Expenses() {
             
           {/* Center: Chart Section */}
           <div className="col-span-6">
-            <ExpenseChart siteId={id} />
+            <ExpenseChart 
+              siteId={id}
+              refresh = {refresh}
+            />
           </div>
 
           {/* Right: Filters */}
           <div className="col-span-3">
-            <div className="bg-white rounded-lg shadow-sm border p-6 h-full">
+            <div className="bg-white rounded-lg shadow-sm border p-4 h-full">
               <div className="flex flex-col h-full">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-700">Filters</h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-base font-semibold text-gray-700">Filters</h3>
                   {(from || to || searchTerm || filterType !== 'all') && (
                     <button
                       onClick={() => {
@@ -190,25 +195,25 @@ function Expenses() {
                         setSearchTerm('');
                         setFilterType('all');
                       }}
-                      className="text-sm text-red-600 hover:text-red-700 flex items-center space-x-1"
+                      className="text-xs text-red-600 hover:text-red-700 flex items-center space-x-1"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-3 h-3" />
                       <span>Clear</span>
                     </button>
                   )}
                 </div>
 
-                <div className="flex-1 space-y-4">
-                  {/* Date Range */}
+                <div className="flex-1 space-y-3">
+                  {/* Date Range - Single Line */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
-                    <div className="space-y-2">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Date Range</label>
+                    <div className="grid grid-cols-2 gap-2">
                       <input
                         type="date"
                         value={from}
                         onChange={(e) => setFrom(e.target.value)}
                         placeholder="From"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                       />
                       <input
                         type="date"
@@ -216,33 +221,33 @@ function Expenses() {
                         onChange={(e) => setTo(e.target.value)}
                         min={from}
                         placeholder="To"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                   </div>
 
                   {/* Search */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Search</label>
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
                       <input
                         type="text"
                         placeholder="Search expenses..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full pl-7 pr-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                   </div>
 
                   {/* Filter by Type */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Expense Type</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Expense Type</label>
                     <select
                       value={filterType}
                       onChange={(e) => setFilterType(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent bg-white"
                     >
                       {expenseTypes.map(type => (
                         <option key={type} value={type}>
@@ -254,7 +259,7 @@ function Expenses() {
 
                   {/* Active filters display */}
                   {(from || to) && (
-                    <div className="text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">
+                    <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1.5 rounded">
                       {from && to ? `${new Date(from).toLocaleDateString()} - ${new Date(to).toLocaleDateString()}` 
                                   : from ? `From ${new Date(from).toLocaleDateString()}` 
                                          : `Until ${new Date(to).toLocaleDateString()}`}
