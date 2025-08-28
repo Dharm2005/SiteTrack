@@ -34,7 +34,7 @@ exports.postAddSite = async (req , res , next) => {
 
 exports.getSiteDetails = async (req ,res, next) => {
   try{
-    const siteId = req.params.id;
+    const siteId = req.params.siteId;
      const site = await Site.findById(siteId)
      
     if (!site) 

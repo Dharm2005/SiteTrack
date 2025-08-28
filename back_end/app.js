@@ -8,6 +8,7 @@ const siteRouter = require('./routes/siteRouter');
 const workerRouter = require('./routes/workerRouter');
 const expenseRouter = require('./routes/expenseRouter');
 const managerRouter = require('./routes/managerRouter');
+const memoRouter = require('./routes/memoRouter');
 
 const errors = require('./controllers/errors');
 
@@ -29,6 +30,7 @@ app.use('/',siteRouter)
 app.use('/', workerRouter);
 app.use('/', expenseRouter);
 app.use('/', managerRouter);
+app.use('/', memoRouter);
 
 
 // Error Handling
