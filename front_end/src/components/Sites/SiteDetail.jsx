@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon, UserCheck } from 'lucide-react'
 import { getSite } from '../../services/siteService';
-import { Workers , LastFewExpenses} from '../index';
+import { Workers , LastFewExpenses, Memos} from '../index';
 import { getWorkersBySite } from '../../services/workerService'
 import { setWorkers } from '../../features/workerSlice';
 import { useDispatch } from 'react-redux';
@@ -354,19 +354,11 @@ function SiteDetail() {
             {/* Notes Section - Bottom Right (Empty for future use) */}
             <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
               <div className="border-b border-gray-200 px-6 py-4">
-                <h2 className="text-2xl font-bold text-gray-900">Notes</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Notes & Reminders</h2>
                 <p className="text-gray-600 mt-1">Site notes and observations</p>
               </div>
               <div className="p-6">
-                <div className="text-center py-12">
-                  <div className="text-gray-400 mb-4">
-                    <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </div>
-                  <p className="text-gray-500 text-lg">Notes section</p>
-                  <p className="text-gray-400 text-sm mt-2">Coming soon...</p>
-                </div>
+                <Memos siteId={id} />
               </div>
             </div>
 

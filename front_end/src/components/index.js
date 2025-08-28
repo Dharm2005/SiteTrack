@@ -22,5 +22,9 @@ export {default as AllManager} from "./Managers/AllManager"
 export {default as Managers} from "./Managers/Managers"
 export {default as Manager} from "./Managers/Manager"
 
+export {default as Memos} from "./Memos/Memos"
+export {default as Memo} from "./Memos/Memo"
+export {default as AddMemoForm} from "./Memos/AddMemoForm"
+
 export {default as NotFound} from "./Errors/NotFound"
 export {default as ScrollToTop} from "./Layout/ScrollToTop"
