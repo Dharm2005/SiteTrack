@@ -27,15 +27,15 @@ function AddExpenseForm({siteId, onClose}) {
 
   const expenseTypeOptions = [
     { value: "cement", label: "Cement" },
-    { value: "soil", label: "Soil" },
-    { value: "petrol", label: "Petrol" },
+    { value: "sand", label: "Sand" },
+    { value: "crushedStone", label: "Crushed Stone" },
     { value: "diesel", label: "Diesel" },
-    { value: "iron", label: "Iron" },
+    { value: "steel", label: "Steel" },
     { value: "vehicleBorrow", label: "Vehicle Borrow" },
     { value: "other", label: "Other" }
   ];
 
-  const unitOptions = ["kg", "ton", "piece", "bag", "litre", "meter", "other"];
+  const unitOptions = ["kg", "ton", "piece", "bag", "litre", "other"];
 
   // Check if unit is required based on expense type
   const isUnitRequired = () => {

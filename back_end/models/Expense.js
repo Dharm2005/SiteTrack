@@ -8,10 +8,10 @@ const expenseSchema = new mongoose.Schema(
       trim: true,
       enum: [
         "cement",
-        "soil",
-        "petrol",
+        "sand",
         "diesel",
-        "iron",
+        "crushedStone",
+        "steel",
         "vehicleBorrow",
         "other",
       ], // flexible categories
@@ -29,6 +29,12 @@ const expenseSchema = new mongoose.Schema(
       enum: ["kg", "ton", "piece", "bag", "litre", "meter", "other"],
       default: "other",
     },
+    stoneType: [
+      {
+        type: String,
+        enum: ["60mm", "40mm", "25mm", "10mm", "6mm", "powder", "wetMix", "GSB", "other"]
+      }
+    ],
     totalCost: {
       type: Number,
       required: true,
@@ -42,12 +48,14 @@ const expenseSchema = new mongoose.Schema(
       type: String,
       default: null, // optional
     },
-    sites: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Site", // link to your Site schema
-      },
-    ],
+    details: {
+      type: String,
+    },
+    siteId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Site", // link to your Site schema
+      require: true
+    },
   },
   { timestamps: true }
 );
