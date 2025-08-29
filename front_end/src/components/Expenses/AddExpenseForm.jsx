@@ -16,7 +16,8 @@ function AddExpenseForm({siteId, onClose}) {
     totalCost: 0,
     arrivalDate: '',
     vehicleNumber: '',
-    sites: []
+    details: '',
+    siteId: '',
   })
 
   const [errors, setErrors] = useState({});
@@ -211,7 +212,8 @@ function AddExpenseForm({siteId, onClose}) {
       formData.append("totalCost", form.totalCost);
       formData.append("arrivalDate", form.arrivalDate);
       formData.append("vehicleNumber", form.vehicleNumber.trim());
-      formData.append("sites", JSON.stringify([siteId]));
+      formData.append("details",form.details)
+      formData.append("siteId",siteId);
 
       const newExpense = await addExpens(formData);
       console.log(newExpense);
@@ -228,7 +230,8 @@ function AddExpenseForm({siteId, onClose}) {
         totalCost: 0,
         arrivalDate: '',
         vehicleNumber: '',
-        sites: []
+        details: '',
+        siteId: '',
       });
       setImagePreview(null);
       setErrors({});
@@ -352,6 +355,13 @@ function AddExpenseForm({siteId, onClose}) {
             {errors.arrivalDate && (
               <p className="text-red-500 text-xs mt-1">{errors.arrivalDate}</p>
             )}
+            <input 
+                  type="text"
+                  name="details"
+                  value={form.details}
+                  onChange={handleChange}
+                  placeholder='Enter optional detail'
+                />
           </div>
         </div>
 
@@ -382,7 +392,7 @@ function AddExpenseForm({siteId, onClose}) {
                   <p className="text-red-500 text-xs mt-1">{errors.quantity}</p>
                 )}
               </div>
-
+                
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Unit *

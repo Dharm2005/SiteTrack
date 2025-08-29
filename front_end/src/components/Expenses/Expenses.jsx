@@ -42,6 +42,8 @@ function Expenses() {
       else{
         expenseData = await getExpensesBySite(id)
       }
+      console.log(expenseData);
+      
       dispatch(setExpenses(expenseData));
     } catch (error) {
       console.error("Error fetching expense:", error);

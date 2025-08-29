@@ -3,7 +3,7 @@ const Expense = require('../models/Expense');
 exports.getExpensesBySite = async (req, res, next) => {
   try {
     const siteId = req.params.siteId;
-    const expenses = await Expense.find({ sites: siteId })
+    const expenses = await Expense.find({ siteId: siteId })
       .sort({createdAt: -1});
 
     res.status(200).json(expenses);
@@ -19,7 +19,7 @@ exports.getFilteredExpenses = async (req, res, next) => {
     const {siteId} = req.params;
     const {limit , from , to} = req.query;
     let expenses;
-    let query = {sites : siteId};
+    let query = {siteId : siteId};
 
     if(from && to){
       query.arrivalDate = {
@@ -50,15 +50,15 @@ exports.getFilteredExpenses = async (req, res, next) => {
 
 exports.postAddExpense = async (req, res, next) => {
   try {
-    let { expenseType, quantity, unit, totalCost, arrivalDate, vehicleNumber,details, sites, stoneType} = req.body;
+    let { expenseType, quantity, unit, totalCost, arrivalDate, vehicleNumber,details, siteId, stoneType} = req.body;
     const billImage = req.file ? req.file.filename : null;
 
     // Parse sites correctly
-    if (typeof sites === "string") {
+     if (stoneType && typeof stoneType === "string") {
       try {
-        sites = JSON.parse(sites); // convert to array if JSON string
+        stoneType = JSON.parse(stoneType); // in case frontend sends JSON string
       } catch (err) {
-        sites = [sites]; // fallback to single site string
+        stoneType = [stoneType]; // fallback if it's just a single string
       }
     }
 
