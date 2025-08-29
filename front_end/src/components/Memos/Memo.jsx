@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import { StickyNote, AlertCircle, Calendar, Clock, ChevronDown, ChevronUp, Edit3, Trash2, MoreVertical } from 'lucide-react'
+import { StickyNote, AlertCircle, Calendar, Clock, ChevronDown, ChevronUp, Edit3, Trash2 } from 'lucide-react'
 
 function Memo({ id, memoType, text, dueDate, createdAt }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showActions, setShowActions] = useState(false);
 
   // Format the date
   const formatDate = (dateString) => {
@@ -87,12 +86,10 @@ function Memo({ id, memoType, text, dueDate, createdAt }) {
 
   const handleEdit = () => {
     console.log('Edit memo:', id);
-    setShowActions(false);
   };
 
   const handleDelete = () => {
     console.log('Delete memo:', id);
-    setShowActions(false);
   };
 
   const toggleExpanded = () => {
@@ -164,46 +161,29 @@ function Memo({ id, memoType, text, dueDate, createdAt }) {
               }`}></div>
             )}
 
-            {/* Actions Menu */}
-            <div className="relative">
-              <button
-                onClick={() => setShowActions(!showActions)}
-                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <MoreVertical className="w-4 h-4 text-gray-500" />
-              </button>
+            {/* Edit Button */}
+            <button
+              onClick={handleEdit}
+              className="p-1.5 hover:bg-blue-100 rounded-lg transition-colors group"
+              title="Edit memo"
+            >
+              <Edit3 className="w-4 h-4 text-gray-500 group-hover:text-blue-600" />
+            </button>
 
-              {showActions && (
-                <>
-                  <div 
-                    className="fixed inset-0 z-10" 
-                    onClick={() => setShowActions(false)}
-                  ></div>
-                  
-                  <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-2 min-w-[120px] z-20">
-                    <button
-                      onClick={handleEdit}
-                      className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
-                    >
-                      <Edit3 className="w-3 h-3" />
-                      <span>Edit</span>
-                    </button>
-                    <button
-                      onClick={handleDelete}
-                      className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                      <span>Delete</span>
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
+            {/* Delete Button */}
+            <button
+              onClick={handleDelete}
+              className="p-1.5 hover:bg-red-100 rounded-lg transition-colors group"
+              title="Delete memo"
+            >
+              <Trash2 className="w-4 h-4 text-gray-500 group-hover:text-red-600" />
+            </button>
 
             {/* Expand/Collapse Button */}
             <button
               onClick={toggleExpanded}
               className="p-1.5 hover:bg-gray-100 rounded-lg transition-all duration-200"
+              title={isExpanded ? 'Collapse' : 'Expand'}
             >
               {isExpanded ? (
                 <ChevronUp className="w-4 h-4 text-gray-500" />
