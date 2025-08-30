@@ -47,10 +47,10 @@ function AddExpenseForm({siteId, onClose}) {
     { value: "25mm", label: "25mm" },
     { value: "10mm", label: "10mm" },
     { value: "6mm", label: "6mm" },
-    { value: "powder", label: "Powder" },
-    { value: "wetMix", label: "Wet Mix" },
+    { value: "Powder", label: "Powder" },
+    { value: "Wet mix", label: "Wet Mix" },
     { value: "GSB", label: "GSB" },
-    { value: "other", label: "Other" }
+    { value: "Other", label: "Other" }
   ];
 
   // Check if unit is required based on expense type

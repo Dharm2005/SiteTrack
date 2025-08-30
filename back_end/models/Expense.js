@@ -32,7 +32,7 @@ const expenseSchema = new mongoose.Schema(
     stoneType: [
       {
         type: String,
-        enum: ["60mm", "40mm", "25mm", "10mm", "6mm", "powder", "wetMix", "GSB", "other"]
+        enum: ["60mm", "40mm", "25mm", "10mm", "6mm", "Powder", "Wet mix", "GSB", "Other"]
       }
     ],
     totalCost: {

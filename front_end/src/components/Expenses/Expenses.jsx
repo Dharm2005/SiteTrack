@@ -313,12 +313,15 @@ function Expenses() {
                     key={expense._id}
                     id={expense._id}
                     expenseType={expense.expenseType}
+                    stoneType={expense.stoneType}
                     billImage={expense.billImage}
                     quantity={expense.quantity}
                     unit={expense.unit}
                     totalCost={expense.totalCost}
                     arrivalDate={expense.arrivalDate}
                     vehicleNumber={expense.vehicleNumber}
+                    supplierName={expense.supplierName}
+                    details={expense.details}
                     createdAt={expense.createdAt}
                   />
                 </div>
