@@ -50,7 +50,7 @@ exports.getFilteredExpenses = async (req, res, next) => {
 
 exports.postAddExpense = async (req, res, next) => {
   try {
-    let { expenseType, quantity, unit, totalCost, arrivalDate, vehicleNumber,details, siteId, stoneType} = req.body;
+    let { expenseType, quantity, unit, totalCost, arrivalDate, vehicleNumber,supplierName,details, siteId, stoneType} = req.body;
     const billImage = req.file ? req.file.filename : null;
 
     // Parse sites correctly
@@ -70,6 +70,7 @@ exports.postAddExpense = async (req, res, next) => {
       totalCost,
       arrivalDate,
       vehicleNumber,
+      supplierName,
       details,
       siteId,
       stoneType: Array.isArray(stoneType) ? stoneType : []

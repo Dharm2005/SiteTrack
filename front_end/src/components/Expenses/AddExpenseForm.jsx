@@ -4,18 +4,20 @@ import { useDispatch } from 'react-redux'
 import { addExpens } from  '../../services/expenseService'
 import {toast} from 'react-toastify';
 import { addNewExpense } from '../../features/expenseSlice';
-import { Package, Upload, X, DollarSign, Calendar, Truck, Hash, Scale, Tag } from 'lucide-react';
+import { Package, Upload, X, DollarSign, Calendar, Truck, Hash, Scale, Tag, FileText, User } from 'lucide-react';
 
 function AddExpenseForm({siteId, onClose}) {
   const [form, setForm] = useState({
     type:'expense',
     expenseType: 'other',
+    stoneType : '',
     billImage: null,
     quantity: 0,
     unit: 'other',
     totalCost: 0,
     arrivalDate: '',
     vehicleNumber: '',
+    supplierName: '',
     details: '',
     siteId: '',
   })
@@ -23,6 +25,7 @@ function AddExpenseForm({siteId, onClose}) {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [stoneTypes , setStoneTypes] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -38,9 +41,26 @@ function AddExpenseForm({siteId, onClose}) {
 
   const unitOptions = ["kg", "ton", "piece", "bag", "litre", "other"];
 
+  const stoneTypeOptions = [
+    { value: "60mm", label: "60mm" },
+    { value: "40mm", label: "40mm" },
+    { value: "25mm", label: "25mm" },
+    { value: "10mm", label: "10mm" },
+    { value: "6mm", label: "6mm" },
+    { value: "powder", label: "Powder" },
+    { value: "wetMix", label: "Wet Mix" },
+    { value: "GSB", label: "GSB" },
+    { value: "other", label: "Other" }
+  ];
+
   // Check if unit is required based on expense type
   const isUnitRequired = () => {
     return !['vehicleBorrow', 'other'].includes(form.expenseType);
+  };
+
+  // Check if supplier name should be visible (materials and vehicle expenses)
+  const isSupplierRequired = () => {
+    return !['other', 'diesel'].includes(form.expenseType);
   };
 
   // Get allowed units based on expense type
@@ -60,6 +80,11 @@ function AddExpenseForm({siteId, onClose}) {
       newErrors.expenseType = 'Expense type is required';
     }
 
+    // Stone type validation for crushed stone
+    if (form.expenseType === 'crushedStone' && stoneTypes.length === 0) {
+      newErrors.stoneTypes = 'Please select at least one stone type for crushed stone';
+    }
+
     // Quantity validation - only required if unit is required
     if (isUnitRequired() && form.quantity <= 0) {
       newErrors.quantity = 'Quantity must be greater than 0';
@@ -73,6 +98,11 @@ function AddExpenseForm({siteId, onClose}) {
     // Special validation for petrol/diesel - unit must be litre
     if ((form.expenseType === 'petrol' || form.expenseType === 'diesel') && form.unit !== 'litre') {
       newErrors.unit = `Unit must be "litre" for ${form.expenseType}`;
+    }
+
+    // Supplier name validation - required for material and vehicle expenses
+    if (isSupplierRequired() && form.supplierName.trim() === '') {
+      newErrors.supplierName = 'Supplier name is required for this expense type';
     }
 
     // Total cost validation
@@ -138,6 +168,9 @@ function AddExpenseForm({siteId, onClose}) {
       } else if (name === 'vehicleNumber') {
         // Convert to uppercase and remove extra spaces
         processedValue = value.replace(/\s+/g, ' ').toUpperCase().trim();
+      } else if (name === 'supplierName') {
+        // Trim supplier name and capitalize first letter of each word
+        processedValue = value.replace(/\s+/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
       }
       
       let updatedForm = {
@@ -172,11 +205,48 @@ function AddExpenseForm({siteId, onClose}) {
             unit: ''
           }));
         }
+        
+        // Reset stone types when expense type changes
+        if (processedValue !== 'crushedStone') {
+          setStoneTypes([]);
+          setErrors(prev => ({ 
+            ...prev, 
+            stoneTypes: ''
+          }));
+        }
+
+        // Clear supplier name when expense type changes to other/diesel
+        if (['other', 'diesel'].includes(processedValue)) {
+          updatedForm = {
+            ...updatedForm,
+            supplierName: ''
+          };
+          setErrors(prev => ({ 
+            ...prev, 
+            supplierName: ''
+          }));
+        }
       }
       
       setForm(updatedForm);
     }
   };
+
+  const handleCheckboxChange = (e) => {
+    const value = e.target.value;
+
+    // Clear stone types error
+    if (errors.stoneTypes) {
+      setErrors(prev => ({ ...prev, stoneTypes: '' }));
+    }
+
+    if(e.target.checked){
+      setStoneTypes(prev => [...prev , value])
+    }
+    else{
+      setStoneTypes(prev => prev.filter((t) => t !== value))
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -208,10 +278,11 @@ function AddExpenseForm({siteId, onClose}) {
         formData.append("quantity", 0);
         formData.append("unit", "other");
       }
-      
+      formData.append("stoneType",JSON.stringify(stoneTypes));
       formData.append("totalCost", form.totalCost);
       formData.append("arrivalDate", form.arrivalDate);
       formData.append("vehicleNumber", form.vehicleNumber.trim());
+      formData.append("supplierName", form.supplierName.trim());
       formData.append("details",form.details)
       formData.append("siteId",siteId);
 
@@ -224,15 +295,18 @@ function AddExpenseForm({siteId, onClose}) {
       // Reset form
       setForm({
         expenseType: 'other',
+        stoneType: '',
         billImage: null,
         quantity: 0,
         unit: 'other',
         totalCost: 0,
         arrivalDate: '',
         vehicleNumber: '',
+        supplierName: '',
         details: '',
         siteId: '',
       });
+      setStoneTypes([]);
       setImagePreview(null);
       setErrors({});
       
@@ -282,7 +356,7 @@ function AddExpenseForm({siteId, onClose}) {
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {/* First Row: Expense Type, Total Cost, Arrival Date */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div>
@@ -355,15 +429,41 @@ function AddExpenseForm({siteId, onClose}) {
             {errors.arrivalDate && (
               <p className="text-red-500 text-xs mt-1">{errors.arrivalDate}</p>
             )}
-            <input 
-                  type="text"
-                  name="details"
-                  value={form.details}
-                  onChange={handleChange}
-                  placeholder='Enter optional detail'
-                />
           </div>
         </div>
+
+        {/* Stone Types - Only visible for crushed stone */}
+        {form.expenseType === 'crushedStone' && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Stone Types *
+            </label>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+              {stoneTypeOptions.map(option => (
+                <label key={option.value} className="flex items-center space-x-2 p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    value={option.value}
+                    checked={stoneTypes.includes(option.value)}
+                    onChange={handleCheckboxChange}
+                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                  />
+                  <span className="text-sm text-gray-700">{option.label}</span>
+                </label>
+              ))}
+            </div>
+            {errors.stoneTypes && (
+              <p className="text-red-500 text-xs mt-1">{errors.stoneTypes}</p>
+            )}
+            {stoneTypes.length > 0 && (
+              <div className="mt-2">
+                <p className="text-sm text-green-600">
+                  Selected: {stoneTypes.map(type => stoneTypeOptions.find(opt => opt.value === type)?.label).join(', ')}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Second Row: Quantity, Unit, Vehicle Number (Conditional quantity and unit) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -450,6 +550,49 @@ function AddExpenseForm({siteId, onClose}) {
           </div>
         </div>
 
+        {/* Supplier Name Field - Only visible for material and vehicle expenses */}
+        {isSupplierRequired() && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Supplier Name *
+            </label>
+            <div className="relative">
+              <User className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                name="supplierName"
+                value={form.supplierName}
+                onChange={handleChange}
+                placeholder="Enter supplier name"
+                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${
+                  errors.supplierName ? 'border-red-300' : 'border-gray-300'
+                }`}
+              />
+            </div>
+            {errors.supplierName && (
+              <p className="text-red-500 text-xs mt-1">{errors.supplierName}</p>
+            )}
+          </div>
+        )}
+
+        {/* Details Field */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Additional Details
+          </label>
+          <div className="relative">
+            <FileText className="absolute left-2.5 top-3 w-4 h-4 text-gray-400" />
+            <textarea
+              name="details"
+              value={form.details}
+              onChange={handleChange}
+              placeholder="Enter any additional details (optional)"
+              rows="3"
+              className="w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm border-gray-300 resize-none"
+            />
+          </div>
+        </div>
+
         {/* Bill Image Upload */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -499,7 +642,7 @@ function AddExpenseForm({siteId, onClose}) {
           )}
         </div>
 
-        {/* Info Note for Optional Fields or Petrol/Diesel */}
+        {/* Info Notes */}
         {!isUnitRequired() && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
             <div className="flex items-center space-x-2">
@@ -527,6 +670,19 @@ function AddExpenseForm({siteId, onClose}) {
           </div>
         )}
 
+        {form.expenseType === 'crushedStone' && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-green-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold">✓</span>
+              </div>
+              <p className="text-sm text-green-700">
+                For <strong>Crushed Stone</strong> expenses, please select at least one stone type from the options above.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Action Buttons */}
         <div className="flex space-x-3 pt-2">
           <button
@@ -545,7 +701,7 @@ function AddExpenseForm({siteId, onClose}) {
             >
               Cancel
             </button>
-          )}
+            )}
         </div>
       </form>
     </div>

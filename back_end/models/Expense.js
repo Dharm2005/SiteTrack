@@ -48,6 +48,11 @@ const expenseSchema = new mongoose.Schema(
       type: String,
       default: null, // optional
     },
+    supplierName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     details: {
       type: String,
     },
