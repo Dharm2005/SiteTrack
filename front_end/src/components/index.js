@@ -11,6 +11,8 @@ export {default as Workers} from "./Workers/Workers"
 export {default as Worker} from "./Workers/Worker"
 export {default as AddWorkerForm} from './Workers/AddWorkerForm'
 export {default as WorkerDetail} from './Workers/WorkerDetail'
+export {default as Advance} from './Workers/Advance'
+export {default as AddAdvanceForm} from './Workers/AddAdvanceForm'
 
 export {default as Expenses} from "./Expenses/Expenses"
 export {default as Expense} from "./Expenses/Expense"
