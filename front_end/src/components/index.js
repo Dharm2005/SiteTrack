@@ -10,6 +10,7 @@ export {default as SiteDetail} from "./Sites/SiteDetail"
 export {default as Workers} from "./Workers/Workers"
 export {default as Worker} from "./Workers/Worker"
 export {default as AddWorkerForm} from './Workers/AddWorkerForm'
+export {default as WorkerDetail} from './Workers/WorkerDetail'
 
 export {default as Expenses} from "./Expenses/Expenses"
 export {default as Expense} from "./Expenses/Expense"

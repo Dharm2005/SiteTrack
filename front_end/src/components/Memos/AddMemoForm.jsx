@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { addMemo } from '../../services/memoService'
 import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
-import { addNewMemo } from '../../features/memoSliice'
+import { addNewMemo } from '../../features/memoSlice'
 import { StickyNote, Calendar, Type, X, AlertCircle } from 'lucide-react'
 
 function AddMemoForm({ siteId, onClose }) {

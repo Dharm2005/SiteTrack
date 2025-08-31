@@ -3,7 +3,7 @@ import { getMemosBySite } from '../../services/memoService'
 import Memo from './Memo'
 import AddMemoForm from './AddMemoForm'
 import { useDispatch, useSelector } from 'react-redux';
-import { setMemos } from '../../features/memoSliice';
+import { setMemos } from '../../features/memoSlice';
 import { Plus, StickyNote, Filter, AlertCircle, Calendar, Edit3, Trash2 } from 'lucide-react'
 
 function Memos({ siteId }) {

@@ -1,10 +1,11 @@
 import React from 'react'
 import { Phone, Calendar, DollarSign, User, ChevronDown, ChevronUp, Edit3, Trash2, MoreVertical } from 'lucide-react'
 import { useState } from 'react'
+import { Link } from 'react-router-dom';
 
 const API_URL = "http://localhost:3000";
 
-function Worker({ id, name, image, mobile, createdAt }) {
+function Worker({id, name, image, mobile, createdAt }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showActions, setShowActions] = useState(false);
 
@@ -183,9 +184,9 @@ function Worker({ id, name, image, mobile, createdAt }) {
               </div>
               
               <div className="flex items-center space-x-2">
-                <button className="text-xs bg-blue-100 text-blue-700 px-3 py-1.5 rounded-md hover:bg-blue-200 transition-colors font-medium">
+                <Link to={`./workers/${id}`} className="text-xs bg-blue-100 text-blue-700 px-3 py-1.5 rounded-md hover:bg-blue-200 transition-colors font-medium">
                   View Profile
-                </button>
+                </Link>
                 {/* <button className="text-xs bg-green-100 text-green-700 px-3 py-1.5 rounded-md hover:bg-green-200 transition-colors font-medium">
                   Mark Present
                 </button> */}

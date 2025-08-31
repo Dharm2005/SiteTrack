@@ -2,10 +2,19 @@ import axios from "axios";
 
 export const getWorkersBySite = async (id) => {
   try {
-  const response = await axios.get(`http://localhost:3000/worker/${id}`);
-  return response.data;
+    const response = await axios.get(`http://localhost:3000/worker/${id}`);
+    return response.data;
   }catch (err) {
     throw new Error(err.response?.data?.message || "Failed to fetch workers");
+  }
+}
+
+export const getAdvancesByWorker = async (workerId) => {
+  try{
+    const response = await axios.get(`http://localhost:3000/worker/${workerId}/advance`);
+    return response.data;
+  } catch(err) {
+    throw new Error(err.response?.data?.message || "Failed to fetch advances");
   }
 }
 
