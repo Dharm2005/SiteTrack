@@ -12,8 +12,6 @@ function AddWorkerForm({siteId, onClose}) {
     workerName: '',
     workerImage: null,
     workerMobile: '',
-    workerAdvance: 0,
-    workerPerDiem: 0,
     sites: []
   })
 
@@ -34,16 +32,6 @@ function AddWorkerForm({siteId, onClose}) {
       newErrors.workerName = 'Worker name must be at least 2 characters';
     } else if (!/^[a-zA-Z\s]+$/.test(form.workerName.trim())) {
       newErrors.workerName = 'Worker name should only contain letters and spaces';
-    }
-
-    // Advance validation
-    if (form.workerAdvance < 0) {
-      newErrors.workerAdvance = 'Advance amount cannot be negative';
-    }
-
-    // Per diem validation
-    if (form.workerPerDiem < 0) {
-      newErrors.workerPerDiem = 'Per diem amount cannot be negative';
     }
 
     // Image validation
@@ -117,8 +105,6 @@ function AddWorkerForm({siteId, onClose}) {
         formData.append("workerImage", form.workerImage);
       }
       formData.append("workerMobile", form.workerMobile);
-      formData.append("workerAdvance", form.workerAdvance);
-      formData.append("workerPerDiem", form.workerPerDiem);
       formData.append("sites", JSON.stringify([siteId]));
 
       const newWorker = await addWorker(formData);
@@ -133,8 +119,6 @@ function AddWorkerForm({siteId, onClose}) {
         workerName: '',
         workerImage: null,
         workerMobile: '',
-        workerAdvance: 0,
-        workerPerDiem: 0,
         sites: []
       });
       setImagePreview(null);
@@ -218,57 +202,6 @@ function AddWorkerForm({siteId, onClose}) {
               placeholder="Enter mobile number"
               className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
-          </div>
-        </div>
-
-        {/* Advance and Per Diem */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Advance Amount (₹)
-            </label>
-            <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="number"
-                name="workerAdvance"
-                value={form.workerAdvance}
-                onChange={handleChange}
-                min="0"
-                step="50"
-                placeholder="0"
-                className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-                  errors.workerAdvance ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                }`}
-              />
-            </div>
-            {errors.workerAdvance && (
-              <p className="text-red-500 text-sm mt-1">{errors.workerAdvance}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Per Diem (₹/day)
-            </label>
-            <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="number"
-                name="workerPerDiem"
-                value={form.workerPerDiem}
-                onChange={handleChange}
-                min="0"
-                step="50"
-                placeholder="0"
-                className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-                  errors.workerPerDiem ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                }`}
-              />
-            </div>
-            {errors.workerPerDiem && (
-              <p className="text-red-500 text-sm mt-1">{errors.workerPerDiem}</p>
-            )}
           </div>
         </div>
 

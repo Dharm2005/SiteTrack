@@ -62,8 +62,6 @@ function Workers({siteId}) {
                 name={worker.workerName}
                 image={worker.workerImage}
                 mobile={worker.workerMobile}
-                advance={worker.workerAdvance}
-                perDiem={worker.workerPerDiem}
                 createdAt={worker.createdAt}
               />
             </div>

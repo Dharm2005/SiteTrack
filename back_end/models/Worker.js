@@ -12,14 +12,6 @@ const workerSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
-  workerAdvance: { 
-    type: Number, 
-    default: 0 
-  },
-  workerPerDiem: { 
-    type: Number, 
-    required: true 
-  }, 
   sites: [
     {
       type: mongoose.Schema.Types.ObjectId,

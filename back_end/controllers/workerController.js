@@ -14,7 +14,7 @@ exports.getWorkersBySite = async (req , res , next) => {
 
 exports.postAddWorker = async (req, res, next) => {
   try {
-    let { workerName, workerMobile, workerAdvance, workerPerDiem, sites } = req.body;
+    let { workerName, workerMobile, sites } = req.body;
     const workerImage = req.file ? req.file.filename : null;
 
     // Parse sites correctly
@@ -30,8 +30,6 @@ exports.postAddWorker = async (req, res, next) => {
       workerName,
       workerImage,
       workerMobile,
-      workerAdvance,
-      workerPerDiem,
       sites: Array.isArray(sites) ? sites : [sites],
     });
 

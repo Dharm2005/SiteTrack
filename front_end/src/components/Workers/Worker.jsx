@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 const API_URL = "http://localhost:3000";
 
-function Worker({ id, name, image, mobile, advance, perDiem, createdAt }) {
+function Worker({ id, name, image, mobile, createdAt }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showActions, setShowActions] = useState(false);
 
@@ -22,16 +22,6 @@ function Worker({ id, name, image, mobile, advance, perDiem, createdAt }) {
       console.error(error);
       return 'Invalid Date';
     }
-  };
-
-  // Format currency
-  const formatCurrency = (amount) => {
-    if (!amount && amount !== 0) return '₹0';
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0
-    }).format(amount);
   };
 
   // Format mobile number
@@ -182,36 +172,6 @@ function Worker({ id, name, image, mobile, advance, perDiem, createdAt }) {
                 </div>
                 <p className="text-sm font-semibold text-gray-900">
                   {formatMobile(mobile)}
-                </p>
-              </div>
-
-              {/* Advance Amount */}
-              <div className="bg-white rounded-lg p-3 shadow-sm">
-                <div className="flex items-center space-x-2 mb-1">
-                  <div className="p-1 bg-orange-100 rounded">
-                    <DollarSign className="w-3 h-3 text-orange-600" />
-                  </div>
-                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                    Advance
-                  </span>
-                </div>
-                <p className="text-sm font-semibold text-gray-900">
-                  {formatCurrency(advance)}
-                </p>
-              </div>
-
-              {/* Per Diem */}
-              <div className="bg-white rounded-lg p-3 shadow-sm">
-                <div className="flex items-center space-x-2 mb-1">
-                  <div className="p-1 bg-blue-100 rounded">
-                    <DollarSign className="w-3 h-3 text-blue-600" />
-                  </div>
-                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                    Per Diem
-                  </span>
-                </div>
-                <p className="text-sm font-semibold text-gray-900">
-                  {formatCurrency(perDiem)}/day
                 </p>
               </div>
             </div>
