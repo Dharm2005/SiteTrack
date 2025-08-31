@@ -6,6 +6,11 @@ const upload = require('../middleware/imageUpload');
 
 workerRouter.get('/worker/:siteId',workerController.getWorkersBySite)
 workerRouter.post('/add-worker',upload.single("workerImage"),workerController.postAddWorker)
+
+workerRouter.post('/worker/add-advance',upload.none(),workerController.addWorkerAdvance)
+workerRouter.get('/worker/:workerId/advance',workerController.getAdvancesByWorker)
+
+
 // workerRouter.delete('/:id',workerController.deleteWorker)
 // workerRouter.get('/worker/:id',workerController.getWorkerDetails)
 

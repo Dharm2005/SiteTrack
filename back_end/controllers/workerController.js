@@ -1,4 +1,5 @@
 const Worker = require('../models/Worker');
+const Advance = require('../models/Advance');
 
 exports.getWorkersBySite = async (req , res , next) => {
   try{
@@ -40,3 +41,39 @@ exports.postAddWorker = async (req, res, next) => {
     res.status(500).json({ message: "Error creating worker", error: error.message });
   }
 };
+
+exports.getAdvancesByWorker = async (req, res, next) => {
+  try{
+    let workerId = req.params.workerId;
+    const advances = await Advance.find({worker : workerId});
+
+    res.status(200).json(advances)
+  }catch(err) {
+    console.error("Error fetching advances:", err);
+    res.status(500).json({ err: "Failed to fetch advances" });
+  }
+}
+
+exports.addWorkerAdvance = async (req, res, next) => {
+  try{
+    let {worker, amount, date, note} = req.body;
+
+    const workerExists = await Worker.findById(worker);
+    if (!workerExists) {
+      return res.status(404).json({ message: "Worker not found" });
+    }
+
+    const advance = new Advance({
+      worker,
+      amount,
+      date,
+      note
+    })
+
+    const savedAdvance = await advance.save();
+    res.status(201).json(savedAdvance)
+  }catch(error) {
+    console.error("Error Adding advance:", error);
+    res.status(500).json({ message: "Error Adding advance", error: error.message });
+  }
+}
