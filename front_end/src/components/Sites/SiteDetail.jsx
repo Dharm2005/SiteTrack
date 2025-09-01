@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon, UserCheck } from 'lucide-react'
 import { getSite } from '../../services/siteService';
-import { Workers , LastFewExpenses, Memos} from '../index';
+import { Workers, Memos } from '../index';
 import { getWorkersBySite } from '../../services/workerService'
 import { setWorkers } from '../../features/workerSlice';
 import { useDispatch } from 'react-redux';
@@ -324,15 +324,12 @@ function SiteDetail() {
 
             {/* Expenses List - Top Right */}
             <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-              <div className="border-b border-gray-200 px-6 py-4">
-                <h2 className="text-2xl font-bold text-gray-900">Recent Expenses</h2>
-                <p className="text-gray-600 mt-1">Track latest site expenses</p>
-              </div>
-              <div className="p-6">
-                <LastFewExpenses 
-                  id={id}
-                />
-              </div>
+              <Link
+                to={`/site/${id}/expenses`}
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2.5 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-center block"
+              >
+                Expenses
+              </Link>
             </div>
 
           </div>
@@ -342,13 +339,12 @@ function SiteDetail() {
 
             {/* Workers List - Bottom Left */}
             <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-              <div className="border-b border-gray-200 px-6 py-4">
-                <h2 className="text-2xl font-bold text-gray-900">Worker List</h2>
-                <p className="text-gray-600 mt-1">Manage site workers and assignments</p>
-              </div>
-              <div className="p-6">
-                <Workers siteId={id} />
-              </div>
+             <Link
+                to={`/site/${id}/workers`}
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2.5 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-center block"
+              >
+                Workers
+              </Link>  
             </div>
 
             {/* Notes Section - Bottom Right (Empty for future use) */}

@@ -17,7 +17,7 @@ exports.getFilteredExpenses = async (req, res, next) => {
 
   try {
     const {siteId} = req.params;
-    const {limit , from , to} = req.query;
+    const {from , to} = req.query;
     let expenses;
     let query = {siteId : siteId};
 
@@ -30,13 +30,6 @@ exports.getFilteredExpenses = async (req, res, next) => {
       expenses = await Expense.find(query)
         .sort({createdAt: -1});
     }
-
-    else if(limit){
-      expenses = await Expense.find(query)
-        .sort({createdAt: -1})
-        .limit(parseInt(limit) || 5);
-    }
-
     else{
       console.error("There is no filter applyed");
     }

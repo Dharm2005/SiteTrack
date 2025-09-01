@@ -9,15 +9,6 @@ export const getExpensesBySite = async (id) => {
   }
 }
 
-export const getLastFewExpenses = async (id) => {
-  try{
-    const response = await axios.get(`http://localhost:3000/expense/${id}/filter?limit=5`);
-    return response.data;
-  }catch (err) {
-    throw new Error(err.response?.data?.message || "Failed to fetch last expenses");
-  }
-}
-
 export const getFilteredExpenses = async (id , startDate , endDate) => {
   try{
     const response = await axios.get(`http://localhost:3000/expense/${id}/filter?from=${startDate}&to=${endDate}`);

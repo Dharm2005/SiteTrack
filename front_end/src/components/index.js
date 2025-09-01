@@ -17,7 +17,6 @@ export {default as AddAdvanceForm} from './Workers/AddAdvanceForm'
 export {default as Expenses} from "./Expenses/Expenses"
 export {default as Expense} from "./Expenses/Expense"
 export {default as AddExpenseForm} from "./Expenses/AddExpenseForm"
-export {default as LastFewExpenses} from "./Expenses/LastFewExpenses"
 export {default as ExpenseChart} from "./Expenses/ExpenseChart"
 
 export {default as AddManager} from "./Managers/AddManager"
