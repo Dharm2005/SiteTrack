@@ -18,6 +18,17 @@ export const getAdvancesByWorker = async (workerId) => {
   }
 }
 
+export const addAdvanceOfWorker = async (advanceData) => {
+  try {
+    const response = await axios.post("http://localhost:3000/worker/add-advance",advanceData,{
+      headers: {"Content-Type": "multipart/form-data"},
+    })
+    return response.data;
+  } catch (error) {
+    console.error("Error while adding advance ",error);
+  }
+}
+
 export const addWorker = async (workerData) => {
   try{
     const response = await axios.post("http://localhost:3000/add-worker",workerData,  {
