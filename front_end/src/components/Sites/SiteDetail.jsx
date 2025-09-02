@@ -258,16 +258,7 @@ function SiteDetail() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-3 mt-6 pt-5 border-t border-gray-200">
-                  <button className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-sm">
-                    <Edit className="w-4 h-4" />
-                    <span>Edit Site</span>
-                  </button>
-                  <button className="flex items-center space-x-2 px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 text-sm">
-                    <Trash2 className="w-4 h-4" />
-                    <span>Delete</span>
-                  </button>
-                </div>
+                
               </div>
             </div>
           </div>
