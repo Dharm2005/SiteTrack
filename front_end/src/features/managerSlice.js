@@ -13,9 +13,12 @@ export const managerSlice = createSlice({
     },
     addNewManager: (state , action) => {
       state.managers.push(action.payload)
+    },
+    deleteManager: (state , action) => {
+      state.managers = state.managers.filter(manager => manager._id !== action.payload);
     }
   }
 })
 
-export const {setManagers , addNewManager} = managerSlice.actions
+export const {setManagers , addNewManager , deleteManager} = managerSlice.actions
 export default managerSlice.reducer;

@@ -1,8 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Loader2 } from 'lucide-react';
+import { deleteManagerFromDB } from '../../services/managerService';
+import { useDispatch } from 'react-redux';
+import { deleteManager } from '../../features/managerSlice';
 
 const API_URL = "http://localhost:3000";
 
-function Manager({ name, image, mobile, dob, gender, username, createdAt }) {
+function Manager({id, name, image, mobile, dob, gender, username, createdAt }) {
+
+  const dispatch = useDispatch()
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+
   // Format date of birth
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -27,8 +36,36 @@ function Manager({ name, image, mobile, dob, gender, username, createdAt }) {
     return age;
   };
 
+  const handleDelete = async () => {
+    const confirmed = window.confirm(`Are you sure to delete "${name || "this manager"}"?`)
+    if(confirmed){
+      setIsDeleting(true);
+      setIsAnimatingOut(true);
+      
+      try {
+        // Add a small delay to show the animation
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await deleteManagerFromDB(id)
+        
+        // Wait for fade animation to complete before removing from store
+        setTimeout(() => {
+          dispatch(deleteManager(id));
+        }, 400);
+      } catch (error) {
+        console.error("error while deleting manager" , error);
+        // Reset states on error
+        setIsDeleting(false);
+        setIsAnimatingOut(false);
+      }
+    }
+  }
+
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <div className={`bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-500 ${
+      isAnimatingOut 
+        ? 'opacity-0 scale-95 transform translate-y-4' 
+        : 'opacity-100 scale-100 transform translate-y-0'
+    } ${isDeleting ? 'pointer-events-none' : ''}`}>
       {/* Header with overlapping large profile image */}
       <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 h-20">
         <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
@@ -46,6 +83,15 @@ function Manager({ name, image, mobile, dob, gender, username, createdAt }) {
             )}
           </div>
         </div>
+        
+        {/* Deleting Overlay */}
+        {isDeleting && (
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white bg-opacity-90 rounded-full p-4">
+              <Loader2 className="w-8 h-8 text-red-600 animate-spin" />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -119,11 +165,31 @@ function Manager({ name, image, mobile, dob, gender, username, createdAt }) {
 
         {/* Action Buttons */}
         <div className="flex space-x-2 mt-6">
-          <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors duration-200">
-            View Details
-          </button>
-          <button className="flex-1 border border-gray-300 hover:border-gray-400 text-gray-700 text-sm font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+          <button 
+            className={`flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors duration-200 ${
+              isDeleting ? 'opacity-50 pointer-events-none' : ''
+            }`}
+            disabled={isDeleting}
+          >
             Edit
+          </button>
+          <button 
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className={`flex-1 text-sm font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 ${
+              isDeleting 
+                ? 'bg-red-300 text-red-700 cursor-not-allowed' 
+                : 'bg-red-400 hover:bg-red-500 text-white'
+            }`}
+          >
+            {isDeleting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Deleting...</span>
+              </>
+            ) : (
+              <span>Delete</span>
+            )}
           </button>
         </div>
       </div>

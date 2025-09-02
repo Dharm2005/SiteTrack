@@ -7,7 +7,7 @@ const upload = require('../middleware/imageUpload');
 managerRouter.get('/managers',managerController.getManagers)
 managerRouter.get('/manager/:siteId',managerController.getManagerBySite)
 managerRouter.post('/add-manager',upload.single("managerImage"),managerController.postAddManager)
-// managerRouter.delete('/:id',managerController.deleteManager)
+managerRouter.delete('/manager/:managerId',managerController.deleteManager)
 // managerRouter.get('/manager/:id',managerController.getManagerDetails)
 
 module.exports = managerRouter;

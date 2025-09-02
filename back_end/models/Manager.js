@@ -36,6 +36,11 @@ const managerSchema = new mongoose.Schema({
     // required: true
   },
 
+  isDeleted : {
+    type: Boolean,
+    default : false
+  },
+
   sites: [
     {
       type: mongoose.Schema.Types.ObjectId,

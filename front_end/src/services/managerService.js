@@ -20,3 +20,12 @@ export const addManager = async (managerData) => {
     console.error("Error while adding manager ", error);
   }
 }
+
+export const deleteManagerFromDB = async (managerId) => {
+  try {
+    const response = await axios.delete(`http://localhost:3000/manager/${managerId}`)
+    return response.data;
+  } catch (err) {
+    throw new Error(err.response?.data?.message || "Failed to delete manager");
+  }
+}

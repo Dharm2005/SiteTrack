@@ -30,7 +30,7 @@ function Site({ id, name, location, image, managerId, createdAt }) {
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(`Are you sure you want to delete "${name || 'this site'}"? This action cannot be undone.`);
+    const confirmed = window.confirm(`Are you sure you want to delete "${name || 'this site'}"?`);
 
     if (confirmed) {
       setIsDeleting(true);
