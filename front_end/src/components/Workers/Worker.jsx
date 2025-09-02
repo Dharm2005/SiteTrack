@@ -1,11 +1,17 @@
 import React from 'react'
-import { Phone, User, Edit3, Trash2, MoreVertical } from 'lucide-react'
+import { Phone, User, Edit3, Trash2, MoreVertical, Loader2 } from 'lucide-react'
 import { useState } from 'react'
+import { deleteWorkerFromDB } from '../../services/workerService';
+import {useDispatch} from 'react-redux'
+import { deleteWorker } from '../../features/workerSlice';
 
 const API_URL = "http://localhost:3000";
 
 function Worker({id, name, image, mobile}) {
   const [showActions, setShowActions] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+  const dispatch = useDispatch()
 
   // Format mobile number
   const formatMobile = (mobile) => {
@@ -28,23 +34,53 @@ function Worker({id, name, image, mobile}) {
     setShowActions(false);
   };
 
-  const handleDelete = () => {
-    console.log('Delete worker:', id);
-    setShowActions(false);
+  const handleDelete = async () => {
+    const confirmed = window.confirm(`Are you really want to delete "${name || "this worker"}"?`)
+
+    if(confirmed){
+      setIsDeleting(true);
+      setIsAnimatingOut(true);
+      setShowActions(false); // Close the dropdown menu
+      
+      try{
+        // Add a small delay to show the animation
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await deleteWorkerFromDB(id);
+        
+        // Wait for fade animation to complete before removing from store
+        setTimeout(() => {
+          dispatch(deleteWorker(id))
+        }, 400);
+      }catch(error){
+        console.error("Error while deleting worker" , error);
+        // Reset states on error
+        setIsDeleting(false);
+        setIsAnimatingOut(false);
+      }
+    }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 group relative">
+    <div className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-500 border border-gray-200 group relative ${
+      isAnimatingOut 
+        ? 'opacity-0 scale-95 transform translate-y-4' 
+        : 'opacity-100 scale-100 transform translate-y-0'
+    } ${isDeleting ? 'pointer-events-none' : ''}`}>
       {/* Actions Menu - Top Right */}
       <div className="absolute top-2 right-2 z-10">
         <button
           onClick={() => setShowActions(!showActions)}
-          className="p-1 opacity-0 group-hover:opacity-100 hover:bg-gray-100 rounded-md transition-all duration-200"
+          disabled={isDeleting}
+          className={`p-1 hover:bg-gray-100 rounded-md transition-all duration-200 ${
+            isDeleting 
+              ? 'opacity-50 cursor-not-allowed' 
+              : 'opacity-0 group-hover:opacity-100'
+          }`}
         >
           <MoreVertical className="w-3 h-3 text-gray-500" />
         </button>
 
-        {showActions && (
+        {showActions && !isDeleting && (
           <>
             <div 
               className="fixed inset-0 z-10" 
@@ -72,7 +108,7 @@ function Worker({id, name, image, mobile}) {
       </div>
 
       {/* Content */}
-      <div className="p-4 text-center">
+      <div className="p-4 text-center relative">
         {/* Worker Image */}
         <div className="flex justify-center mb-3">
           {image ? (
@@ -103,6 +139,16 @@ function Worker({id, name, image, mobile}) {
         <p className="text-xs text-gray-600 truncate">
           {formatMobile(mobile)}
         </p>
+
+        {/* Deleting Overlay */}
+        {isDeleting && (
+          <div className="absolute inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center rounded-lg">
+            <div className="bg-red-50 rounded-full p-3 mb-2">
+              <Loader2 className="w-6 h-6 text-red-600 animate-spin" />
+            </div>
+            <span className="text-xs text-red-600 font-medium">Deleting...</span>
+          </div>
+        )}
       </div>
     </div>
   )

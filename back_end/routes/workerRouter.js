@@ -11,7 +11,7 @@ workerRouter.post('/worker/add-advance',upload.none(),workerController.addWorker
 workerRouter.get('/worker/:workerId/advance',workerController.getAdvancesByWorker)
 
 
-// workerRouter.delete('/:id',workerController.deleteWorker)
+workerRouter.delete('/worker/:workerId',workerController.deleteWorker)
 // workerRouter.get('/worker/:id',workerController.getWorkerDetails)
 
 module.exports = workerRouter;

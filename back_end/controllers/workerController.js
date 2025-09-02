@@ -4,7 +4,7 @@ const Advance = require('../models/Advance');
 exports.getWorkersBySite = async (req , res , next) => {
   try{
   const siteId = req.params.siteId;
-  const workers = await Worker.find({sites : siteId})
+  const workers = await Worker.find({sites : siteId , isDeleted : false})
 
   res.status(200).json(workers);
   } catch(err) {
@@ -41,6 +41,27 @@ exports.postAddWorker = async (req, res, next) => {
     res.status(500).json({ message: "Error creating worker", error: error.message });
   }
 };
+
+exports.deleteWorker = async (req, res, next) => {
+  try {
+    const {workerId} = req.params;
+
+    const updatedWorker = await Worker.findByIdAndUpdate(
+      workerId,
+      {isDeleted : true},
+      {new : true}
+    )
+
+    if(!updatedWorker){
+      return res.status(404).json({message : "no worker found"})
+    }
+  
+    return res.json(updatedWorker)
+
+  } catch (error) {
+    
+  }
+}
 
 exports.getAdvancesByWorker = async (req, res, next) => {
   try{

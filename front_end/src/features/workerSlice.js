@@ -13,9 +13,12 @@ export const workerSlice = createSlice({
     },
     addNewWorker: (state , action) => {
       state.workers.push(action.payload)
+    },
+    deleteWorker: (state , action) => {
+      state.workers = state.workers.filter(worker => worker._id !== action.payload)
     }
   }
 })
 
-export const {setWorkers , addNewWorker} = workerSlice.actions
+export const {setWorkers , addNewWorker , deleteWorker} = workerSlice.actions
 export default workerSlice.reducer;

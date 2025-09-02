@@ -12,6 +12,10 @@ const workerSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
+  isDeleted : {
+    type: Boolean,
+    default: false,
+  },
   sites: [
     {
       type: mongoose.Schema.Types.ObjectId,

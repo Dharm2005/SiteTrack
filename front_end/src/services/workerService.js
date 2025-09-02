@@ -40,3 +40,12 @@ export const addWorker = async (workerData) => {
     console.log("error to add worker" , err);   
   }
 }
+
+export const deleteWorkerFromDB = async (workerId) => {
+  try{
+    const response = await axios.delete(`http://localhost:3000/worker/${workerId}`)
+    return response.data;
+  }catch (err){
+    throw new Error(err.response?.data?.message || "Failed to delete worker");
+  }
+}
