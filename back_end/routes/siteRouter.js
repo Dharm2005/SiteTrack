@@ -6,7 +6,7 @@ const upload = require('../middleware/imageUpload');
 
 siteRouter.get('/',siteController.getSites)
 siteRouter.post('/add-site',upload.single("siteImage"),siteController.postAddSite)
-// siteRouter.delete('/:id',siteController.deleteSite)
 siteRouter.get('/site/:siteId',siteController.getSiteDetails)
+siteRouter.delete('/site/:siteId',siteController.deleteSite)
 
 module.exports = siteRouter;

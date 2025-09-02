@@ -13,9 +13,12 @@ export const siteSlice = createSlice({
     },
     addNewSite: (state , action) => {
       state.sites.push(action.payload)
+    },
+    deleteSite: (state, action) => {
+      state.sites = state.state.filter((site) => site._id !== action.payload);
     }
   }
 })
 
-export const {setSites , addNewSite} = siteSlice.actions
+export const {setSites , addNewSite , deleteSite} = siteSlice.actions
 export default siteSlice.reducer;

@@ -3,7 +3,7 @@ const Manager = require('../models/Manager')
 
 exports.getSites = async (req , res , next) => {
    try {
-    const sites = await Site.find();
+    const sites = await Site.find({isDeleted : false});
     res.json(sites);
   } catch (error) {
     res.status(500).json({ message: "Error fetching sites", error: err.message });
@@ -35,7 +35,7 @@ exports.postAddSite = async (req , res , next) => {
 exports.getSiteDetails = async (req ,res, next) => {
   try{
     const siteId = req.params.siteId;
-     const site = await Site.findById(siteId)
+    const site = await Site.findById(siteId)
      
     if (!site) 
       return res.status(404).json({ error: "Site not found" });
@@ -44,3 +44,22 @@ exports.getSiteDetails = async (req ,res, next) => {
     res.status(500).json({error : err.message})
   }
 };
+
+exports.deleteSite = async (req , res, next) => {
+  try{
+    const siteId = req.params.siteId;
+    const updatedSite = await Site.findByIdAndUpdate(
+      siteId,
+      {isDeleted : true},
+      {new : true}
+    );
+
+    if(!updatedSite){
+      return res.status(404).json({message : "No site found"});
+    }
+    
+    res.json(updatedSite);
+  }catch(error){
+    console.log("Error while deleting site", error);
+  }
+}

@@ -20,3 +20,12 @@ export const getSite = async (id) => {
     throw new Error(err.response?.data?.message || "Failed to fetch site");
   }
 };
+
+export const deleteSiteFromDB = async (id) => {
+  try {
+    const response = await axios.delete(`http://localhost:3000/site/${id}`);
+    return response.data;
+  } catch (err) {
+    throw new Error(err.response?.data?.message || "Failed to delete site");
+  }
+}

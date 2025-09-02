@@ -17,7 +17,10 @@ const siteSchema = mongoose.Schema({
     type : mongoose.Schema.ObjectId,
     reg : "Manager"
   },
-  
+  isDeleted : {
+    type: Boolean,
+    default: false,
+  }
 },
 {timestamps : true}
 )

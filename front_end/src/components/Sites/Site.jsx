@@ -1,7 +1,9 @@
 import React from 'react';
 import { MapPin, User, Phone, Calendar, ImageIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteSiteFromDB } from '../../services/siteService';
+import {deleteSite} from '../../features/siteSlice'
 
 const API_URL = "http://localhost:3000";
 
@@ -9,6 +11,7 @@ function Site({ id ,name, location, image, managerId, createdAt }) {
 
   const managers = useSelector(state => state.manager.managers)
   const manager = managers.find((m) => m._id === managerId)
+  const dispatch = useDispatch()
 
   // Format the date if it exists
   const formatDate = (dateString) => {
@@ -25,6 +28,15 @@ function Site({ id ,name, location, image, managerId, createdAt }) {
       return 'Invalid Date';
     }
   };
+
+  const handleDelete = async () => {
+    try{
+      await deleteSiteFromDB(id);
+      dispatch(deleteSite(id))
+    } catch(error) {
+      console.log("error while deleting site" , error);
+    }
+  }
 
   // Handle missing image
   const handleImageError = (e) => {
@@ -121,12 +133,12 @@ function Site({ id ,name, location, image, managerId, createdAt }) {
           >
             View Details
           </Link>
-          <Link 
-            to=""
+          <button 
+            onClick={handleDelete}
             className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 text-center"
           >
-            Edit
-          </Link>
+            Delete
+          </button>
         </div>
       </div>
     </div>
