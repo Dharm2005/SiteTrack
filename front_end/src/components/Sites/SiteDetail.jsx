@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon, UserCheck } from 'lucide-react'
+import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon, UserCheck, Users, DollarSign, FileText, Edit, Trash2 } from 'lucide-react'
 import { getSite } from '../../services/siteService';
-import { Workers, Memos } from '../index';
+import { Memos } from '../index';
 import { getWorkersBySite } from '../../services/workerService'
 import { setWorkers } from '../../features/workerSlice';
 import { useDispatch } from 'react-redux';
@@ -143,17 +143,17 @@ function SiteDetail() {
       </div>
 
       {/* Main Content */}
-      <div className="px-6 pb-6">
-        <div className="max-w-7xl mx-auto">
-
-          {/* Top Row - Combined Site & Manager Details and Expenses */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-
-            {/* Combined Site & Manager Details Card - Top Left */}
-            <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-
-              {/* Site Image with Manager Image Overlay */}
-              <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 h-56">
+      <div className="px-6 pb-6 max-w-7xl mx-auto">
+        
+        {/* Top Section - Site Details and Navigation Cards Side by Side */}
+        <div className="grid lg:grid-cols-5 gap-6 mb-6">
+          
+          {/* Left Side - Site and Manager Details */}
+          <div className="lg:col-span-3">
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden h-full">
+              
+              {/* Better Site Header */}
+              <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 h-40">
                 {site.siteImage ? (
                   <>
                     <img
@@ -162,204 +162,183 @@ function SiteDetail() {
                       className="w-full h-full object-cover"
                       onError={handleImageError}
                     />
-                    {/* Fallback icon - hidden by default */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 hidden">
-                      <ImageIcon className="w-16 h-16 text-white/70 mb-2" />
-                      <p className="text-white/80 text-sm">No image available</p>
+                      <ImageIcon className="w-12 h-12 text-white/70 mb-1" />
+                      <p className="text-white/80 text-xs">No image available</p>
                     </div>
                   </>
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
-                    <ImageIcon className="w-16 h-16 text-white/70 mb-2" />
-                    <p className="text-white/80 text-sm">No image available</p>
+                    <ImageIcon className="w-12 h-12 text-white/70 mb-1" />
+                    <p className="text-white/80 text-xs">No image available</p>
                   </div>
                 )}
 
-                {/* Manager Image Overlay - Top Left Corner */}
-                <div className="absolute top-4 left-4 w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-lg">
-                  {manager && manager.managerImage ? (
-                    <>
-                      <img
-                        src={`${API_URL}/uploads/managers/${manager.managerImage}`}
-                        alt={manager.managerName || 'Manager Image'}
-                        className="w-full h-full object-cover"
-                        onError={handleManagerImageError}
-                      />
-                      {/* Fallback icon - hidden by default */}
-                      <div className="absolute inset-0 flex items-center justify-center bg-emerald-500 hidden">
-                        <User className="w-8 h-8 text-white" />
-                      </div>
-                    </>
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-emerald-500">
-                      <User className="w-8 h-8 text-white" />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Combined Site & Manager Info */}
-              <div className="p-6">
-
-                {/* Site Name */}
-                <div className="mb-6">
-                  <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2 leading-tight">
+                {/* Site Name Overlay */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                  <h1 className="text-2xl font-bold text-white">
                     {site.siteName || 'Unnamed Site'}
                   </h1>
-                  <div className="w-12 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
                 </div>
 
-                {/* Site Details - Top Row */}
-                <div className="grid grid-cols-2 gap-3 mb-6">
-                  {/* Location */}
-                  <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <MapPin className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-medium text-gray-500 mb-1">Location</p>
-                      <p className="text-sm font-semibold text-gray-900 truncate">
-                        {site.location || 'Not specified'}
-                      </p>
+                {/* Manager Image in Top Right Corner */}
+                {manager && (
+                  <div className="absolute top-3 right-3 w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-lg">
+                    {manager.managerImage ? (
+                      <>
+                        <img
+                          src={`${API_URL}/uploads/managers/${manager.managerImage}`}
+                          alt={manager.managerName || 'Manager Image'}
+                          className="w-full h-full object-cover"
+                          onError={handleManagerImageError}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-emerald-500 hidden">
+                          <User className="w-5 h-5 text-white" />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center bg-emerald-500">
+                        <User className="w-5 h-5 text-white" />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Site and Manager Details */}
+              <div className="p-5 flex-1">
+                <div className="grid md:grid-cols-2 gap-6">
+                  
+                  {/* Site Information */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <MapPin className="w-4 h-4 text-blue-600 mr-2" />
+                      Site Information
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center text-sm py-1">
+                        <span className="text-gray-600">Location</span>
+                        <span className="font-medium text-gray-900">{site.location || 'Not specified'}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-sm py-1">
+                        <span className="text-gray-600">Created</span>
+                        <span className="font-medium text-gray-900">{formatDate(site.createdAt)}</span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Created At */}
-                  <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-                    <div className="p-2 bg-green-100 rounded-lg">
-                      <Calendar className="w-4 h-4 text-green-600" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-medium text-gray-500 mb-1">Created</p>
-                      <p className="text-sm font-semibold text-gray-900 truncate">
-                        {formatDate(site.createdAt)}
-                      </p>
-                    </div>
+                  {/* Manager Information */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <UserCheck className="w-4 h-4 text-emerald-600 mr-2" />
+                      Site Manager
+                    </h3>
+                    {manager ? (
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center text-sm py-1">
+                          <span className="text-gray-600">Name</span>
+                          <span className="font-medium text-gray-900">{manager.managerName || 'Not specified'}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm py-1">
+                          <span className="text-gray-600">Mobile</span>
+                          <span className="font-medium text-gray-900">{manager.managerMobile || 'Not specified'}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm py-1">
+                          <span className="text-gray-600">Gender</span>
+                          <span className="font-medium text-gray-900">{manager.managerGender || 'Not specified'}</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4 bg-gray-50 rounded-lg">
+                        <User className="w-6 h-6 text-gray-400 mx-auto mb-1" />
+                        <p className="text-gray-500 text-sm">No manager assigned</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Manager Section Divider */}
-                <div className="border-t border-gray-200 pt-6 mb-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                    <div className="p-2 bg-emerald-100 rounded-lg mr-3">
-                      <UserCheck className="w-5 h-5 text-emerald-600" />
-                    </div>
-                    Site Manager
-                  </h3>
-
-                  {manager ? (
-                    <div className="grid grid-cols-2 gap-3">
-                      {/* Manager Name */}
-                      <div className="flex items-center space-x-3 p-3 bg-emerald-50 rounded-xl">
-                        <div className="p-2 bg-emerald-100 rounded-lg">
-                          <User className="w-4 h-4 text-emerald-600" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-medium text-gray-500 mb-1">Name</p>
-                          <p className="text-sm font-semibold text-gray-900 truncate">
-                            {manager.managerName || 'Not specified'}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Manager Mobile */}
-                      <div className="flex items-center space-x-3 p-3 bg-emerald-50 rounded-xl">
-                        <div className="p-2 bg-blue-100 rounded-lg">
-                          <Phone className="w-4 h-4 text-blue-600" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-medium text-gray-500 mb-1">Mobile</p>
-                          <p className="text-sm font-semibold text-gray-900 truncate">
-                            {manager.managerMobile || 'Not specified'}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Manager DOB */}
-                      <div className="flex items-center space-x-3 p-3 bg-emerald-50 rounded-xl">
-                        <div className="p-2 bg-purple-100 rounded-lg">
-                          <Calendar className="w-4 h-4 text-purple-600" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-medium text-gray-500 mb-1">DOB</p>
-                          <p className="text-sm font-semibold text-gray-900 truncate">
-                            {formatDate(manager.managerDob)}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Manager Gender */}
-                      <div className="flex items-center space-x-3 p-3 bg-emerald-50 rounded-xl">
-                        <div className="p-2 bg-orange-100 rounded-lg">
-                          <User className="w-4 h-4 text-orange-600" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-medium text-gray-500 mb-1">Gender</p>
-                          <p className="text-sm font-semibold text-gray-900 truncate">
-                            {manager.managerGender || 'Not specified'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center py-6 bg-gray-50 rounded-xl">
-                      <User className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                      <p className="text-gray-500">No manager assigned to this site</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Site Action Buttons */}
-                <div className="flex gap-3">
-                  <button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2.5 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-sm">
-                    Edit Site
+                {/* Action Buttons */}
+                <div className="flex gap-3 mt-6 pt-5 border-t border-gray-200">
+                  <button className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-sm">
+                    <Edit className="w-4 h-4" />
+                    <span>Edit Site</span>
                   </button>
-                  <button className="flex-1 px-4 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 text-sm">
-                    Delete
+                  <button className="flex items-center space-x-2 px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 text-sm">
+                    <Trash2 className="w-4 h-4" />
+                    <span>Delete</span>
                   </button>
                 </div>
-
               </div>
             </div>
-
-            {/* Expenses List - Top Right */}
-            <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-              <Link
-                to={`/site/${id}/expenses`}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2.5 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-center block"
-              >
-                Expenses
-              </Link>
-            </div>
-
           </div>
 
-          {/* Bottom Section - Workers and Future Notes */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-            {/* Workers List - Bottom Left */}
-            <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-             <Link
-                to={`/site/${id}/workers`}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2.5 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-center block"
-              >
-                Workers
-              </Link>  
-            </div>
-
-            {/* Notes Section - Bottom Right (Empty for future use) */}
-            <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-              <div className="border-b border-gray-200 px-6 py-4">
-                <h2 className="text-2xl font-bold text-gray-900">Notes & Reminders</h2>
-                <p className="text-gray-600 mt-1">Site notes and observations</p>
+          {/* Right Side - Navigation Cards */}
+          <div className="lg:col-span-2 flex flex-col space-y-4 h-full">
+            
+            {/* Workers Card */}
+            <Link
+              to={`/site/${id}/workers`}
+              className="flex-1 bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-200 transform hover:scale-105 group"
+            >
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-2xl font-bold mb-2">Workers</h3>
+                    <p className="text-blue-100">Manage site workers and their details</p>
+                  </div>
+                  <Users className="w-12 h-12 text-blue-200 group-hover:text-white transition-colors" />
+                </div>
               </div>
-              <div className="p-6">
-                <Memos siteId={id} />
+              <div className="p-6 bg-blue-50">
+                <div className="flex items-center justify-between text-blue-800">
+                  <span className="font-medium">View all workers</span>
+                  <ArrowLeft className="w-5 h-5 rotate-180 group-hover:translate-x-1 transition-transform" />
+                </div>
               </div>
-            </div>
+            </Link>
 
+            {/* Expenses Card */}
+            <Link
+              to={`/site/${id}/expenses`}
+              className="flex-1 bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-200 transform hover:scale-105 group"
+            >
+              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-2xl font-bold mb-2">Expenses</h3>
+                    <p className="text-emerald-100">Track and manage site expenses</p>
+                  </div>
+                  <DollarSign className="w-12 h-12 text-emerald-200 group-hover:text-white transition-colors" />
+                </div>
+              </div>
+              <div className="p-6 bg-emerald-50">
+                <div className="flex items-center justify-between text-emerald-800">
+                  <span className="font-medium">View all expenses</span>
+                  <ArrowLeft className="w-5 h-5 rotate-180 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
+
+        {/* Notes & Reminders - Full Width */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-4 text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold mb-1 flex items-center">
+                  <FileText className="w-5 h-5 mr-2" />
+                  Notes & Reminders
+                </h2>
+                <p className="text-purple-100 text-sm">Site notes and observations</p>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <Memos siteId={id} />
+          </div>
+        </div>
+
       </div>
     </div>
   );

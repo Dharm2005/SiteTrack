@@ -9,14 +9,15 @@ import { useParams } from 'react-router-dom'
 
 function Workers() {
   const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedWorkerId, setSelectedWorkerId] = useState(null);
   const allWorkers = useSelector((state) => state.worker.workers);
   const dispatch = useDispatch()
-  const {id} = useParams()
+  const { id } = useParams()
 
   useEffect(() => {
     const fetchWorkers = async () => {
       try {
-        if(!allWorkers || allWorkers.length === 0){
+        if (!allWorkers || allWorkers.length === 0) {
           const workerData = await getWorkersBySite(id);
           dispatch(setWorkers(workerData));
         }
@@ -25,8 +26,7 @@ function Workers() {
       }
     };
     fetchWorkers();
-  }, [id, dispatch ,allWorkers]);
-
+  }, [id, dispatch, allWorkers]);
 
   const handleCloseForm = () => {
     setShowAddForm(false);
@@ -36,10 +36,17 @@ function Workers() {
     setShowAddForm(true);
   };
 
+  const handleWorkerSelect = (workerId) => {
+    setSelectedWorkerId(workerId);
+  };
+
+  // Find selected worker for display
+  const selectedWorker = allWorkers?.find(worker => worker._id === selectedWorkerId);
+
   return (
-    <div className="h-full flex flex-col">
-      {/* Header Section - Takes minimal space */}
-      <div className="flex-shrink-0 mb-6">
+    <div className="h-full flex flex-col p-4">
+      {/* Header Section - Reduced padding */}
+      <div className="flex-shrink-0 mb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-blue-100 rounded-lg">
@@ -49,6 +56,11 @@ function Workers() {
               <h2 className="text-2xl font-bold text-gray-900">Workers</h2>
               <p className="text-gray-600">
                 {allWorkers?.length ? `${allWorkers.length} workers found` : 'No workers available'}
+                {selectedWorker && (
+                  <span className="ml-2 text-blue-600 font-medium">
+                    • {selectedWorker.workerName} selected
+                  </span>
+                )}
               </p>
             </div>
           </div>
@@ -66,7 +78,7 @@ function Workers() {
 
         {/* Add Worker Form - Only show when needed */}
         {showAddForm && (
-          <div className="mt-6">
+          <div className="mt-4">
             <AddWorkerForm
               siteId={id}
               onClose={handleCloseForm}
@@ -75,15 +87,19 @@ function Workers() {
         )}
       </div>
 
-      {/* Workers Section - Takes about 35-40% of remaining space */}
-      <div className="flex-shrink-0 mb-8">
+      {/* Workers Section - Reduced margin */}
+      <div className="flex-shrink-0 mb-4">
         {allWorkers && allWorkers.length > 0 ? (
           <div className="relative">
             {/* Horizontal Scrollable Container */}
-            <div className="overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-              <div className="flex space-x-4 min-w-max px-1">
+            <div className="overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 px-2 py-2">
+              <div className="flex space-x-6 min-w-max">
                 {allWorkers.map(worker => (
-                  <div key={worker._id} className="flex-shrink-0 w-40">
+                  <div 
+                    key={worker._id} 
+                    className={`flex-shrink-0 w-40 cursor-pointer transition-all duration-200 transform hover:scale-105 ${selectedWorkerId === worker._id ? 'ring-2 ring-blue-500 ring-offset-2 rounded-lg' : ''}`}
+                    onClick={() => handleWorkerSelect(worker._id)}
+                  >
                     <Worker
                       key={worker._id}
                       id={worker._id}
@@ -106,12 +122,12 @@ function Workers() {
           </div>
         ) : (
           /* Empty State */
-          <div className="flex flex-col items-center justify-center py-12 bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-200">
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <Users className="w-10 h-10 text-gray-400" />
+          <div className="flex flex-col items-center justify-center py-8 bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-200">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <Users className="w-8 h-8 text-gray-400" />
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">No workers found</h3>
-            <p className="text-gray-500 text-center max-w-md mb-6">
+            <p className="text-gray-500 text-center max-w-md mb-4">
               There are no workers assigned to this site yet. Add your first worker to get started.
             </p>
             {!showAddForm && (
@@ -127,9 +143,24 @@ function Workers() {
         )}
       </div>
 
-      {/* Empty Space for Additional Fields - Takes 60-65% of page */}
-      <div>
-        <WorkerDetail />
+      {/* Worker Detail Section - Reduced spacing and improved messaging */}
+      <div className="flex-1 min-h-0">
+        {selectedWorkerId ? (
+          <WorkerDetail workerId={selectedWorkerId} />
+        ) : (
+          <div className="flex flex-col items-center justify-center h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <Users className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-700 mb-2">No Worker Selected</h3>
+            <p className="text-gray-500 text-center">
+              {allWorkers?.length > 0 
+                ? "Click on a worker above to view their details and advances"
+                : "Add workers to get started"
+              }
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )

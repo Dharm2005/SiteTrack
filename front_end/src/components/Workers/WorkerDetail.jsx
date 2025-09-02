@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux';
 import { getAdvancesByWorker } from '../../services/workerService';
 import { setAdvances } from '../../features/workerAdvanceSlice';
@@ -8,8 +7,7 @@ import Advance from './Advance';
 import AddAdvanceForm from './AddAdvanceForm';
 import { Plus, DollarSign, ArrowLeft } from 'lucide-react';
 
-function WorkerDetail() {
-  const { workerId } = useParams();
+function WorkerDetail({workerId}) {
   const allAdvance = useSelector(state => state.advance.advances);
   const dispatch = useDispatch();
   const [showAddForm, setShowAddForm] = useState(false);
