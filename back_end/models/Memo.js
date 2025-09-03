@@ -17,6 +17,10 @@ const memoSchema = new mongoose.Schema({
   dueDate: {
     type: Date,
   },
+  isDeleted: {
+    type: Boolean,
+    default : false
+  },
   siteId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Site",

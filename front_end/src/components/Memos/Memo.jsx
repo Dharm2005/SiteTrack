@@ -1,8 +1,14 @@
 import React, { useState } from 'react'
-import { StickyNote, AlertCircle, Calendar, Clock, ChevronDown, ChevronUp, Edit3, Trash2 } from 'lucide-react'
+import { StickyNote, AlertCircle, Calendar, Clock, ChevronDown, ChevronUp, Edit3, Trash2, Loader2 } from 'lucide-react'
+import { deleteMemoFromDB } from '../../services/memoService';
+import {useDispatch} from "react-redux"
+import { deleteMemo } from '../../features/memoSlice';
 
 function Memo({ id, memoType, text, dueDate, createdAt }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+  const dispatch = useDispatch();
 
   // Format the date
   const formatDate = (dateString) => {
@@ -88,19 +94,46 @@ function Memo({ id, memoType, text, dueDate, createdAt }) {
     console.log('Edit memo:', id);
   };
 
-  const handleDelete = () => {
-    console.log('Delete memo:', id);
+  const handleDelete = async () => {
+    const confirmed = window.confirm("Are you really want to delete this memo?");
+
+    if(confirmed){
+      setIsDeleting(true);
+      setIsAnimatingOut(true);
+      
+      try{
+        // Add a small delay to show the animation
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await deleteMemoFromDB(id);
+        
+        // Wait for fade animation to complete before removing from store
+        setTimeout(() => {
+          dispatch(deleteMemo(id));
+        }, 400);
+      }catch(error){
+        console.error("Error while deleting memo",error);
+        // Reset states on error
+        setIsDeleting(false);
+        setIsAnimatingOut(false);
+      }
+    }
   };
 
   const toggleExpanded = () => {
-    setIsExpanded(!isExpanded);
+    if (!isDeleting) {
+      setIsExpanded(!isExpanded);
+    }
   };
 
   const priority = getPriorityStatus();
   const IconComponent = priority.icon;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 overflow-hidden">
+    <div className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-500 border border-gray-200 overflow-hidden relative ${
+      isAnimatingOut 
+        ? 'opacity-0 scale-95 transform translate-y-4' 
+        : 'opacity-100 scale-100 transform translate-y-0'
+    } ${isDeleting ? 'pointer-events-none' : ''}`}>
       {/* Compact Header - Always Visible */}
       <div className="p-4">
         <div className="flex items-start justify-between">
@@ -164,7 +197,12 @@ function Memo({ id, memoType, text, dueDate, createdAt }) {
             {/* Edit Button */}
             <button
               onClick={handleEdit}
-              className="p-1.5 hover:bg-blue-100 rounded-lg transition-colors group"
+              disabled={isDeleting}
+              className={`p-1.5 rounded-lg transition-colors group ${
+                isDeleting 
+                  ? 'opacity-50 cursor-not-allowed' 
+                  : 'hover:bg-blue-100'
+              }`}
               title="Edit memo"
             >
               <Edit3 className="w-4 h-4 text-gray-500 group-hover:text-blue-600" />
@@ -173,16 +211,30 @@ function Memo({ id, memoType, text, dueDate, createdAt }) {
             {/* Delete Button */}
             <button
               onClick={handleDelete}
-              className="p-1.5 hover:bg-red-100 rounded-lg transition-colors group"
+              disabled={isDeleting}
+              className={`p-1.5 rounded-lg transition-colors group flex items-center justify-center ${
+                isDeleting 
+                  ? 'bg-red-100 cursor-not-allowed' 
+                  : 'hover:bg-red-100'
+              }`}
               title="Delete memo"
             >
-              <Trash2 className="w-4 h-4 text-gray-500 group-hover:text-red-600" />
+              {isDeleting ? (
+                <Loader2 className="w-4 h-4 text-red-600 animate-spin" />
+              ) : (
+                <Trash2 className="w-4 h-4 text-gray-500 group-hover:text-red-600" />
+              )}
             </button>
 
             {/* Expand/Collapse Button */}
             <button
               onClick={toggleExpanded}
-              className="p-1.5 hover:bg-gray-100 rounded-lg transition-all duration-200"
+              disabled={isDeleting}
+              className={`p-1.5 rounded-lg transition-all duration-200 ${
+                isDeleting 
+                  ? 'opacity-50 cursor-not-allowed' 
+                  : 'hover:bg-gray-100'
+              }`}
               title={isExpanded ? 'Collapse' : 'Expand'}
             >
               {isExpanded ? (
@@ -196,7 +248,7 @@ function Memo({ id, memoType, text, dueDate, createdAt }) {
       </div>
 
       {/* Expanded Details - Conditionally Visible */}
-      {isExpanded && (
+      {isExpanded && !isDeleting && (
         <div className="border-t border-gray-100 bg-gray-50">
           <div className="p-4 space-y-4">
             {/* Full Text */}
@@ -271,6 +323,16 @@ function Memo({ id, memoType, text, dueDate, createdAt }) {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Deleting Overlay - Covers entire memo */}
+      {isDeleting && (
+        <div className="absolute inset-0 bg-white bg-opacity-95 flex flex-col items-center justify-center rounded-xl z-10">
+          <div className="bg-red-50 rounded-full p-4 mb-3">
+            <Loader2 className="w-8 h-8 text-red-600 animate-spin" />
+          </div>
+          <span className="text-sm text-red-600 font-medium">Deleting memo...</span>
         </div>
       )}
     </div>
