@@ -4,8 +4,17 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import { addNewSite } from '../../features/siteSlice';
 import { toast } from 'react-toastify';
-function AddSite() {
-  const [form, setForm] = useState({
+import { useEffect } from 'react';
+import { updateSite } from '../../features/siteSlice';
+import { updateSiteToDB } from '../../services/siteService';
+import { getAllManager } from '../../services/managerService';
+import { setManagers } from '../../features/managerSlice';
+
+const API_URL = "http://localhost:3000";
+
+
+function AddSite({ initialValues }) {
+  const [form, setForm] = useState(initialValues || {
     type: '',
     siteName: '',
     location: '',
@@ -20,8 +29,20 @@ function AddSite() {
 
   // get managers from Redux
   const managers = useSelector((state) => state.manager.managers);
-  console.log(managers);
-  
+
+  useEffect(() => {
+    const fetchManagers = async () => {
+      try {
+        if (!managers || managers.length === 0) {
+          const managerData = await getAllManager();
+          dispatch(setManagers(managerData));
+        }
+      } catch (error) {
+        console.error("Error fetching workers:", error);
+      }
+    };
+    fetchManagers();
+  }, [dispatch, managers]);
 
   const handleChange = (e) => {
     if (e.target.name !== 'siteImage') {
@@ -75,6 +96,24 @@ function AddSite() {
     if (fileInput) fileInput.value = '';
   };
 
+  useEffect(() => {
+    if (initialValues) {
+      setForm({
+        type: 'site',
+        siteName: initialValues.siteName || '',
+        location: initialValues.location || '',
+        siteImage: null, // 👈 keep it null unless uploading new one
+        managerId: initialValues.manager?._id?.toString() || initialValues.manager?.toString() || ''
+      });
+
+      // 🔧 FIX: Better image path handling for existing images
+      if (initialValues.siteImage) {
+        const imageUrl = `${API_URL}/uploads/sites/${initialValues.siteImage}`
+        setImagePreview(imageUrl);
+      }
+    }
+  }, [initialValues]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -82,16 +121,25 @@ function AddSite() {
       formData.append("type", "site");
       formData.append("siteName", form.siteName);
       formData.append("location", form.location);
-      formData.append("managerId", form.managerId); // ✅ sending managerId only
-      if (form.siteImage) formData.append("siteImage", form.siteImage);
+      formData.append("managerId", form.managerId);
+      if (form.siteImage instanceof File) {
+        formData.append("siteImage", form.siteImage);
+      }
+      if (initialValues) {
+        formData.append("_id", initialValues._id);
 
-      const newSite = await addSite(formData);
-      dispatch(addNewSite(newSite));
+        const updatedSite = await updateSiteToDB(initialValues._id, formData)
+        dispatch(updateSite(updatedSite))
+        toast.success("✅ site updated successfully!");
+      } else {
+        const newSite = await addSite(formData);
+        dispatch(addNewSite(newSite));
+        toast.success("✅ New site added successfully!");
+      }
       navigate('/');
-      toast.success("✅ New site added successfully!");
     } catch (error) {
-      console.error("error while adding new site", error);
-      toast.error("❌ Failed to add site!");
+      console.error("error while submit site", error);
+      toast.error("❌ Failed to submit site!");
     }
   };
 
@@ -99,8 +147,12 @@ function AddSite() {
     <div className="min-h-screen bg-gray-50 py-8 px-6">
       <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Add New Site</h2>
-          <p className="text-gray-600">Fill in the details to add a new construction site</p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            {initialValues ? 'Edit Site' : 'Add New Site'}
+          </h2>
+          <p className="text-gray-600">
+            {initialValues ? 'Update the site details' : 'Fill in the details to add a new construction site'}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -145,9 +197,8 @@ function AddSite() {
             </label>
             {!imagePreview ? (
               <div
-                className={`relative w-full p-8 border-2 border-dashed rounded-lg transition-colors duration-200 ${
-                  dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
-                }`}
+                className={`relative w-full p-8 border-2 border-dashed rounded-lg transition-colors duration-200 ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
+                  }`}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
                 onDragOver={handleDrag}
@@ -171,12 +222,23 @@ function AddSite() {
             ) : (
               <div className="relative">
                 <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
-                  <img src={imagePreview} alt="Site preview" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 hover:opacity-100 flex items-center justify-center">
+                  <img
+                    src={imagePreview}
+                    alt="Site preview"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      console.error('Image failed to load:', imagePreview);
+                      // Fallback: try without /uploads/sites/ prefix
+                      if (imagePreview.includes('/uploads/sites/')) {
+                        e.target.src = imagePreview.replace('/uploads/sites/', '/');
+                      }
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 hover:opacity-100 flex items-center justify-center transition-opacity">
                     <button
                       type="button"
                       onClick={removeImage}
-                      className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
                     >
                       Remove Image
                     </button>
@@ -201,7 +263,7 @@ function AddSite() {
             >
               <option value="">-- Select a Manager --</option>
               {managers.map((m) => (
-                <option key={m._id} value={m._id}>
+                <option key={m._id} value={m._id.toString()}>
                   {m.managerName} ({m.username})
                 </option>
               ))}
@@ -211,9 +273,9 @@ function AddSite() {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-4 rounded-lg transition"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-4 rounded-lg transition-colors"
           >
-            Add Site
+            {initialValues ? 'Update Site' : 'Add Site'}
           </button>
         </form>
       </div>

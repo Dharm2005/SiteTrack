@@ -3,6 +3,7 @@ export {default as Footer} from "./Layout/Footer"
 export {default as Home} from "./Layout/Home"
 
 export {default as AddSite} from "./Sites/AddSite"
+export {default as EditSite} from "./Sites/EditSite"
 export {default as Sites} from "./Sites/Sites"
 export {default as Site} from "./Sites/Site"
 export {default as SiteDetail} from "./Sites/SiteDetail"

@@ -1,15 +1,23 @@
 import axios from 'axios'
 
 export const getAllSite = async () => {
-  const response = await axios.get("http://localhost:3000/")
-  return response.data; 
+  try {
+    const response = await axios.get("http://localhost:3000/")
+    return response.data;
+  } catch (error) {
+    console.error("Error while fetching all sites", error)
+  }
 }
 
 export const addSite = async (siteData) => {
-  const response = await axios.post("http://localhost:3000/add-site",siteData,{
+  try {
+    const response = await axios.post("http://localhost:3000/add-site", siteData, {
       headers: { "Content-Type": "multipart/form-data" },
     })
-  return response.data;
+    return response.data;
+  } catch (error) {
+    console.error("Error while creating new site", error);
+  }
 }
 
 export const getSite = async (id) => {
@@ -27,5 +35,17 @@ export const deleteSiteFromDB = async (id) => {
     return response.data;
   } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to delete site");
+  }
+}
+
+export const updateSiteToDB = async (siteId ,siteData) => {
+  try {
+    const response = await axios.put(`http://localhost:3000/site/${siteId}`,
+      siteData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    )
+    return response.data;
+  } catch (error) {
+    console.error("Error while updating site", error);
   }
 }

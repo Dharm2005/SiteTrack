@@ -71,6 +71,11 @@ exports.updateSite = async (req, res, next) => {
     const {siteId} = req.params;
     const updates = {...req.body};
 
+    if(updates.managerId){
+      updates.manager = updates.managerId;
+      delete updates.managerId;
+    }
+
     if(req.file){
       const oldSite = await Site.findById(siteId)
 

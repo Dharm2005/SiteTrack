@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, User, Phone, Calendar, ImageIcon, Loader2 } from 'lucide-react';
+import { MapPin, User, Phone, Calendar, ImageIcon, Loader2, Edit, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteSiteFromDB } from '../../services/siteService';
@@ -35,12 +35,12 @@ function Site({ id, name, location, image, managerId, createdAt }) {
     if (confirmed) {
       setIsDeleting(true);
       setIsAnimatingOut(true);
-      
+
       try {
         // Add a small delay to show the animation
         await new Promise(resolve => setTimeout(resolve, 300));
         await deleteSiteFromDB(id);
-        
+
         // Wait for fade animation to complete before removing from store
         setTimeout(() => {
           dispatch(deleteSite(id));
@@ -60,11 +60,10 @@ function Site({ id, name, location, image, managerId, createdAt }) {
   };
 
   return (
-    <div className={`bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden border border-gray-100 group hover:scale-105 ${
-      isAnimatingOut 
-        ? 'opacity-0 scale-95 transform translate-y-4' 
+    <div className={`bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden border border-gray-100 group hover:scale-105 ${isAnimatingOut
+        ? 'opacity-0 scale-95 transform translate-y-4'
         : 'opacity-100 scale-100 transform translate-y-0'
-    } ${isDeleting ? 'pointer-events-none' : ''}`}>
+      } ${isDeleting ? 'pointer-events-none' : ''}`}>
       {/* Large Image Section */}
       <div className="relative h-64 bg-gradient-to-br from-blue-500 to-purple-600 overflow-hidden">
         {image ? (
@@ -151,31 +150,39 @@ function Site({ id, name, location, image, managerId, createdAt }) {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex space-x-3 mt-6">
+        <div className="flex items-center space-x-3 mt-6">
           <Link
             to={`/site/${id}`}
-            className={`flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-center ${
-              isDeleting ? 'opacity-50 pointer-events-none' : ''
-            }`}
+            className={`flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-center ${isDeleting ? 'opacity-50 pointer-events-none' : ''
+              }`}
           >
             View Details
           </Link>
+
+          {/* Edit Button Icon */}
+          <Link
+            to={`/edit-site/${id}`}
+            className={`p-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-md ${isDeleting ? 'opacity-50 pointer-events-none' : ''
+              }`}
+            title="Edit Site"
+          >
+            <Edit className="w-5 h-5" />
+          </Link>
+
+          {/* Delete Button Icon */}
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className={`px-6 py-3 border-2 rounded-xl font-medium transition-all duration-200 text-center flex items-center justify-center space-x-2 ${
-              isDeleting 
-                ? 'border-red-300 text-red-600 bg-red-50 cursor-not-allowed' 
-                : 'border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
-            }`}
+            className={`p-3 transition-all duration-200 transform hover:scale-105 shadow-md rounded-xl ${isDeleting
+                ? 'bg-red-300 text-red-600 cursor-not-allowed'
+                : 'bg-red-100 hover:bg-red-200 text-red-700'
+              }`}
+            title="Delete Site"
           >
             {isDeleting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Deleting...</span>
-              </>
+              <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              <span>Delete</span>
+              <Trash2 className="w-5 h-5" />
             )}
           </button>
         </div>
