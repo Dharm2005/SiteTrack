@@ -29,3 +29,24 @@ export const deleteManagerFromDB = async (managerId) => {
     throw new Error(err.response?.data?.message || "Failed to delete manager");
   }
 }
+
+export const updateManagerToDB = async (managerId ,managerData) => {
+  try {
+    const response = await axios.put(`http://localhost:3000/manager/${managerId}`,
+      managerData,
+      {headers : {"Content-Type" : "multipart/form-data"}}
+    )
+    return response.data
+  } catch (error) {
+    console.error("Error while updating manager",error);
+  }
+}
+
+export const getManagerById = async (managerId) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/manager/${managerId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error while fetching manager" , error);
+  }
+}

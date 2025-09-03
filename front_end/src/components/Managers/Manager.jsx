@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import { Loader2 } from 'lucide-react';
+import { Loader2, Edit2, Trash2 } from 'lucide-react';
 import { deleteManagerFromDB } from '../../services/managerService';
 import { useDispatch } from 'react-redux';
 import { deleteManager } from '../../features/managerSlice';
+import { Link } from 'react-router-dom';
 
 const API_URL = "http://localhost:3000";
 
@@ -163,32 +164,34 @@ function Manager({id, name, image, mobile, dob, gender, username, createdAt }) {
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex space-x-2 mt-6">
-          <button 
-            className={`flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors duration-200 ${
+        {/* Action Icon Buttons */}
+        <div className="flex justify-center space-x-3 mt-6">
+          {/* Edit Link */}
+          <Link 
+            to={`/edit-manager/${id}`}
+            className={`w-10 h-10 bg-blue-100 hover:bg-blue-200 text-blue-600 hover:text-blue-700 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md ${
               isDeleting ? 'opacity-50 pointer-events-none' : ''
             }`}
-            disabled={isDeleting}
+            title="Edit Manager"
           >
-            Edit
-          </button>
+            <Edit2 className="w-5 h-5" />
+          </Link>
+
+          {/* Delete Button */}
           <button 
             onClick={handleDelete}
             disabled={isDeleting}
-            className={`flex-1 text-sm font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 ${
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md ${
               isDeleting 
-                ? 'bg-red-300 text-red-700 cursor-not-allowed' 
-                : 'bg-red-400 hover:bg-red-500 text-white'
+                ? 'bg-red-200 text-red-500 cursor-not-allowed' 
+                : 'bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700'
             }`}
+            title={isDeleting ? 'Deleting...' : 'Delete Manager'}
           >
             {isDeleting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Deleting...</span>
-              </>
+              <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              <span>Delete</span>
+              <Trash2 className="w-5 h-5" />
             )}
           </button>
         </div>

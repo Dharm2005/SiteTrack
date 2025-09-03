@@ -10,7 +10,6 @@ function EditSite() {
     const fetchSite = async () => {
       try{
         const data = await getSite(id);
-        console.log("initial data ",data);
         setSiteData(data);
       }catch (error) {
         console.error("Error while fetching site for update" , error);

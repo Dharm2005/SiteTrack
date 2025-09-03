@@ -1,4 +1,6 @@
 const Manager = require('../models/Manager')
+const fs = require('fs');
+const path = require('path');
 
 exports.getManagers = async (req , res , next) => {
    try {
@@ -9,10 +11,10 @@ exports.getManagers = async (req , res , next) => {
   }
 }
 
-exports.getManagerBySite = async (req, res, next) => {
+exports.getManagerById = async (req, res, next) => {
   try{
-    const siteId = req.params.siteId;
-    const manager = await Manager.findOne({sites : siteId})
+    const {managerId} = req.params;
+    const manager = await Manager.findById(managerId)
     res.status(200).json(manager);
   } catch(err) {
     console.error("Error fetching manager:", err);
@@ -58,5 +60,40 @@ exports.deleteManager = async (req, res, next) => {
 
   } catch (error) {
     console.error("Error while deleteing manager" , error);
+  }
+}
+
+exports.updateManager = async (req , res , next) => {
+  try {
+    const {managerId} = req.params;
+    const updates = {...req.body};
+
+    if(req.file){
+      const oldManager = await Manager.findById(managerId)
+
+      if(oldManager && oldManager.managerImage){
+        const oldPath = path.join(__dirname,"../uploads/managers",oldManager.managerImage)
+        if(fs.existsSync(oldPath)){
+          fs.unlinkSync(oldPath)
+        }
+      }
+
+      updates.managerImage = req.file.filename;
+    }
+
+    const updatedManager = await Manager.findByIdAndUpdate(
+      managerId,
+      updates,
+      {new : true}
+    )
+
+    if(!updatedManager){
+      return res.status(404).json({message : "manager not found for update"})
+    }
+
+    return res.json(updatedManager)
+
+  } catch (error) {
+    console.error("Error while updating manager");
   }
 }

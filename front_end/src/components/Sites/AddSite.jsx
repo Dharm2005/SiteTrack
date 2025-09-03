@@ -19,7 +19,7 @@ function AddSite({ initialValues }) {
     siteName: '',
     location: '',
     siteImage: '',
-    managerId: ''   // 🔑 only managerId now
+    managerId: ''  
   })
   const [imagePreview, setImagePreview] = useState(null);
   const [dragActive, setDragActive] = useState(false);
@@ -102,11 +102,10 @@ function AddSite({ initialValues }) {
         type: 'site',
         siteName: initialValues.siteName || '',
         location: initialValues.location || '',
-        siteImage: null, // 👈 keep it null unless uploading new one
+        siteImage: null,
         managerId: initialValues.manager?._id?.toString() || initialValues.manager?.toString() || ''
       });
 
-      // 🔧 FIX: Better image path handling for existing images
       if (initialValues.siteImage) {
         const imageUrl = `${API_URL}/uploads/sites/${initialValues.siteImage}`
         setImagePreview(imageUrl);

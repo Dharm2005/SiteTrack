@@ -1,13 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { addManager } from '../../services/managerService';
-import { addNewManager } from '../../features/managerSlice';
+import { addManager, updateManagerToDB } from '../../services/managerService';
+import { addNewManager, updateManager } from '../../features/managerSlice';
 
-function AddManager() {
-  const [form, setForm] = useState({
+const API_URL = "http://localhost:3000";
+
+function AddManager({ initialValues }) {
+  const [form, setForm] = useState(initialValues || {
     type: '',
     managerName: '',
     managerImage: '',
@@ -22,12 +24,12 @@ function AddManager() {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    if(e.target.name !== 'managerImage') {
-      setForm({...form, [e.target.name]: e.target.value})
+    if (e.target.name !== 'managerImage') {
+      setForm({ ...form, [e.target.name]: e.target.value })
     } else {
       const file = e.target.files[0];
-      setForm({...form, [e.target.name]: file})
-      
+      setForm({ ...form, [e.target.name]: file })
+
       // Create image preview
       if (file) {
         const reader = new FileReader();
@@ -53,14 +55,14 @@ function AddManager() {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
-      
+
       // Check if it's an image file
       if (file.type.startsWith('image/')) {
-        setForm({...form, managerImage: file});
-        
+        setForm({ ...form, managerImage: file });
+
         // Create image preview
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -74,43 +76,79 @@ function AddManager() {
   };
 
   const removeImage = () => {
-    setForm({...form, managerImage: ''});
+    setForm({ ...form, managerImage: '' });
     setImagePreview(null);
     // Reset the file input
     const fileInput = document.getElementById('managerImage');
     if (fileInput) fileInput.value = '';
   };
 
+  useEffect(() => {
+    if (initialValues) {
+      setForm({
+        type: 'manager',
+        managerName: initialValues.managerName,
+        managerImage: null,
+        managerMobile: initialValues.managerMobile,
+        managerDob: initialValues.managerDob 
+          ? new Date(initialValues.managerDob).toISOString().split("T")[0] 
+          : '',
+        managerGender: initialValues.managerGender
+      })
+
+      if(initialValues.managerImage){
+        const imageUrl = `${API_URL}/uploads/managers/${initialValues.managerImage}`
+        setImagePreview(imageUrl)
+      }
+    }
+  }, [initialValues])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const formData = new FormData();
-      formData.append("type","manager");
-      formData.append("managerName",form.managerName);
-      formData.append("managerImage",form.managerImage);
-      formData.append("managerMobile",form.managerMobile);
-      formData.append("managerDob",form.managerDob);
-      formData.append("managerGender",form.managerGender);
-  
-      const newManager = await addManager(formData);
-      dispatch(addNewManager(newManager))
+      formData.append("type", "manager");
+      formData.append("managerName", form.managerName);
+      formData.append("managerMobile", form.managerMobile);
+      formData.append("managerDob", form.managerDob);
+      formData.append("managerGender", form.managerGender);
+      
+      if (form.managerImage instanceof File) {
+        formData.append("managerImage", form.managerImage);
+      }
+
+
+      if(initialValues){
+        formData.append("_id",initialValues._id)
+
+        const updatedManager = await updateManagerToDB(initialValues._id,formData)
+        dispatch(updateManager(updatedManager))
+        toast.success("✅ manager updated successfully!");
+      }else {
+        const newManager = await addManager(formData);
+        dispatch(addNewManager(newManager))
+        toast.success("✅ New manager added successfully!");
+      }
       navigate('/all-manager')
-      toast.success("✅ New manager added successfully!");
     } catch (error) {
       console.error("error while adding new manager", error);
       navigate('/all-manager')
       toast.error("❌ Error while adding manager!");
     }
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-6">
       <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Add New Manager</h2>
-          <p className="text-gray-600">Fill in the details to add a new site manager</p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            {initialValues ? 'Edit Manager' : 'Add New Manager'}
+          </h2>
+          <p className="text-gray-600">
+            {initialValues ? 'Update the manager details' : 'Fill in the details to add a new manager'}
+          </p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <label htmlFor="managerName" className="block text-sm font-semibold text-gray-700">
@@ -133,14 +171,13 @@ function AddManager() {
             <label className="block text-sm font-semibold text-gray-700">
               Manager Photo
             </label>
-            
+
             {!imagePreview ? (
-              <div 
-                className={`relative w-full p-8 border-2 border-dashed rounded-lg transition-colors duration-200 ${
-                  dragActive 
-                    ? 'border-blue-500 bg-blue-50' 
+              <div
+                className={`relative w-full p-8 border-2 border-dashed rounded-lg transition-colors duration-200 ${dragActive
+                    ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-300 hover:border-gray-400'
-                }`}
+                  }`}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
                 onDragOver={handleDrag}
@@ -154,12 +191,12 @@ function AddManager() {
                   onChange={handleChange}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
-                
+
                 <div className="text-center">
                   <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                     <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                  
+
                   <div className="text-sm text-gray-600">
                     <span className="font-semibold text-blue-600 hover:text-blue-500">
                       Click to upload
@@ -173,9 +210,9 @@ function AddManager() {
             ) : (
               <div className="relative">
                 <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
-                  <img 
-                    src={imagePreview} 
-                    alt="Manager preview" 
+                  <img
+                    src={imagePreview}
+                    alt="Manager preview"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
@@ -188,7 +225,7 @@ function AddManager() {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="mt-2 text-sm text-gray-600 flex items-center">
                   <svg className="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -262,11 +299,11 @@ function AddManager() {
             </div>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-[1.02] shadow-lg"
           >
-            Add Manager
+            {initialValues ? 'Update Manager' : 'Add Manager'}
           </button>
         </form>
       </div>

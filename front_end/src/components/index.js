@@ -21,6 +21,7 @@ export {default as AddExpenseForm} from "./Expenses/AddExpenseForm"
 export {default as ExpenseChart} from "./Expenses/ExpenseChart"
 
 export {default as AddManager} from "./Managers/AddManager"
+export {default as EditManager} from "./Managers/EditManager"
 export {default as AllManager} from "./Managers/AllManager"
 export {default as Managers} from "./Managers/Managers"
 export {default as Manager} from "./Managers/Manager"
