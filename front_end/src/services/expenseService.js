@@ -28,3 +28,12 @@ export const addExpens = async (materialData) => {
     console.log("error to add expense" , err);   
   }
 }
+
+export const deleteExpenseFromDB = async (expenseId) => {
+  try{
+    const response = await axios.delete(`http://localhost:3000/expense/${expenseId}`)
+    return response.data
+  }catch(error){
+    console.error("Error while deleting expense" , error);
+  }
+}

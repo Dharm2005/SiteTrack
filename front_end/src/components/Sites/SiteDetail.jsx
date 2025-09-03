@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon, UserCheck, Users, DollarSign, FileText, Edit, Trash2 } from 'lucide-react'
+import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon, UserCheck, Users,IndianRupee, FileText, Edit, Trash2 } from 'lucide-react'
 import { getSite } from '../../services/siteService';
 import { Memos } from '../index';
 import { getWorkersBySite } from '../../services/workerService'
@@ -299,7 +299,7 @@ function SiteDetail() {
                     <h3 className="text-2xl font-bold mb-2">Expenses</h3>
                     <p className="text-emerald-100">Track and manage site expenses</p>
                   </div>
-                  <DollarSign className="w-12 h-12 text-emerald-200 group-hover:text-white transition-colors" />
+                  <IndianRupee className="w-12 h-12 text-emerald-200 group-hover:text-white transition-colors" />
                 </div>
               </div>
               <div className="p-6 bg-emerald-50">

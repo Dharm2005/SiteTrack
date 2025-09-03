@@ -3,7 +3,7 @@ import AddExpenseForm from './AddExpenseForm'
 import { useSelector } from 'react-redux'
 import { Expense, ExpenseChart } from '../index'
 import { useState } from 'react'
-import { Plus, Package, TrendingUp, DollarSign, Calendar, Filter, Search, ArrowLeft, X, BarChart3 } from 'lucide-react'
+import { Plus, Package,IndianRupee, Calendar, Filter, Search, ArrowLeft, X, BarChart3 } from 'lucide-react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { getExpensesBySite, getFilteredExpenses } from '../../services/expenseService'
@@ -155,7 +155,7 @@ function Expenses() {
                     </p>
                   </div>
                   <div className="p-3 bg-green-100 rounded-lg">
-                    <DollarSign className="w-6 h-6 text-green-600" />
+                    <IndianRupee className="w-6 h-6 text-green-600" />
                   </div>
                 </div>
                 

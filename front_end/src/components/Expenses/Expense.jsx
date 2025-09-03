@@ -1,13 +1,19 @@
 import React, { useState } from 'react'
 import {
-  Package, Calendar, DollarSign, Truck, Hash, Scale,
-  Edit3, Trash2, Tag, Clock, Image as ImageIcon, X, User, FileText, Gem
+  Package, Calendar,IndianRupee, Truck, Hash, Scale,
+  Edit3, Trash2, Tag, Clock, Image as ImageIcon, X, User, FileText, Gem, Loader2
 } from 'lucide-react'
+import { useDispatch } from 'react-redux';
+import { deleteExpenseFromDB } from '../../services/expenseService';
+import { deleteExpense } from '../../features/expenseSlice';
 
 const API_URL = "http://localhost:3000";
 
 function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalCost, arrivalDate, vehicleNumber, supplierName, details, createdAt }) {
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+  const dispatch = useDispatch()
 
   // Format the date
   const formatDate = (dateString) => {
@@ -91,8 +97,29 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
     console.log('Edit expense:', id);
   };
 
-  const handleDelete = () => {
-    console.log('Delete expense:', id);
+  const handleDelete = async () => {
+    const confirmed = window.confirm("Are you really want to delete this expense?");
+
+    if(confirmed){
+      setIsDeleting(true);
+      setIsAnimatingOut(true);
+      
+      try {
+        // Add a small delay to show the animation
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await deleteExpenseFromDB(id);
+        
+        // Wait for fade animation to complete before removing from store
+        setTimeout(() => {
+          dispatch(deleteExpense(id));
+        }, 400);
+      } catch (error) {
+        console.error("Error while deleting expense", error);
+        // Reset states on error
+        setIsDeleting(false);
+        setIsAnimatingOut(false);
+      }
+    }
   };
 
   // Check if quantity/unit should be displayed
@@ -112,13 +139,21 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 group relative overflow-visible"
-           style={{ zIndex: 'var(--hover-z-index, 1)' }}
+      <div className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-500 border border-gray-100 group relative overflow-visible ${
+        isAnimatingOut 
+          ? 'opacity-0 scale-95 transform translate-y-4' 
+          : 'opacity-100 scale-100 transform translate-y-0'
+      } ${isDeleting ? 'pointer-events-none' : ''}`}
+           style={{ zIndex: isDeleting ? '10' : 'var(--hover-z-index, 1)' }}
            onMouseEnter={(e) => {
-             e.currentTarget.style.setProperty('--hover-z-index', '10');
+             if (!isDeleting) {
+               e.currentTarget.style.setProperty('--hover-z-index', '10');
+             }
            }}
            onMouseLeave={(e) => {
-             e.currentTarget.style.setProperty('--hover-z-index', '1');
+             if (!isDeleting) {
+               e.currentTarget.style.setProperty('--hover-z-index', '1');
+             }
            }}>
         <div className="px-4 py-3">
           <div className="flex items-center justify-between gap-4">
@@ -128,7 +163,7 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
               {/* Expense Image/Icon */}
               <div className="relative flex-shrink-0">
                 {billImage ? (
-                  <div className="relative group/image cursor-pointer" onClick={() => setSelectedImage(`${API_URL}/uploads/bills/${billImage}`)}>
+                  <div className="relative group/image cursor-pointer" onClick={() => !isDeleting && setSelectedImage(`${API_URL}/uploads/bills/${billImage}`)}>
                     <img
                       src={`${API_URL}/uploads/bills/${billImage}`}
                       alt={`${expenseType} bill`}
@@ -138,9 +173,11 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
                     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm hidden">
                       <Package className="w-5 h-5 text-white" />
                     </div>
-                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-lg opacity-0 group-hover/image:opacity-100 transition-opacity">
-                      <ImageIcon className="w-3 h-3 text-white" />
-                    </div>
+                    {!isDeleting && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-lg opacity-0 group-hover/image:opacity-100 transition-opacity">
+                        <ImageIcon className="w-3 h-3 text-white" />
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm">
@@ -226,7 +263,7 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
                 </div>
                 
                 {/* Tooltip for full details */}
-                {details && details.length > 12 && (
+                {details && details.length > 12 && !isDeleting && (
                   <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-xl opacity-0 group-hover/details:opacity-100 transition-opacity duration-300 pointer-events-none z-50 max-w-sm whitespace-normal">
                     <div className="break-words">{details}</div>
                     <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
@@ -237,7 +274,7 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
               {/* Total Cost */}
               <div className="text-center p-2 bg-green-50 rounded-lg border border-green-100">
                 <div className="flex items-center justify-center text-green-600 mb-1">
-                  <DollarSign className="w-3 h-3 mr-1" />
+                  <IndianRupee className="w-3 h-3 mr-1" />
                   <span className="text-xs font-medium">Total</span>
                 </div>
                 <div className="text-sm font-bold text-green-700">
@@ -294,7 +331,12 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
                 <div className="flex items-center justify-center space-x-1">
                   <button
                     onClick={handleEdit}
-                    className="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-md transition-all duration-200 hover:scale-105 border border-blue-200"
+                    disabled={isDeleting}
+                    className={`p-1.5 rounded-md transition-all duration-200 border ${
+                      isDeleting 
+                        ? 'opacity-50 cursor-not-allowed text-blue-400 bg-blue-25 border-blue-100' 
+                        : 'text-blue-600 bg-blue-50 hover:bg-blue-100 hover:scale-105 border-blue-200'
+                    }`}
                     title="Edit expense"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
@@ -302,10 +344,19 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
 
                   <button
                     onClick={handleDelete}
-                    className="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition-all duration-200 hover:scale-105 border border-red-200"
+                    disabled={isDeleting}
+                    className={`p-1.5 rounded-md transition-all duration-200 border flex items-center justify-center ${
+                      isDeleting 
+                        ? 'bg-red-100 border-red-200 cursor-not-allowed' 
+                        : 'text-red-600 bg-red-50 hover:bg-red-100 hover:scale-105 border-red-200'
+                    }`}
                     title="Delete expense"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    {isDeleting ? (
+                      <Loader2 className="w-3.5 h-3.5 text-red-600 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-3.5 h-3.5" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -314,7 +365,7 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
           </div>
 
           {/* Mobile View - Show as cards when screen is too small */}
-          <div className="block lg:hidden mt-3 pt-3 border-t border-gray-100">
+          <div className={`block lg:hidden mt-3 pt-3 border-t border-gray-100 ${isDeleting ? 'opacity-50' : ''}`}>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="p-2 bg-amber-50 rounded border border-amber-100">
                 <span className="text-amber-600 font-medium">Stone: </span>
@@ -333,10 +384,20 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
             </div>
           </div>
         </div>
+
+        {/* Deleting Overlay - Covers entire expense */}
+        {isDeleting && (
+          <div className="absolute inset-0 bg-white bg-opacity-95 flex flex-col items-center justify-center rounded-lg z-20">
+            <div className="bg-red-50 rounded-full p-4 mb-3">
+              <Loader2 className="w-8 h-8 text-red-600 animate-spin" />
+            </div>
+            <span className="text-sm text-red-600 font-medium">Deleting expense...</span>
+          </div>
+        )}
       </div>
 
       {/* Image Modal */}
-      {selectedImage && (
+      {selectedImage && !isDeleting && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
           <div className="relative max-w-4xl max-h-[90vh]">
             <img

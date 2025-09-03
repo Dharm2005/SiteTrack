@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import { addExpens } from  '../../services/expenseService'
 import {toast} from 'react-toastify';
 import { addNewExpense } from '../../features/expenseSlice';
-import { Package, Upload, X, DollarSign, Calendar, Truck, Hash, Scale, Tag, FileText, User } from 'lucide-react';
+import { Package, Upload, X,IndianRupee, Calendar, Truck, Hash, Scale, Tag, FileText, User } from 'lucide-react';
 
 function AddExpenseForm({siteId, onClose}) {
   const [form, setForm] = useState({
@@ -390,7 +390,7 @@ function AddExpenseForm({siteId, onClose}) {
               Total Cost (₹) *
             </label>
             <div className="relative">
-              <DollarSign className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <IndianRupee className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="number"
                 name="totalCost"

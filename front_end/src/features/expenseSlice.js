@@ -13,9 +13,12 @@ export const expenseSlice = createSlice({
     },
     addNewExpense: (state , action) => {
       state.expenses.push(action.payload)
-    }
+    },
+    deleteExpense: (state , action) => {
+      state.expenses = state.expenses.filter(expense => expense._id !== action.payload)
+    },
   }
 })
 
-export const {setExpenses , addNewExpense} = expenseSlice.actions
+export const {setExpenses , addNewExpense , deleteExpense} = expenseSlice.actions
 export default expenseSlice.reducer;

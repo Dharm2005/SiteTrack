@@ -8,7 +8,6 @@ expenseRouter.get('/expense/:siteId',expenseController.getExpensesBySite)
 expenseRouter.post('/add-expense',upload.single("billImage"),expenseController.postAddExpense)
 expenseRouter.get('/expense/:siteId/filter',expenseController.getFilteredExpenses)
 
-// expenseRouter.delete('expense/:id',expenseController.deleteMaterial)
-// expenseRouter.get('/expense/:id',expenseController.getMaterialDetails)
+expenseRouter.delete('/expense/:expenseId',expenseController.deleteExpense)
 
 module.exports = expenseRouter;

@@ -3,7 +3,7 @@ const Expense = require('../models/Expense');
 exports.getExpensesBySite = async (req, res, next) => {
   try {
     const siteId = req.params.siteId;
-    const expenses = await Expense.find({ siteId: siteId })
+    const expenses = await Expense.find({ siteId: siteId , isDeleted : false})
       .sort({createdAt: -1});
 
     res.status(200).json(expenses);
@@ -19,7 +19,7 @@ exports.getFilteredExpenses = async (req, res, next) => {
     const {siteId} = req.params;
     const {from , to} = req.query;
     let expenses;
-    let query = {siteId : siteId};
+    let query = {siteId : siteId , isDeleted : false};
 
     if(from && to){
       query.arrivalDate = {
@@ -76,3 +76,24 @@ exports.postAddExpense = async (req, res, next) => {
     res.status(500).json({ message: "Error adding expense", error: error.message });
   }
 };
+
+exports.deleteExpense = async (req, res, next) => {
+  try {
+    const {expenseId} = req.params;
+
+    const updatedExpense = await Expense.findByIdAndUpdate(
+      expenseId,
+      {isDeleted : true},
+      {new : true}
+    )
+
+    if(!updatedExpense){
+      return res.status(404).json({message : "No expense found"});
+    }
+
+    return res.json(updatedExpense);
+
+  } catch (error) {
+    console.log("Error while deleting expenses");
+  }
+}
