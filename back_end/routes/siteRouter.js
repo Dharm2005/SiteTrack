@@ -8,5 +8,6 @@ siteRouter.get('/',siteController.getSites)
 siteRouter.post('/add-site',upload.single("siteImage"),siteController.postAddSite)
 siteRouter.get('/site/:siteId',siteController.getSiteDetails)
 siteRouter.delete('/site/:siteId',siteController.deleteSite)
+siteRouter.put('/site/:siteId',upload.single("siteImage"),siteController.updateSite)
 
 module.exports = siteRouter;

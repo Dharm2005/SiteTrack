@@ -1,5 +1,7 @@
 const Site = require('../models/Site')
 const Manager = require('../models/Manager')
+const fs = require("fs");
+const path = require("path");
 
 exports.getSites = async (req , res , next) => {
    try {
@@ -61,5 +63,40 @@ exports.deleteSite = async (req , res, next) => {
     res.json(updatedSite);
   }catch(error){
     console.log("Error while deleting site", error);
+  }
+}
+
+exports.updateSite = async (req, res, next) => {
+  try {
+    const {siteId} = req.params;
+    const updates = {...req.body};
+
+    if(req.file){
+      const oldSite = await Site.findById(siteId)
+
+      if(oldSite && oldSite.siteImage){
+        const oldPath = path.join(__dirname , "../uploads/sites" , oldSite.siteImage)
+        if(fs.existsSync(oldPath)){
+          fs.unlinkSync(oldPath)
+        }
+      }
+
+      updates.siteImage = req.file.filename;
+    }
+
+    const updatedSite = await Site.findByIdAndUpdate(
+      siteId,
+      updates,
+      {new : true}
+    )
+
+    if(!updatedSite){
+      return res.status(404).json({message : "site not found for update"})
+    }
+    return res.json(updatedSite)
+
+  } catch (error) {
+    console.error("Error to update site" , error);
+    
   }
 }
