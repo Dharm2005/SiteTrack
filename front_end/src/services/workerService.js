@@ -70,3 +70,16 @@ export const updateWorkerToDB = async (workerId , workerData) => {
     throw new Error(err.response?.data?.message || "Failed to update worker");
   }
 }
+
+export const updateAdvanceToDB = async (advanceId , advanceData) => {
+  try{
+    const response = await axios.put(`http://localhost:3000/worker/advance/${advanceId}`,
+      advanceData,
+      {headers : {"Content-Type" : "multipart/form-data"}}
+    )
+    return response.data;
+    
+  } catch (error) {
+    console.error("Error while editing advance",error);
+  }
+}

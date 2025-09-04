@@ -10,9 +10,9 @@ workerRouter.post('/add-worker',upload.single("workerImage"),workerController.po
 
 workerRouter.get('/worker/:workerId/advance',workerController.getAdvancesByWorker)
 workerRouter.post('/worker/add-advance',upload.none(),workerController.addWorkerAdvance)
+workerRouter.put('/worker/advance/:advanceId',upload.none(),workerController.updateAdvance)
 
 workerRouter.delete('/worker/:workerId',workerController.deleteWorker)
 workerRouter.put('/worker/:workerId',upload.single("workerImage"),workerController.updateWorker)
-
 
 module.exports = workerRouter;

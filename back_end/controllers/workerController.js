@@ -145,3 +145,24 @@ exports.updateWorker = async (req, res, next) => {
     console.error("Error while editing worker in backend" , error);
   }
 }
+
+exports.updateAdvance = async (req, res, next) => {
+  try {
+    const {advanceId} = req.params;
+    const updates = {...req.body};
+
+    const updatedAdvance = await Advance.findByIdAndUpdate(
+      advanceId,
+      updates,
+      {new : true}
+    )
+    
+    if(!updatedAdvance){
+      return res.status(404).json({message : "Advance not found for update"})
+    }
+    return res.status(200).json(updatedAdvance);
+
+  } catch (error) {
+    console.error("Error while editing advance in DB" ,error);
+  }
+}

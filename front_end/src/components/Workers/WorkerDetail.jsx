@@ -92,6 +92,7 @@ function WorkerDetail({workerId}) {
             {allAdvance.map(advance => (
               <Advance
                 key={advance._id}
+                id={advance._id}
                 amount={advance.amount}
                 date={advance.date}
                 note={advance.note}
