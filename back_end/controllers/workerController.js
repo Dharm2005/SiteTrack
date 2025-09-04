@@ -1,15 +1,28 @@
 const Worker = require('../models/Worker');
 const Advance = require('../models/Advance');
+const path = require('path');
+const fs = require('fs');
 
 exports.getWorkersBySite = async (req , res , next) => {
   try{
-  const siteId = req.params.siteId;
-  const workers = await Worker.find({sites : siteId , isDeleted : false})
+    const siteId = req.params.siteId;
+    const workers = await Worker.find({sites : siteId , isDeleted : false})
 
-  res.status(200).json(workers);
+    res.status(200).json(workers);
   } catch(err) {
     console.error("Error fetching workers:", err);
     res.status(500).json({ err: "Failed to fetch workers" });
+  }
+}
+
+exports.getWorkerById = async (req, res, next) => {
+  try {
+    const {workerId} = req.params;
+    const worker = await Worker.findById(workerId);
+
+    return res.status(200).json(worker);
+  } catch (error) {
+    console.error("Error while fetching worker");
   }
 }
 
@@ -96,5 +109,39 @@ exports.addWorkerAdvance = async (req, res, next) => {
   }catch(error) {
     console.error("Error Adding advance:", error);
     res.status(500).json({ message: "Error Adding advance", error: error.message });
+  }
+}
+
+exports.updateWorker = async (req, res, next) => {
+  try {
+    const {workerId} = req.params;
+    const updates = {...req.body};
+
+    if(req.file){
+      const oldWorker = await Worker.findById(workerId);
+
+      if(oldWorker && oldWorker.workerImage){
+        const oldPath = path.join(__dirname,"../uploads/workers",oldWorker.workerImage)
+        if(fs.existsSync(oldPath)){
+          fs.unlinkSync(oldPath)
+        }
+      }
+      updates.workerImage = req.file.filename;
+    }
+
+    const updatedWorker = await Worker.findByIdAndUpdate(
+      workerId,
+      updates,
+      {new: true}
+    )
+
+    if(!updatedWorker){
+      return res.status(400).json({message : "No worker found for update"})
+    }
+
+    return res.json(updatedWorker);
+
+  } catch (error) {
+    console.error("Error while editing worker in backend" , error);
   }
 }

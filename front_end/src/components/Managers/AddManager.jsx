@@ -13,7 +13,7 @@ function AddManager({ initialValues }) {
     type: '',
     managerName: '',
     managerImage: '',
-    managerMobile: '',
+    managerMobile: '',  
     managerDob: '',
     managerGender: ''
   })

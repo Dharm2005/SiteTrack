@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { deleteWorkerFromDB } from '../../services/workerService';
 import {useDispatch} from 'react-redux'
 import { deleteWorker } from '../../features/workerSlice';
+import { Link } from 'react-router-dom';
 
 const API_URL = "http://localhost:3000";
 
@@ -27,11 +28,6 @@ function Worker({id, name, image, mobile}) {
   const handleImageError = (e) => {
     e.target.style.display = 'none';
     e.target.nextSibling.style.display = 'flex';
-  };
-
-  const handleEdit = () => {
-    console.log('Edit worker:', id);
-    setShowActions(false);
   };
 
   const handleDelete = async () => {
@@ -88,13 +84,13 @@ function Worker({id, name, image, mobile}) {
             ></div>
             
             <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg py-1 min-w-[100px] z-20">
-              <button
-                onClick={handleEdit}
+              <Link
+                to = {`/edit-worker/${id}`}
                 className="w-full px-2 py-1.5 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center space-x-1"
               >
                 <Edit3 className="w-2.5 h-2.5" />
                 <span>Edit</span>
-              </button>
+              </Link>
               <button
                 onClick={handleDelete}
                 className="w-full px-2 py-1.5 text-left text-xs text-red-600 hover:bg-red-50 flex items-center space-x-1"

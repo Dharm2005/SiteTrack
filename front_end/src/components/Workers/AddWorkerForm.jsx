@@ -1,13 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { addWorker } from  '../../services/workerService'
-import {toast} from 'react-toastify';
-import { addNewWorker } from '../../features/workerSlice';
-import { User, Phone, DollarSign, Upload, X } from 'lucide-react';
+import { addWorker, updateWorkerToDB } from '../../services/workerService'
+import { toast } from 'react-toastify';
+import { addNewWorker, updateWorker } from '../../features/workerSlice';
+import { User, Phone, Upload, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+const API_URL = "http://localhost:3000";
 
-function AddWorkerForm({siteId, onClose}) {
-  const [form, setForm] = useState({
+
+function AddWorkerForm({ siteId, onClose, initialValues }) {
+  const [form, setForm] = useState(initialValues || {
     type: 'worker',
     workerName: '',
     workerImage: null,
@@ -18,7 +21,7 @@ function AddWorkerForm({siteId, onClose}) {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // Validation functions
@@ -58,14 +61,14 @@ function AddWorkerForm({siteId, onClose}) {
     if (files && files.length > 0) {
       const file = files[0];
       setForm({ ...form, [name]: file });
-      
+
       // Create image preview
       const reader = new FileReader();
       reader.onload = (e) => setImagePreview(e.target.result);
       reader.readAsDataURL(file);
     } else {
       let processedValue = value;
-      
+
       // Handle different input types
       if (type === "number") {
         processedValue = value === '' ? 0 : Number(value);
@@ -76,7 +79,7 @@ function AddWorkerForm({siteId, onClose}) {
         // Remove non-digit characters
         processedValue = value.replace(/\D/g, '').slice(0, 10);
       }
-      
+
       setForm({
         ...form,
         [name]: processedValue
@@ -84,10 +87,26 @@ function AddWorkerForm({siteId, onClose}) {
     }
   };
 
+  useEffect(() => {
+    if (initialValues) {
+      setForm({
+        type: 'worker',
+        workerName: initialValues.workerName || '',
+        workerImage: null,
+        workerMobile: initialValues.workerMobile || '',
+        sites: []
+      })
+    }
+
+    if (initialValues && initialValues.workerImage) {
+      const imageUrl = `${API_URL}/uploads/workers/${initialValues.workerImage}`
+      setImagePreview(imageUrl)
+    }
+
+  }, [initialValues])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validate form
     const formErrors = validateForm();
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
@@ -96,23 +115,30 @@ function AddWorkerForm({siteId, onClose}) {
     }
 
     setIsSubmitting(true);
-    
+
     try {
       const formData = new FormData();
       formData.append("type", "worker");
       formData.append("workerName", form.workerName.trim());
-      if (form.workerImage) {
+      if (form.workerImage instanceof File) {
         formData.append("workerImage", form.workerImage);
       }
       formData.append("workerMobile", form.workerMobile);
-      formData.append("sites", JSON.stringify([siteId]));
+      if (!initialValues && siteId) {
+        formData.append("sites", JSON.stringify([siteId]));
+      }
 
-      const newWorker = await addWorker(formData);
-      console.log(newWorker);
-      
-      dispatch(addNewWorker(newWorker));
-      toast.success("✅ New worker added successfully!");
-      
+      if (initialValues) {
+        formData.append("_id", initialValues._id)
+        const updatedWorker = await updateWorkerToDB(initialValues._id, formData)
+        dispatch(updateWorker(updatedWorker))
+        toast.success("✅ Worker edited successfully!");
+        navigate(`/site/${siteId}/workers`)
+      } else {
+        const newWorker = await addWorker(formData);
+        dispatch(addNewWorker(newWorker));
+        toast.success("✅ New worker added successfully!");
+      }
       // Reset form
       setForm({
         type: 'worker',
@@ -123,7 +149,7 @@ function AddWorkerForm({siteId, onClose}) {
       });
       setImagePreview(null);
       setErrors({});
-      
+
       if (onClose) onClose();
     } catch (error) {
       console.error("error while adding new worker", error);
@@ -177,9 +203,8 @@ function AddWorkerForm({siteId, onClose}) {
               value={form.workerName}
               onChange={handleChange}
               placeholder="Enter worker's full name"
-              className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-                errors.workerName ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-              }`}
+              className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${errors.workerName ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
+                }`}
             />
           </div>
           {errors.workerName && (
@@ -210,7 +235,7 @@ function AddWorkerForm({siteId, onClose}) {
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Worker Photo
           </label>
-          
+
           {!imagePreview ? (
             <div className="relative">
               <input
@@ -223,9 +248,8 @@ function AddWorkerForm({siteId, onClose}) {
               />
               <label
                 htmlFor="workerImageInput"
-                className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-xl cursor-pointer hover:bg-gray-50 transition-colors ${
-                  errors.workerImage ? 'border-red-300' : 'border-gray-300 hover:border-gray-400'
-                }`}
+                className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-xl cursor-pointer hover:bg-gray-50 transition-colors ${errors.workerImage ? 'border-red-300' : 'border-gray-300 hover:border-gray-400'
+                  }`}
               >
                 <Upload className="w-8 h-8 text-gray-400 mb-2" />
                 <p className="text-sm text-gray-600">Click to upload worker photo</p>
@@ -248,7 +272,7 @@ function AddWorkerForm({siteId, onClose}) {
               </button>
             </div>
           )}
-          
+
           {errors.workerImage && (
             <p className="text-red-500 text-sm mt-1">{errors.workerImage}</p>
           )}
@@ -263,7 +287,7 @@ function AddWorkerForm({siteId, onClose}) {
           >
             {isSubmitting ? 'Adding Worker...' : 'Add Worker'}
           </button>
-          
+
           {onClose && (
             <button
               type="button"
@@ -272,7 +296,7 @@ function AddWorkerForm({siteId, onClose}) {
             >
               Cancel
             </button>
-            )}
+          )}
         </div>
       </form>
     </div>
