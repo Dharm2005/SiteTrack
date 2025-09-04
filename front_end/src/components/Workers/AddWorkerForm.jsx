@@ -10,6 +10,8 @@ const API_URL = "http://localhost:3000";
 
 
 function AddWorkerForm({ siteId, onClose, initialValues }) {
+  console.log(siteId);
+  
   const [form, setForm] = useState(initialValues || {
     type: 'worker',
     workerName: '',
@@ -175,8 +177,12 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
             <User className="w-6 h-6 text-blue-600" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-900">Add New Worker</h3>
-            <p className="text-sm text-gray-600">Fill in the worker details</p>
+            <h3 className="text-xl font-bold text-gray-900">
+              {initialValues ? "Edit Worler" : "Add New Worker"}
+            </h3>
+            <p className="text-sm text-gray-600">
+              {initialValues ? "Update worker details" : "Fill in the worker details"}
+            </p>
           </div>
         </div>
         {onClose && (
@@ -285,7 +291,7 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
             disabled={isSubmitting}
             className={`flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100`}
           >
-            {isSubmitting ? 'Adding Worker...' : 'Add Worker'}
+            {isSubmitting ? initialValues ? 'Editing Worker...' : 'Adding Worker...' : initialValues ? 'Edit Worker' : 'Add Worker'}
           </button>
 
           {onClose && (

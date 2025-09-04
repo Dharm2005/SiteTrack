@@ -1,4 +1,6 @@
 const Expense = require('../models/Expense');
+const path = require('path');
+const fs = require('fs');
 
 exports.getExpensesBySite = async (req, res, next) => {
   try {
@@ -12,6 +14,18 @@ exports.getExpensesBySite = async (req, res, next) => {
     res.status(500).json({ err: "Failed to fetch expenses" });
   }
 };
+
+exports.getExpenseById = async (req, res, next) => {
+  try {
+    const {expenseId} = req.params;
+
+    const expense = await Expense.findById(expenseId);
+    return res.status(200).json(expense);
+  } catch (error) {
+    console.error("Error while fetchig expense by id" , error);
+    res.status(500).json({err : "Failed to fetch expense"})
+  }
+}
 
 exports.getFilteredExpenses = async (req, res, next) => {
 
@@ -95,5 +109,50 @@ exports.deleteExpense = async (req, res, next) => {
 
   } catch (error) {
     console.log("Error while deleting expenses");
+  }
+}
+
+exports.updateExpense = async (req, res, next) => {
+  try {
+    const {expenseId} = req.params;
+    const updates = {...req.body};
+
+    if (updates.stoneType) {
+      try {
+        const parsedStoneType = JSON.parse(updates.stoneType);
+        updates.stoneType = Array.isArray(parsedStoneType) ? parsedStoneType : [];
+        
+      } catch (error) {
+        updates.stoneType = [];
+      }
+    }
+
+    if(req.file){
+      const oldExpanse = await Expense.findById(expenseId);
+
+      if(oldExpanse && oldExpanse.billImage){
+        const oldPath = path.join(__dirname,"../uploads/bills",oldExpanse.billImage)
+        if(fs.existsSync(oldPath)){
+          fs.unlinkSync(oldPath)
+        }
+      }
+
+      updates.billImage = req.file.filename
+    }
+
+    const updatedExpense = await Expense.findByIdAndUpdate(
+      expenseId,
+      updates,
+      {new : true}
+    )
+
+    if(!updatedExpense){
+      return res.status(404).json({message : "No expense found for update"})
+    }
+
+    return res.json(updatedExpense)
+  } catch (error) {
+    console.error("Error while updating expense in DB" , error);
+       
   }
 }

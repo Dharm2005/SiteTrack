@@ -2,10 +2,19 @@ import axios from "axios";
 
 export const getExpensesBySite = async (id) => {
   try {
-  const response = await axios.get(`http://localhost:3000/expense/${id}`);
-  return response.data;
+    const response = await axios.get(`http://localhost:3000/expense/${id}`);
+    return response.data;
   }catch (err) {
     throw new Error(err.response?.data?.message || "Failed to fetch expenses");
+  }
+}
+
+export const getExpenseById = async (id) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/expense/data/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error while fetching expense",error);    
   }
 }
 
@@ -35,5 +44,17 @@ export const deleteExpenseFromDB = async (expenseId) => {
     return response.data
   }catch(error){
     console.error("Error while deleting expense" , error);
+  }
+}
+
+export const updateExpenseToDB = async (expenseId , expenseData) => {
+  try {
+    const response = await axios.put(`http://localhost:3000/expense/${expenseId}`,
+      expenseData,
+      {headers : {"Content-Type" : "multipart/form-data"}}
+    )
+    return response.data;
+  } catch (error) {
+    console.error("Error while updating expense" , error);
   }
 }

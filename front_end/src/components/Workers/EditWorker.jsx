@@ -5,7 +5,6 @@ import AddWorkerForm from './AddWorkerForm'
 
 function EditWorker() {
   const {id} = useParams();
-  console.log(id);
   
   const [workerData , setWorkerData] = useState(null);
 
@@ -14,6 +13,7 @@ function EditWorker() {
       try{
         const data = await getWorkerById(id);
         setWorkerData(data);
+        
       }catch(error){
         console.error("Error while fetching worker for edit" , error);
       }
@@ -25,6 +25,7 @@ function EditWorker() {
 
   return (
     <AddWorkerForm
+      siteId={workerData.sites?.[0]}
       initialValues = {workerData}
     />
   )

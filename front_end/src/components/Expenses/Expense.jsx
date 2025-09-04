@@ -6,6 +6,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { deleteExpenseFromDB } from '../../services/expenseService';
 import { deleteExpense } from '../../features/expenseSlice';
+import { Link } from 'react-router-dom';
 
 const API_URL = "http://localhost:3000";
 
@@ -91,10 +92,6 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
   const handleImageError = (e) => {
     e.target.style.display = 'none';
     e.target.nextSibling.style.display = 'flex';
-  };
-
-  const handleEdit = () => {
-    console.log('Edit expense:', id);
   };
 
   const handleDelete = async () => {
@@ -329,8 +326,8 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
 
                 {/* Action Buttons */}
                 <div className="flex items-center justify-center space-x-1">
-                  <button
-                    onClick={handleEdit}
+                  <Link
+                    to={`/edit-expense/${id}`}
                     disabled={isDeleting}
                     className={`p-1.5 rounded-md transition-all duration-200 border ${
                       isDeleting 
@@ -340,7 +337,7 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
                     title="Edit expense"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
-                  </button>
+                  </Link>
 
                   <button
                     onClick={handleDelete}

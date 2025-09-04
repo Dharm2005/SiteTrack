@@ -1,16 +1,24 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { addExpens } from  '../../services/expenseService'
-import {toast} from 'react-toastify';
-import { addNewExpense } from '../../features/expenseSlice';
-import { Package, Upload, X,IndianRupee, Calendar, Truck, Hash, Scale, Tag, FileText, User } from 'lucide-react';
+import { addExpens, updateExpenseToDB } from '../../services/expenseService'
+import { toast } from 'react-toastify';
+import { addNewExpense, updateExpense } from '../../features/expenseSlice';
+import { Package, Upload, X, IndianRupee, Calendar, Truck, Hash, Scale, Tag, FileText, User, Edit } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-function AddExpenseForm({siteId, onClose}) {
-  const [form, setForm] = useState({
-    type:'expense',
+const API_URL = "http://localhost:3000";
+
+function AddExpenseForm({ siteId, onClose, initialValues }) {
+  console.log(siteId);
+  
+  // Determine if we're in edit mode
+  const isEditMode = !!initialValues;
+  
+  const [form, setForm] = useState(initialValues || {
+    type: 'expense',
     expenseType: 'other',
-    stoneType : '',
+    stoneType: '',
     billImage: null,
     quantity: 0,
     unit: 'other',
@@ -25,9 +33,10 @@ function AddExpenseForm({siteId, onClose}) {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
-  const [stoneTypes , setStoneTypes] = useState([]);
+  const [stoneTypes, setStoneTypes] = useState([]);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const expenseTypeOptions = [
     { value: "cement", label: "Cement" },
@@ -154,14 +163,14 @@ function AddExpenseForm({siteId, onClose}) {
     if (files && files.length > 0) {
       const file = files[0];
       setForm({ ...form, [name]: file });
-      
+
       // Create image preview
       const reader = new FileReader();
       reader.onload = (e) => setImagePreview(e.target.result);
       reader.readAsDataURL(file);
     } else {
       let processedValue = value;
-      
+
       // Handle different input types
       if (type === "number") {
         processedValue = value === '' ? 0 : Number(value);
@@ -172,7 +181,7 @@ function AddExpenseForm({siteId, onClose}) {
         // Trim supplier name and capitalize first letter of each word
         processedValue = value.replace(/\s+/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
       }
-      
+
       let updatedForm = {
         ...form,
         [name]: processedValue
@@ -188,10 +197,10 @@ function AddExpenseForm({siteId, onClose}) {
             quantity: 0
           };
           // Clear related errors
-          setErrors(prev => ({ 
-            ...prev, 
-            unit: '', 
-            quantity: '' 
+          setErrors(prev => ({
+            ...prev,
+            unit: '',
+            quantity: ''
           }));
         } else if (processedValue === 'petrol' || processedValue === 'diesel') {
           // Automatically set unit to litre for petrol/diesel
@@ -200,17 +209,17 @@ function AddExpenseForm({siteId, onClose}) {
             unit: 'litre'
           };
           // Clear unit error if exists
-          setErrors(prev => ({ 
-            ...prev, 
+          setErrors(prev => ({
+            ...prev,
             unit: ''
           }));
         }
-        
+
         // Reset stone types when expense type changes
         if (processedValue !== 'crushedStone') {
           setStoneTypes([]);
-          setErrors(prev => ({ 
-            ...prev, 
+          setErrors(prev => ({
+            ...prev,
             stoneTypes: ''
           }));
         }
@@ -221,13 +230,13 @@ function AddExpenseForm({siteId, onClose}) {
             ...updatedForm,
             supplierName: ''
           };
-          setErrors(prev => ({ 
-            ...prev, 
+          setErrors(prev => ({
+            ...prev,
             supplierName: ''
           }));
         }
       }
-      
+
       setForm(updatedForm);
     }
   };
@@ -240,17 +249,49 @@ function AddExpenseForm({siteId, onClose}) {
       setErrors(prev => ({ ...prev, stoneTypes: '' }));
     }
 
-    if(e.target.checked){
-      setStoneTypes(prev => [...prev , value])
+    if (e.target.checked) {
+      setStoneTypes(prev => [...prev, value])
     }
-    else{
+    else {
       setStoneTypes(prev => prev.filter((t) => t !== value))
     }
   }
 
+  useEffect(() => {
+    if (initialValues) {
+      setForm({
+        type: 'expense',
+        expenseType: initialValues.expenseType,
+        stoneType: initialValues.stoneType,
+        billImage: null,
+        quantity: initialValues.quantity,
+        unit: initialValues.unit,
+        totalCost: initialValues.totalCost,
+        arrivalDate: initialValues.arrivalDate 
+          ? new Date(initialValues.arrivalDate).toISOString().split("T")[0] 
+          : '',
+        vehicleNumber: initialValues.vehicleNumber,
+        supplierName: initialValues.supplierName,
+        details: initialValues.details,
+        siteId: initialValues.siteId,
+      })
+      
+      // Set stone types for editing crushed stone expenses
+      if (initialValues.stoneType && Array.isArray(initialValues.stoneType)) {
+        setStoneTypes(initialValues.stoneType);
+      }
+    }
+
+    if (initialValues && initialValues.billImage) {
+      const imageUrl = `${API_URL}/uploads/bills/${initialValues.billImage}`
+      setImagePreview(imageUrl)
+    }
+
+  }, [initialValues])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate form
     const formErrors = validateForm();
     if (Object.keys(formErrors).length > 0) {
@@ -260,15 +301,15 @@ function AddExpenseForm({siteId, onClose}) {
     }
 
     setIsSubmitting(true);
-    
+
     try {
       const formData = new FormData();
       formData.append("type", "expense");
       formData.append("expenseType", form.expenseType);
-      if (form.billImage) {
+      if (form.billImage instanceof File) {
         formData.append("billImage", form.billImage);
       }
-      
+
       // Only append quantity and unit if they are relevant for the expense type
       if (isUnitRequired()) {
         formData.append("quantity", form.quantity);
@@ -278,42 +319,53 @@ function AddExpenseForm({siteId, onClose}) {
         formData.append("quantity", 0);
         formData.append("unit", "other");
       }
-      formData.append("stoneType",JSON.stringify(stoneTypes));
+      if(form.expenseType === 'crushedStone'){
+        formData.append("stoneType", JSON.stringify(stoneTypes));
+      }else{
+        formData.append("stoneType", JSON.stringify([]));
+      }
       formData.append("totalCost", form.totalCost);
       formData.append("arrivalDate", form.arrivalDate);
       formData.append("vehicleNumber", form.vehicleNumber.trim());
       formData.append("supplierName", form.supplierName.trim());
-      formData.append("details",form.details)
-      formData.append("siteId",siteId);
+      formData.append("details", form.details)
+      if (!initialValues && siteId) {
+        formData.append("siteId", siteId);
+      }
 
-      const newExpense = await addExpens(formData);
-      console.log(newExpense);
-      
-      dispatch(addNewExpense(newExpense));
-      toast.success("✅ New expense added successfully!");
-      
-      // Reset form
-      setForm({
-        expenseType: 'other',
-        stoneType: '',
-        billImage: null,
-        quantity: 0,
-        unit: 'other',
-        totalCost: 0,
-        arrivalDate: '',
-        vehicleNumber: '',
-        supplierName: '',
-        details: '',
-        siteId: '',
-      });
-      setStoneTypes([]);
-      setImagePreview(null);
-      setErrors({});
-      
+      if (initialValues) {
+        formData.append("_id", initialValues._id)
+        const updatedExpense = await updateExpenseToDB(initialValues._id, formData)
+        dispatch(updateExpense(updatedExpense))
+        toast.success("✅ Expense updated successfully!");
+        navigate(`/site/${siteId}/expenses`)
+      }else{
+        const newExpense = await addExpens(formData);
+        dispatch(addNewExpense(newExpense));
+        toast.success("✅ New expense added successfully!");
+        // Reset form
+        setForm({
+          expenseType: 'other',
+          stoneType: '',
+          billImage: null,
+          quantity: 0,
+          unit: 'other',
+          totalCost: 0,
+          arrivalDate: '',
+          vehicleNumber: '',
+          supplierName: '',
+          details: '',
+          siteId: '',
+        });
+        setStoneTypes([]);
+        setImagePreview(null);
+        setErrors({});
+      }
+
       if (onClose) onClose();
     } catch (error) {
-      console.error("error while adding new expense", error);
-      toast.error("❌ Failed to add expense. Please try again.");
+      console.error(`error while ${isEditMode ? 'updating' : 'adding new'} expense`, error);
+      toast.error(`❌ Failed to ${isEditMode ? 'update' : 'add'} expense. Please try again.`);
     } finally {
       setIsSubmitting(false);
     }
@@ -338,12 +390,20 @@ function AddExpenseForm({siteId, onClose}) {
     <div className="bg-white rounded-xl shadow-sm border p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
-          <div className="p-1.5 bg-green-100 rounded-md">
-            <Package className="w-4 h-4 text-green-600" />
+          <div className={`p-1.5 ${isEditMode ? 'bg-blue-100' : 'bg-green-100'} rounded-md`}>
+            {isEditMode ? (
+              <Edit className="w-4 h-4 text-blue-600" />
+            ) : (
+              <Package className="w-4 h-4 text-green-600" />
+            )}
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Add New Expense</h3>
-            <p className="text-xs text-gray-500">Fill in the expense details</p>
+            <h3 className="text-lg font-semibold text-gray-900">
+              {isEditMode ? 'Edit Expense' : 'Add New Expense'}
+            </h3>
+            <p className="text-xs text-gray-500">
+              {isEditMode ? 'Update the expense details below' : 'Fill in the expense details'}
+            </p>
           </div>
         </div>
         {onClose && (
@@ -369,9 +429,8 @@ function AddExpenseForm({siteId, onClose}) {
                 name="expenseType"
                 value={form.expenseType}
                 onChange={handleChange}
-                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${
-                  errors.expenseType ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${errors.expenseType ? 'border-red-300' : 'border-gray-300'
+                  }`}
               >
                 {expenseTypeOptions.map(option => (
                   <option key={option.value} value={option.value}>
@@ -399,9 +458,8 @@ function AddExpenseForm({siteId, onClose}) {
                 min="0"
                 step="0.01"
                 placeholder="Enter total cost"
-                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${
-                  errors.totalCost ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${errors.totalCost ? 'border-red-300' : 'border-gray-300'
+                  }`}
               />
             </div>
             {errors.totalCost && (
@@ -421,9 +479,8 @@ function AddExpenseForm({siteId, onClose}) {
                 value={form.arrivalDate}
                 onChange={handleChange}
                 max={getTodayDate()}
-                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${
-                  errors.arrivalDate ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${errors.arrivalDate ? 'border-red-300' : 'border-gray-300'
+                  }`}
               />
             </div>
             {errors.arrivalDate && (
@@ -483,16 +540,15 @@ function AddExpenseForm({siteId, onClose}) {
                     min="0"
                     step="0.01"
                     placeholder="Enter quantity"
-                    className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${
-                      errors.quantity ? 'border-red-300' : 'border-gray-300'
-                    }`}
+                    className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${errors.quantity ? 'border-red-300' : 'border-gray-300'
+                      }`}
                   />
                 </div>
                 {errors.quantity && (
                   <p className="text-red-500 text-xs mt-1">{errors.quantity}</p>
                 )}
               </div>
-                
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Unit *
@@ -507,9 +563,8 @@ function AddExpenseForm({siteId, onClose}) {
                     value={form.unit}
                     onChange={handleChange}
                     disabled={form.expenseType === 'petrol' || form.expenseType === 'diesel'}
-                    className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${
-                      errors.unit ? 'border-red-300' : 'border-gray-300'
-                    } ${(form.expenseType === 'petrol' || form.expenseType === 'diesel') ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                    className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${errors.unit ? 'border-red-300' : 'border-gray-300'
+                      } ${(form.expenseType === 'petrol' || form.expenseType === 'diesel') ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                   >
                     {allowedUnits.map(unit => (
                       <option key={unit} value={unit}>
@@ -539,9 +594,8 @@ function AddExpenseForm({siteId, onClose}) {
                 value={form.vehicleNumber}
                 onChange={handleChange}
                 placeholder="Enter vehicle number"
-                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${
-                  errors.vehicleNumber ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${errors.vehicleNumber ? 'border-red-300' : 'border-gray-300'
+                  }`}
               />
             </div>
             {errors.vehicleNumber && (
@@ -564,9 +618,8 @@ function AddExpenseForm({siteId, onClose}) {
                 value={form.supplierName}
                 onChange={handleChange}
                 placeholder="Enter supplier name"
-                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${
-                  errors.supplierName ? 'border-red-300' : 'border-gray-300'
-                }`}
+                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${errors.supplierName ? 'border-red-300' : 'border-gray-300'
+                  }`}
               />
             </div>
             {errors.supplierName && (
@@ -598,7 +651,7 @@ function AddExpenseForm({siteId, onClose}) {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Bill/Receipt Photo
           </label>
-          
+
           {!imagePreview ? (
             <div className="relative">
               <input
@@ -611,12 +664,13 @@ function AddExpenseForm({siteId, onClose}) {
               />
               <label
                 htmlFor="billImageInput"
-                className={`flex flex-col items-center justify-center w-full h-20 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 transition-colors ${
-                  errors.billImage ? 'border-red-300' : 'border-gray-300 hover:border-gray-400'
-                }`}
+                className={`flex flex-col items-center justify-center w-full h-20 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 transition-colors ${errors.billImage ? 'border-red-300' : 'border-gray-300 hover:border-gray-400'
+                  }`}
               >
                 <Upload className="w-5 h-5 text-gray-400 mb-1" />
-                <p className="text-sm text-gray-600">Upload bill/receipt</p>
+                <p className="text-sm text-gray-600">
+                  {isEditMode ? 'Update bill/receipt' : 'Upload bill/receipt'}
+                </p>
                 <p className="text-xs text-gray-400">PNG, JPG, WebP up to 5MB</p>
               </label>
             </div>
@@ -636,7 +690,7 @@ function AddExpenseForm({siteId, onClose}) {
               </button>
             </div>
           )}
-          
+
           {errors.billImage && (
             <p className="text-red-500 text-xs mt-1">{errors.billImage}</p>
           )}
@@ -650,7 +704,7 @@ function AddExpenseForm({siteId, onClose}) {
                 <span className="text-white text-xs font-bold">i</span>
               </div>
               <p className="text-sm text-blue-700">
-                For <strong>{expenseTypeOptions.find(opt => opt.value === form.expenseType)?.label}</strong> expenses, 
+                For <strong>{expenseTypeOptions.find(opt => opt.value === form.expenseType)?.label}</strong> expenses,
                 quantity and unit fields are optional.
               </p>
             </div>
@@ -688,11 +742,18 @@ function AddExpenseForm({siteId, onClose}) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2.5 rounded-lg font-medium hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-md disabled:opacity-50 disabled:cursor-not-allowed text-sm`}
+            className={`flex-1 ${
+              isEditMode 
+                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700' 
+                : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700'
+            } text-white px-4 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-md disabled:opacity-50 disabled:cursor-not-allowed text-sm`}
           >
-            {isSubmitting ? 'Adding...' : 'Add Expense'}
+            {isSubmitting 
+              ? (isEditMode ? 'Updating...' : 'Adding...') 
+              : (isEditMode ? 'Update Expense' : 'Add Expense')
+            }
           </button>
-          
+
           {onClose && (
             <button
               type="button"
@@ -701,7 +762,7 @@ function AddExpenseForm({siteId, onClose}) {
             >
               Cancel
             </button>
-            )}
+          )}
         </div>
       </form>
     </div>
