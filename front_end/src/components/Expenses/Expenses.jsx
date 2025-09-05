@@ -79,8 +79,10 @@ function Expenses() {
 
   // Filter and sort expenses based on search and type
   const filteredExpenses = allExpenses?.filter(expense => {
-    const matchesSearch = expense.expenseType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      expense.vehicleNumber?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = 
+      expense.expenseType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      expense.vehicleNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      expense.supplierName?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === 'all' || expense.expenseType === filterType;
     return matchesSearch && matchesType;
   }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) || [];
@@ -295,6 +297,11 @@ function Expenses() {
           </h2>
           <div className="text-sm text-gray-600">
             {filteredExpenses.length} of {allExpenses?.length || 0} records
+            {searchTerm && (
+              <span className="ml-2 px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs">
+                Search: "{searchTerm}"
+              </span>
+            )}
           </div>
         </div>
 
@@ -323,6 +330,7 @@ function Expenses() {
                     supplierName={expense.supplierName}
                     details={expense.details}
                     createdAt={expense.createdAt}
+                    searchTerm={searchTerm}
                   />
                 </div>
               ))}

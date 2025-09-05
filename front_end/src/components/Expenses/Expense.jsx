@@ -10,11 +10,33 @@ import { Link } from 'react-router-dom';
 
 const API_URL = "http://localhost:3000";
 
-function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalCost, arrivalDate, vehicleNumber, supplierName, details, createdAt }) {
+function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalCost, arrivalDate, vehicleNumber, supplierName, details, createdAt, searchTerm }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const dispatch = useDispatch()
+
+  // Highlight text function
+  const highlightText = (text, searchTerm) => {
+    if (!text || !searchTerm || typeof text !== 'string') return text;
+
+    const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const parts = text.split(regex);
+
+    return parts.map((part, index) => {
+      if (part.toLowerCase() === searchTerm.toLowerCase()) {
+        return (
+          <span
+            key={index}
+            className="bg-yellow-200 text-yellow-900 px-1 py-0.5 rounded-sm font-semibold animate-pulse"
+          >
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
 
   // Format the date
   const formatDate = (dateString) => {
@@ -129,9 +151,19 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
   };
 
   // Truncate text for better display
-  const truncateText = (text, maxLength = 20) => {
+  
+
+  // Create highlighted truncated text
+  const getHighlightedTruncatedText = (text, maxLength, searchTerm) => {
     if (!text) return 'N/A';
-    return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+    
+    // If there's a search term and it matches, don't truncate to show the match
+    if (searchTerm && text.toLowerCase().includes(searchTerm.toLowerCase())) {
+      return highlightText(text, searchTerm);
+    }
+    
+    const truncated = text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+    return highlightText(truncated, searchTerm);
   };
 
   return (
@@ -187,7 +219,7 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
               <div className="min-w-0">
                 <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getExpenseTypeColor(expenseType)} mb-1`}>
                   <Tag className="w-3 h-3 mr-1" />
-                  {formatExpenseType(expenseType)}
+                  {highlightText(formatExpenseType(expenseType), searchTerm)}
                 </div>
                 <div className="flex items-center space-x-2 text-xs text-gray-500">
                   <span className="bg-gray-100 px-2 py-0.5 rounded font-medium">
@@ -218,7 +250,7 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
                         key={index}
                         className="inline-block px-2 py-0.5 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full border border-amber-200"
                       >
-                        {type}
+                        {highlightText(type, searchTerm)}
                       </span>
                     ))
                   ) : (
@@ -234,7 +266,7 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
                   <span className="text-xs font-medium">Supplier</span>
                 </div>
                 <div className="text-xs font-semibold text-indigo-700" title={supplierName || 'N/A'}>
-                  {truncateText(supplierName, 12)}
+                  {getHighlightedTruncatedText(supplierName, 12, searchTerm)}
                 </div>
               </div>
 
@@ -256,13 +288,13 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
                   <span className="text-xs font-medium">Details</span>
                 </div>
                 <div className="text-xs font-semibold text-teal-700 cursor-help">
-                  {truncateText(details, 12)}
+                  {getHighlightedTruncatedText(details, 12, searchTerm)}
                 </div>
                 
                 {/* Tooltip for full details */}
                 {details && details.length > 12 && !isDeleting && (
                   <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-xl opacity-0 group-hover/details:opacity-100 transition-opacity duration-300 pointer-events-none z-50 max-w-sm whitespace-normal">
-                    <div className="break-words">{details}</div>
+                    <div className="break-words">{highlightText(details, searchTerm)}</div>
                     <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                   </div>
                 )}
@@ -312,7 +344,7 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
                   <div className="bg-blue-50 border border-blue-200 text-blue-700 px-3 py-2 rounded-lg text-xs font-semibold mb-2 min-w-[90px]">
                     <div className="flex items-center justify-center">
                       <Truck className="w-3 h-3 mr-1" />
-                      <span>{vehicleNumber}</span>
+                      <span>{highlightText(vehicleNumber, searchTerm)}</span>
                     </div>
                   </div>
                 ) : (
@@ -366,16 +398,16 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="p-2 bg-amber-50 rounded border border-amber-100">
                 <span className="text-amber-600 font-medium">Stone: </span>
-                <span className="text-amber-700 font-semibold">{formatStoneTypes(stoneType)}</span>
+                <span className="text-amber-700 font-semibold">{highlightText(formatStoneTypes(stoneType), searchTerm)}</span>
               </div>
               <div className="p-2 bg-indigo-50 rounded border border-indigo-100">
                 <span className="text-indigo-600 font-medium">Supplier: </span>
-                <span className="text-indigo-700 font-semibold">{supplierName || 'N/A'}</span>
+                <span className="text-indigo-700 font-semibold">{highlightText(supplierName || 'N/A', searchTerm)}</span>
               </div>
               {details && (
                 <div className="col-span-2 p-2 bg-teal-50 rounded border border-teal-100">
                   <span className="text-teal-600 font-medium">Details: </span>
-                  <span className="text-teal-700 font-semibold">{details}</span>
+                  <span className="text-teal-700 font-semibold">{highlightText(details, searchTerm)}</span>
                 </div>
               )}
             </div>
