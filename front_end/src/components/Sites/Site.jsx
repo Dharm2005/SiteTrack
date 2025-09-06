@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, User, Phone, Calendar, ImageIcon, Loader2, Edit, Trash2 } from 'lucide-react';
+import { MapPin, User, Phone, Calendar, ImageIcon, Loader2, Edit, Trash2, X, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteSiteFromDB } from '../../services/siteService';
@@ -12,6 +12,7 @@ function Site({ id, name, location, image, managerId, createdAt }) {
   const manager = managers.find((m) => m._id === managerId)
   const dispatch = useDispatch()
   const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null)
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
 
   const formatDate = (dateString) => {
@@ -60,134 +61,158 @@ function Site({ id, name, location, image, managerId, createdAt }) {
   };
 
   return (
-    <div className={`bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden border border-gray-100 group hover:scale-105 ${isAnimatingOut
+    <>
+      <div className={`bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden border border-gray-100 group hover:scale-105 ${isAnimatingOut
         ? 'opacity-0 scale-95 transform translate-y-4'
         : 'opacity-100 scale-100 transform translate-y-0'
-      } ${isDeleting ? 'pointer-events-none' : ''}`}>
-      {/* Large Image Section */}
-      <div className="relative h-64 bg-gradient-to-br from-blue-500 to-purple-600 overflow-hidden">
-        {image ? (
-          <>
-            <img
-              src={`${API_URL}/uploads/sites/${image}`}
-              alt={name || 'Site Image'}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-              onError={handleImageError}
-            />
-            {/* Fallback icon - hidden by default */}
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 hidden">
+        } ${isDeleting ? 'pointer-events-none' : ''}`}>
+        {/* Large Image Section */}
+        <div className="relative h-64 bg-gradient-to-br from-blue-500 to-purple-600 overflow-hidden hover:border cursor-pointer" onClick={() => !isDeleting && setSelectedImage(`${API_URL}/uploads/sites/${image}`)}>
+          {image ? (
+            <>
+              <img
+                src={`${API_URL}/uploads/sites/${image}`}
+                alt={name || 'Site Image'}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                onError={handleImageError}
+              />
+              {/* Fallback icon - hidden by default */}
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 hidden">
+                <ImageIcon className="w-20 h-20 text-white/70" />
+              </div>
+            </>
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
               <ImageIcon className="w-20 h-20 text-white/70" />
             </div>
-          </>
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
-            <ImageIcon className="w-20 h-20 text-white/70" />
+          )}
+
+          {/* Overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent"></div>
+
+          {/* Magnifying Glass Icon - Shows on hover */}
+          <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <ImageIcon className="w-5 h-5 text-white drop-shadow-lg" />
           </div>
-        )}
 
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent"></div>
+          {/* Site name overlay */}
+          <div className="absolute bottom-6 left-6 right-6">
+            <h3 className="text-white text-2xl font-bold truncate drop-shadow-lg">
+              {name || 'Unnamed Site'}
+            </h3>
+          </div>
 
-        {/* Site name overlay */}
-        <div className="absolute bottom-6 left-6 right-6">
-          <h3 className="text-white text-2xl font-bold truncate drop-shadow-lg">
-            {name || 'Unnamed Site'}
-          </h3>
+          {/* Deleting Overlay */}
+          {isDeleting && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <div className="bg-white bg-opacity-90 rounded-full p-4">
+                <Loader2 className="w-8 h-8 text-red-600 animate-spin" />
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Deleting Overlay */}
-        {isDeleting && (
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white bg-opacity-90 rounded-full p-4">
-              <Loader2 className="w-8 h-8 text-red-600 animate-spin" />
+        {/* Compact Details Section */}
+        <div className="p-6">
+          {/* Two Column Layout for Details */}
+          <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+            {/* Left Column */}
+            <div className="space-y-4">
+              {/* Location */}
+              <div>
+                <div className="flex items-center space-x-2 mb-1">
+                  <MapPin className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm font-medium text-gray-500">Location</span>
+                </div>
+                <p className="text-gray-900 font-medium truncate">
+                  {location || 'Not specified'}
+                </p>
+              </div>
+
+              {/* Manager Name */}
+              <div>
+                <div className="flex items-center space-x-2 mb-1">
+                  <User className="w-4 h-4 text-green-600" />
+                  <span className="text-sm font-medium text-gray-500">Manager</span>
+                </div>
+                <p className="text-gray-900 font-medium truncate">
+                  {manager?.managerName || 'Not assigned'}
+                </p>
+              </div>
+            </div>
+
+            {/* Right Column */}
+            <div className="space-y-4">
+              {/* Created Date */}
+              <div>
+                <div className="flex items-center space-x-2 mb-1">
+                  <Calendar className="w-4 h-4 text-orange-600" />
+                  <span className="text-sm font-medium text-gray-500">Created</span>
+                </div>
+                <p className="text-gray-900 font-medium">
+                  {formatDate(createdAt)}
+                </p>
+              </div>
             </div>
           </div>
-        )}
-      </div>
 
-      {/* Compact Details Section */}
-      <div className="p-6">
-        {/* Two Column Layout for Details */}
-        <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-          {/* Left Column */}
-          <div className="space-y-4">
-            {/* Location */}
-            <div>
-              <div className="flex items-center space-x-2 mb-1">
-                <MapPin className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-gray-500">Location</span>
-              </div>
-              <p className="text-gray-900 font-medium truncate">
-                {location || 'Not specified'}
-              </p>
-            </div>
+          {/* Action Buttons */}
+          <div className="flex items-center space-x-3 mt-6">
+            <Link
+              to={`/site/${id}`}
+              className={`flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-center ${isDeleting ? 'opacity-50 pointer-events-none' : ''
+                }`}
+            >
+              View Details
+            </Link>
 
-            {/* Manager Name */}
-            <div>
-              <div className="flex items-center space-x-2 mb-1">
-                <User className="w-4 h-4 text-green-600" />
-                <span className="text-sm font-medium text-gray-500">Manager</span>
-              </div>
-              <p className="text-gray-900 font-medium truncate">
-                {manager?.managerName || 'Not assigned'}
-              </p>
-            </div>
-          </div>
+            {/* Edit Button Icon */}
+            <Link
+              to={`/edit-site/${id}`}
+              className={`p-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-md ${isDeleting ? 'opacity-50 pointer-events-none' : ''
+                }`}
+              title="Edit Site"
+            >
+              <Edit className="w-5 h-5" />
+            </Link>
 
-          {/* Right Column */}
-          <div className="space-y-4">
-            {/* Created Date */}
-            <div>
-              <div className="flex items-center space-x-2 mb-1">
-                <Calendar className="w-4 h-4 text-orange-600" />
-                <span className="text-sm font-medium text-gray-500">Created</span>
-              </div>
-              <p className="text-gray-900 font-medium">
-                {formatDate(createdAt)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex items-center space-x-3 mt-6">
-          <Link
-            to={`/site/${id}`}
-            className={`flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg text-center ${isDeleting ? 'opacity-50 pointer-events-none' : ''
-              }`}
-          >
-            View Details
-          </Link>
-
-          {/* Edit Button Icon */}
-          <Link
-            to={`/edit-site/${id}`}
-            className={`p-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-md ${isDeleting ? 'opacity-50 pointer-events-none' : ''
-              }`}
-            title="Edit Site"
-          >
-            <Edit className="w-5 h-5" />
-          </Link>
-
-          {/* Delete Button Icon */}
-          <button
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className={`p-3 transition-all duration-200 transform hover:scale-105 shadow-md rounded-xl ${isDeleting
+            {/* Delete Button Icon */}
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className={`p-3 transition-all duration-200 transform hover:scale-105 shadow-md rounded-xl ${isDeleting
                 ? 'bg-red-300 text-red-600 cursor-not-allowed'
                 : 'bg-red-100 hover:bg-red-200 text-red-700'
-              }`}
-            title="Delete Site"
-          >
-            {isDeleting ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Trash2 className="w-5 h-5" />
-            )}
-          </button>
+                }`}
+              title="Delete Site"
+            >
+              {isDeleting ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Trash2 className="w-5 h-5" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+      {selectedImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+          <div className="relative max-w-4xl max-h-[90vh]">
+            <img
+              src={selectedImage}
+              alt="Full Bill"
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+            />
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-gray-100"
+            >
+              <X className="w-5 h-5 text-gray-800" />
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
