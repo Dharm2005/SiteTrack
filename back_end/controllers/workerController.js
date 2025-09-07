@@ -6,7 +6,7 @@ const fs = require('fs');
 exports.getWorkersBySite = async (req , res , next) => {
   try{
     const siteId = req.params.siteId;
-    const workers = await Worker.find({sites : siteId , isDeleted : false})
+    const workers = await Worker.find({site : siteId , isDeleted : false})
 
     res.status(200).json(workers);
   } catch(err) {
@@ -28,23 +28,14 @@ exports.getWorkerById = async (req, res, next) => {
 
 exports.postAddWorker = async (req, res, next) => {
   try {
-    let { workerName, workerMobile, sites } = req.body;
+    let { workerName, workerMobile, site } = req.body;
     const workerImage = req.file ? req.file.filename : null;
-
-    // Parse sites correctly
-    if (typeof sites === "string") {
-      try {
-        sites = JSON.parse(sites); // convert to array if JSON string
-      } catch (err) {
-        sites = [sites]; // fallback to single site string
-      }
-    }
 
     const worker = new Worker({
       workerName,
       workerImage,
       workerMobile,
-      sites: Array.isArray(sites) ? sites : [sites],
+      site,
     });
 
     const savedWorker = await worker.save();

@@ -16,12 +16,11 @@ const workerSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  sites: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Site"
-    }
-  ]
+  site: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Site"
+  }
+  
 }, { timestamps: true });
 
 module.exports = mongoose.model("Worker", workerSchema);

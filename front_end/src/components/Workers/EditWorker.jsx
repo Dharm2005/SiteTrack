@@ -25,7 +25,7 @@ function EditWorker() {
 
   return (
     <AddWorkerForm
-      siteId={workerData.sites?.[0]}
+      siteId={workerData.site}
       initialValues = {workerData}
     />
   )

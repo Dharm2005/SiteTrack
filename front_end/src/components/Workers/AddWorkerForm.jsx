@@ -17,7 +17,7 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
     workerName: '',
     workerImage: null,
     workerMobile: '',
-    sites: []
+    site: '',
   })
 
   const [errors, setErrors] = useState({});
@@ -96,7 +96,7 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
         workerName: initialValues.workerName || '',
         workerImage: null,
         workerMobile: initialValues.workerMobile || '',
-        sites: []
+        site: ''
       })
     }
 
@@ -127,7 +127,7 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
       }
       formData.append("workerMobile", form.workerMobile);
       if (!initialValues && siteId) {
-        formData.append("sites", JSON.stringify([siteId]));
+        formData.append("site", siteId);
       }
 
       if (initialValues) {
@@ -147,7 +147,7 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
         workerName: '',
         workerImage: null,
         workerMobile: '',
-        sites: []
+        site: ''
       });
       setImagePreview(null);
       setErrors({});

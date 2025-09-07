@@ -7,12 +7,11 @@ import Advance from './Advance';
 import AddAdvanceForm from './AddAdvanceForm';
 import { Plus, DollarSign, ArrowLeft } from 'lucide-react';
 
-function WorkerDetail({workerId}) {
+function WorkerDetail({workerId , workerName}) {
+  
   const allAdvance = useSelector(state => state.advance.advances);
   const dispatch = useDispatch();
   const [showAddForm, setShowAddForm] = useState(false);
-
-  console.log("all", allAdvance);
 
   useEffect(() => {
     const fetchAdvance = async () => {
@@ -49,7 +48,7 @@ function WorkerDetail({workerId}) {
               <DollarSign className="w-7 h-7 text-green-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Worker Advances</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{workerName}'s Advances</h1>
               <div className="flex items-center space-x-4 text-sm text-gray-600">
                 <span>{allAdvance?.length || 0} advances</span>
                 <span>•</span>
