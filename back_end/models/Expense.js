@@ -32,6 +32,9 @@ const expenseSchema = new mongoose.Schema(
     stoneType: [
       {
         type: String,
+        required: function(){
+          return this.expenseType === "crushedStone"
+        },
         enum: ["60mm", "40mm", "25mm", "10mm", "6mm", "Powder", "Wet mix", "GSB", "Other"]
       }
     ],
@@ -42,6 +45,7 @@ const expenseSchema = new mongoose.Schema(
     },
     arrivalDate: {
       type: Date,
+      required: true,
       default: Date.now,
     },
     vehicleNumber: {

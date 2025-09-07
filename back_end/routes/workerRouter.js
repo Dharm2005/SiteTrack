@@ -12,6 +12,10 @@ workerRouter.get('/worker/:workerId/advance',workerController.getAdvancesByWorke
 workerRouter.post('/worker/add-advance',upload.none(),workerController.addWorkerAdvance)
 workerRouter.put('/worker/advance/:advanceId',upload.none(),workerController.updateAdvance)
 
+workerRouter.get('/worker/:workerId/earn',workerController.getEarnByWorker)
+workerRouter.post('/worker/add-earn',upload.none(),workerController.addWorkerEarn)
+workerRouter.put('/worker/earn/:earnId',upload.none(),workerController.updateEarn)
+
 workerRouter.delete('/worker/:workerId',workerController.deleteWorker)
 workerRouter.put('/worker/:workerId',upload.single("workerImage"),workerController.updateWorker)
 

@@ -1,5 +1,6 @@
 const Worker = require('../models/Worker');
 const Advance = require('../models/Advance');
+const Earn = require('../models/Earn');
 const path = require('path');
 const fs = require('fs');
 
@@ -67,6 +68,41 @@ exports.deleteWorker = async (req, res, next) => {
   }
 }
 
+exports.updateWorker = async (req, res, next) => {
+  try {
+    const {workerId} = req.params;
+    const updates = {...req.body};
+
+    if(req.file){
+      const oldWorker = await Worker.findById(workerId);
+
+      if(oldWorker && oldWorker.workerImage){
+        const oldPath = path.join(__dirname,"../uploads/workers",oldWorker.workerImage)
+        if(fs.existsSync(oldPath)){
+          fs.unlinkSync(oldPath)
+        }
+      }
+      updates.workerImage = req.file.filename;
+    }
+
+    const updatedWorker = await Worker.findByIdAndUpdate(
+      workerId,
+      updates,
+      {new: true}
+    )
+
+    if(!updatedWorker){
+      return res.status(400).json({message : "No worker found for update"})
+    }
+
+    return res.json(updatedWorker);
+
+  } catch (error) {
+    console.error("Error while editing worker in backend" , error);
+  }
+}
+
+
 exports.getAdvancesByWorker = async (req, res, next) => {
   try{
     let workerId = req.params.workerId;
@@ -103,40 +139,6 @@ exports.addWorkerAdvance = async (req, res, next) => {
   }
 }
 
-exports.updateWorker = async (req, res, next) => {
-  try {
-    const {workerId} = req.params;
-    const updates = {...req.body};
-
-    if(req.file){
-      const oldWorker = await Worker.findById(workerId);
-
-      if(oldWorker && oldWorker.workerImage){
-        const oldPath = path.join(__dirname,"../uploads/workers",oldWorker.workerImage)
-        if(fs.existsSync(oldPath)){
-          fs.unlinkSync(oldPath)
-        }
-      }
-      updates.workerImage = req.file.filename;
-    }
-
-    const updatedWorker = await Worker.findByIdAndUpdate(
-      workerId,
-      updates,
-      {new: true}
-    )
-
-    if(!updatedWorker){
-      return res.status(400).json({message : "No worker found for update"})
-    }
-
-    return res.json(updatedWorker);
-
-  } catch (error) {
-    console.error("Error while editing worker in backend" , error);
-  }
-}
-
 exports.updateAdvance = async (req, res, next) => {
   try {
     const {advanceId} = req.params;
@@ -155,5 +157,63 @@ exports.updateAdvance = async (req, res, next) => {
 
   } catch (error) {
     console.error("Error while editing advance in DB" ,error);
+  }
+}
+
+
+exports.getEarnByWorker = async (req, res, next) => {
+  try{
+    let workerId = req.params.workerId;
+    const earn = await Earn.find({worker : workerId});
+
+    res.status(200).json(earn)
+  }catch(err) {
+    console.error("Error fetching eanr:", err);
+    res.status(500).json({ err: "Failed to fetch earn" });
+  }
+}
+
+exports.addWorkerEarn = async (req, res, next) => {
+  try{
+    let {worker, amount, date, note} = req.body;
+
+    const workerExists = await Worker.findById(worker);
+    if (!workerExists) {
+      return res.status(404).json({ message: "Worker not found" });
+    }
+
+    const earn = new Earn({
+      worker,
+      amount,
+      date,
+      note
+    })
+
+    const savedEarn = await earn.save();
+    res.status(201).json(savedEarn)
+  }catch(error) {
+    console.error("Error Adding earn:", error);
+    res.status(500).json({ message: "Error Adding earn", error: error.message });
+  }
+}
+
+exports.updateEarn = async (req, res, next) => {
+  try {
+    const {earnId} = req.params;
+    const updates = {...req.body};
+
+    const updatedEarn = await Earn.findByIdAndUpdate(
+      earnId,
+      updates,
+      {new : true}
+    )
+    
+    if(!updatedEarn){
+      return res.status(404).json({message : "Earn not found for update"})
+    }
+    return res.status(200).json(updatedEarn);
+
+  } catch (error) {
+    console.error("Error while editing Earn in DB" ,error);
   }
 }
