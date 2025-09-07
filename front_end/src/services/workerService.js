@@ -86,7 +86,7 @@ export const updateAdvanceToDB = async (advanceId , advanceData) => {
 
 export const getEarnByWorker = async (workerId) => {
   try{
-    const response = await axios.get(`http://localhost:3000/worker/${workerId}/eanr`);
+    const response = await axios.get(`http://localhost:3000/worker/${workerId}/earn`);
     return response.data;
   } catch(err) {
     throw new Error(err.response?.data?.message || "Failed to fetch earn");
