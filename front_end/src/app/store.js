@@ -5,6 +5,7 @@ import expenseReducer from "../features/expenseSlice";
 import managerReducer from '../features/managerSlice'
 import memoReducer from '../features/memoSlice'
 import workerAdvanceReducer from '../features/workerAdvanceSlice'
+import workerEarnReducer from '../features/workerEarnSlice'
 
 export const store = configureStore({
   reducer : {
@@ -14,5 +15,6 @@ export const store = configureStore({
     manager : managerReducer,
     memo : memoReducer,
     advance : workerAdvanceReducer,
+    earn : workerEarnReducer
   }
 })
