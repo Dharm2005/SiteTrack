@@ -50,7 +50,9 @@ const expenseSchema = new mongoose.Schema(
     },
     supplierName: {
       type: String,
-      required: true,
+      required: function(){
+        return this.expenseType !== 'diesel' && this.expenseType !== 'other';
+      },
       trim: true,
     },
     details: {
