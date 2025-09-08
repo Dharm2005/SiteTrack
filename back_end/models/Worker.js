@@ -19,6 +19,10 @@ const workerSchema = new mongoose.Schema({
   site: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Site"
+  },
+  isCompleted: {
+    type : Boolean,
+    default : false
   }
   
 }, { timestamps: true });

@@ -6,7 +6,7 @@ import { setAdvances } from '../../features/workerAdvanceSlice';
 import Advance from './Advance';
 import Earn from './Earn';
 import AddAdvanceForm from './AddAdvanceForm';
-import { Plus, DollarSign, ArrowLeft } from 'lucide-react';
+import { Plus, DollarSign, ArrowLeft, Calculator, TrendingUp, TrendingDown, Calendar, FileText } from 'lucide-react';
 import { setEarn } from '../../features/workerEarnSlice';
 import AddEarnForm from './AddEarnForm';
 
@@ -16,7 +16,7 @@ function WorkerDetail({ workerId, workerName }) {
   const allEarn = useSelector(state => state.earn.earnings)
   const dispatch = useDispatch();
   const [showAddForm, setShowAddForm] = useState(false);
-  const [selectedPage, setSelectedPage] = useState('earn');
+  const [selectedPage, setSelectedPage] = useState('settlement');
 
   useEffect(() => {
     const fetchEarn = async () => {
@@ -53,32 +53,67 @@ function WorkerDetail({ workerId, workerName }) {
 
   const totalEarn = allEarn?.reduce((sum, earn) => sum + parseFloat(earn.amount || 0), 0) || 0;
 
+  const totalPayable = totalEarn - totalAdvances;
 
   return (
     <>
-
       <nav className="mb-6">
-        <div className="flex bg-gray-100 p-1 rounded-lg w-fit">
-          <button
-            onClick={() => setSelectedPage("earn")}
-            className={`px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 ${selectedPage === 'earn'
+        <div className="flex items-center justify-between">
+          {/* Navigation Tabs */}
+          <div className="flex bg-gray-100 p-1 rounded-lg w-fit">
+            <button
+              onClick={() => setSelectedPage("settlement")}
+              className={`px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 ${selectedPage === 'settlement'
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-500 hover:text-gray-700'
-              }`}
-          >
-            Earnings
-          </button>
-          <button
-            onClick={() => setSelectedPage("advance")}
-            className={`px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 ${selectedPage === 'advance'
+                }`}
+            >
+              Final Settlement
+            </button>
+            <button
+              onClick={() => setSelectedPage("earn")}
+              className={`px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 ${selectedPage === 'earn'
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-500 hover:text-gray-700'
-              }`}
-          >
-            Advances
-          </button>
+                }`}
+            >
+              Earnings
+            </button>
+            <button
+              onClick={() => setSelectedPage("advance")}
+              className={`px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 ${selectedPage === 'advance'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
+                }`}
+            >
+              Advances
+            </button>
+            
+          </div>
+
+          {/* Total Payable Amount */}
+          <div className="bg-white rounded-lg px-6 py-3 shadow-sm border">
+            <div className="flex items-center space-x-4">
+              <div className="text-sm text-gray-600 font-medium">
+                Total Payable Amount:
+              </div>
+              <div className="flex items-center space-x-2 text-sm">
+                <span className="font-semibold text-blue-600">₹{totalEarn.toLocaleString()}</span>
+                <span className="text-gray-400">-</span>
+                <span className="font-semibold text-red-600">₹{totalAdvances.toLocaleString()}</span>
+                <span className="text-gray-400">=</span>
+                <span className={`font-bold text-lg px-3 py-1 rounded-lg ${totalPayable >= 0
+                    ? 'text-green-700 bg-green-100'
+                    : 'text-red-700 bg-red-100'
+                  }`}>
+                  ₹{totalPayable.toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </nav>
+
       {selectedPage === 'advance' ? (
         <div className="space-y-4 p-4 bg-gray-50 min-h-screen">
           {/* Header Section */}
@@ -166,7 +201,9 @@ function WorkerDetail({ workerId, workerName }) {
             </div>
           )}
         </div>
-      ) : (
+      ) : (<></>)}
+
+      {selectedPage === 'earn' ? (
         <div className="space-y-4 p-4 bg-gray-50 min-h-screen">
           {/* Header Section */}
           <div className="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm">
@@ -253,7 +290,187 @@ function WorkerDetail({ workerId, workerName }) {
             </div>
           )}
         </div>
-      )}
+      ) : (<></>)}
+
+      {selectedPage === 'settlement' ? (
+        <div className="space-y-6 p-4 bg-gray-50 min-h-screen">
+          {/* Header Section */}
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Calculator className="w-7 h-7 text-blue-600" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">{workerName}'s Final Settlement</h1>
+                <p className="text-gray-600">Complete overview of advances, earnings, and final payment</p>
+              </div>
+            </div>
+          </div>
+          {/* Three Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* Earnings Section */}
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="bg-green-100 text-green-800 p-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold">All Earnings</h3>
+                    <p className="text-green-600 text-sm">{allEarn?.length || 0} transactions</p>
+                  </div>
+                  <div className="bg-green-200 p-2 rounded-lg">
+                    <TrendingUp className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="max-h-80 overflow-y-auto">
+                {allEarn && allEarn.length > 0 ? (
+                  <div className="divide-y divide-gray-100">
+                    {allEarn.map((earn, index) => (
+                      <div key={earn._id || index} className="p-3 hover:bg-gray-50 transition-colors">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center text-xs text-gray-500">
+                            <Calendar className="w-3 h-3 mr-1" />
+                            {new Date(earn.date || earn.createdAt).toLocaleDateString()}
+                          </div>
+                          <span className="font-semibold text-green-600">₹{parseFloat(earn.amount).toLocaleString()}</span>
+                        </div>
+                        {earn.note && (
+                          <div className="flex items-start space-x-2">
+                            <FileText className="w-3 h-3 text-gray-400 mt-0.5 flex-shrink-0" />
+                            <p className="text-xs text-gray-600 line-clamp-2">{earn.note}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-6 text-center">
+                    <TrendingUp className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                    <p className="text-gray-500 text-sm">No earnings recorded</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-green-50 p-3 border-t border-green-100">
+                <div className="flex items-center justify-between">
+                  <span className="text-green-700 font-medium text-sm">Total Earnings:</span>
+                  <span className="text-green-800 font-bold">₹{totalEarn.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Advances Section */}
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="bg-red-100 text-red-800 p-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold">All Advances</h3>
+                    <p className="text-red-600 text-sm">{allAdvance?.length || 0} transactions</p>
+                  </div>
+                  <div className="bg-red-200 p-2 rounded-lg">
+                    <TrendingDown className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="max-h-80 overflow-y-auto">
+                {allAdvance && allAdvance.length > 0 ? (
+                  <div className="divide-y divide-gray-100">
+                    {allAdvance.map((advance, index) => (
+                      <div key={advance._id || index} className="p-3 hover:bg-gray-50 transition-colors">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center text-xs text-gray-500">
+                            <Calendar className="w-3 h-3 mr-1" />
+                            {new Date(advance.date || advance.createdAt).toLocaleDateString()}
+                          </div>
+                          <span className="font-semibold text-red-600">₹{parseFloat(advance.amount).toLocaleString()}</span>
+                        </div>
+                        {advance.note && (
+                          <div className="flex items-start space-x-2">
+                            <FileText className="w-3 h-3 text-gray-400 mt-0.5 flex-shrink-0" />
+                            <p className="text-xs text-gray-600 line-clamp-2">{advance.note}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-6 text-center">
+                    <TrendingDown className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                    <p className="text-gray-500 text-sm">No advances recorded</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-red-50 p-3 border-t border-red-100">
+                <div className="flex items-center justify-between">
+                  <span className="text-red-700 font-medium text-sm">Total Advances:</span>
+                  <span className="text-red-800 font-bold">₹{totalAdvances.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Final Payment Section */}
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className={`p-3 ${totalPayable >= 0
+                  ? 'bg-blue-100 text-blue-800'
+                  : 'bg-orange-100 text-orange-800'
+                }`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold">Final Payment</h3>
+                    <p className={`text-sm ${totalPayable >= 0 ? 'text-blue-600' : 'text-orange-600'
+                      }`}>
+                      {totalPayable >= 0 ? 'Amount to Pay' : 'Amount Overpaid'}
+                    </p>
+                  </div>
+                  <div className={`p-2 rounded-lg ${totalPayable >= 0 ? 'bg-blue-200' : 'bg-orange-200'
+                    }`}>
+                    <Calculator className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4">
+                <div className="text-center mb-4">
+                  <div className={`text-3xl font-bold mb-1 ${totalPayable >= 0 ? 'text-blue-600' : 'text-orange-600'
+                    }`}>
+                    ₹{Math.abs(totalPayable).toLocaleString()}
+                  </div>
+                  <p className="text-gray-500 text-xs">
+                    {totalPayable >= 0 ? 'To be paid to worker' : 'Worker owes company'}
+                  </p>
+                </div>
+
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-600">Total Earnings:</span>
+                    <span className="font-medium text-green-600">₹{totalEarn.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-600">Total Advances:</span>
+                    <span className="font-medium text-red-600">₹{totalAdvances.toLocaleString()}</span>
+                  </div>
+                  <hr className="border-gray-200" />
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-gray-900 text-sm">Final Amount:</span>
+                    <span className={`font-bold text-sm ${totalPayable >= 0 ? 'text-blue-600' : 'text-orange-600'
+                      }`}>
+                      ₹{totalPayable.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Placeholder for future payment functionality */}
+                <div className="bg-gray-50 p-3 rounded-lg text-center">
+                  <p className="text-gray-500 text-xs mb-1">Payment System</p>
+                  <p className="text-xs text-gray-400">Coming Soon...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (<></>)}
     </>
   )
 }
