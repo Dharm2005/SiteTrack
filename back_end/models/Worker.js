@@ -20,7 +20,7 @@ const workerSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Site"
   },
-  isCompleted: {
+  isSettled: {
     type : Boolean,
     default : false
   }

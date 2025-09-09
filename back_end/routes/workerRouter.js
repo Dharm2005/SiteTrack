@@ -19,4 +19,6 @@ workerRouter.put('/worker/earn/:earnId',upload.none(),workerController.updateEar
 workerRouter.delete('/worker/:workerId',workerController.deleteWorker)
 workerRouter.put('/worker/:workerId',upload.single("workerImage"),workerController.updateWorker)
 
+workerRouter.put('/worker/:workerId/settle',workerController.settleWorker)
+
 module.exports = workerRouter;

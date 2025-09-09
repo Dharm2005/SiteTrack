@@ -116,3 +116,15 @@ export const updateEarnToDB = async (earnId , earnData) => {
     console.error("Error while editing earn",error);
   }
 }
+
+export const settledWorkerInDB = async (workerId , workerData) => {
+  try{
+    const response = await axios.put(`https://localhost:3000/worker/${workerId}/settle`,
+      workerData,
+      {headers : { "Content-Type": "application/json" }}
+    )
+    return response.data;
+  }catch(error){
+    console.error("Error while settling worker" , error)
+  }
+}

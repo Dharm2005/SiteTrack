@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import { getAdvancesByWorker, getEarnByWorker } from '../../services/workerService';
+import { getAdvancesByWorker, getEarnByWorker, settledWorkerInDB } from '../../services/workerService';
 import { setAdvances } from '../../features/workerAdvanceSlice';
 import Advance from './Advance';
 import Earn from './Earn';
@@ -9,6 +9,7 @@ import AddAdvanceForm from './AddAdvanceForm';
 import { Plus, DollarSign, ArrowLeft, Calculator, TrendingUp, TrendingDown, Calendar, FileText } from 'lucide-react';
 import { setEarn } from '../../features/workerEarnSlice';
 import AddEarnForm from './AddEarnForm';
+import { updateWorker } from '../../features/workerSlice';
 
 function WorkerDetail({ workerId, workerName }) {
 
@@ -17,6 +18,7 @@ function WorkerDetail({ workerId, workerName }) {
   const dispatch = useDispatch();
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedPage, setSelectedPage] = useState('settlement');
+  const [isSettled , setIsSettled] = useState(false);
 
   useEffect(() => {
     const fetchEarn = async () => {
@@ -40,6 +42,23 @@ function WorkerDetail({ workerId, workerName }) {
   }, [dispatch, workerId])
   console.log("advance", allAdvance, "earn", allEarn);
 
+  const handleSettlement = async (e) => {
+    e.preventDefault();
+    try {
+      const confirm = window.confirm("Are you sure ? you can not change it leter")
+
+      if(!confirm){
+        return;
+      }else{
+        const settleCheck = isSettled;
+        const res = await settledWorkerInDB(workerId , settleCheck);
+        dispatch(updateWorker(res));
+        setIsSettled(res.isSettled);
+      }
+    } catch (error) {
+      console.log("Error while settling worker", error);
+    }
+  }
 
   const handleCloseForm = () => {
     setShowAddForm(false);
@@ -119,9 +138,6 @@ function WorkerDetail({ workerId, workerName }) {
           {/* Header Section */}
           <div className="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm">
             <div className="flex items-center space-x-4">
-              <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <ArrowLeft className="w-6 h-6 text-gray-600" />
-              </button>
               <div className="flex items-center space-x-3">
                 <div className="p-3 bg-green-100 rounded-lg">
                   <DollarSign className="w-7 h-7 text-green-600" />
@@ -208,9 +224,6 @@ function WorkerDetail({ workerId, workerName }) {
           {/* Header Section */}
           <div className="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm">
             <div className="flex items-center space-x-4">
-              <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <ArrowLeft className="w-6 h-6 text-gray-600" />
-              </button>
               <div className="flex items-center space-x-3">
                 <div className="p-3 bg-green-100 rounded-lg">
                   <DollarSign className="w-7 h-7 text-green-600" />
@@ -463,8 +476,16 @@ function WorkerDetail({ workerId, workerName }) {
 
                 {/* Placeholder for future payment functionality */}
                 <div className="bg-gray-50 p-3 rounded-lg text-center">
-                  <p className="text-gray-500 text-xs mb-1">Payment System</p>
-                  <p className="text-xs text-gray-400">Coming Soon...</p>
+                  <form onSubmit={handleSettlement}>
+                    <label>Pay and Complete the worker</label>
+                    <input
+                      name="isSettled"
+                      type="checkbox"
+                      checked={isSettled}
+                      onChange={(e) => setIsSettled(e.target.checked)}
+                    />
+                    <button type='submit'>Save</button>
+                  </form>
                 </div>
               </div>
             </div>

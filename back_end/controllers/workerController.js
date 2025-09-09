@@ -217,3 +217,23 @@ exports.updateEarn = async (req, res, next) => {
     console.error("Error while editing Earn in DB" ,error);
   }
 }
+
+exports.settleWorker = async (req, res, next) => {
+  try {
+    const {workerId} = req.params;
+    const {isSettled} = req.body;
+
+    const settledWorker = await Worker.findByIdAndUpdate(
+      workerId,
+      {isSettled},
+      {new : true}
+    )
+
+    if(!settledWorker){
+      return res.status(404).json({message : "Worker not found for settlement"})
+    }
+    return res.status(200).json(settledWorker)
+  } catch (error) {
+    console.log("Error while settling worker" , error);
+  }
+}
