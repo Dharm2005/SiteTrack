@@ -11,10 +11,11 @@ function Workers() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedWorkerId, setSelectedWorkerId] = useState(null);
   const [selectedWorkerName, setSelectedWorkerName] = useState(null);
+  const [selectedWorkerSettle, setSelectedWorkerSettle] = useState(false);
   const allWorkers = useSelector((state) => state.worker.workers);
   const dispatch = useDispatch()
   const { id } = useParams()
-
+  
   useEffect(() => {
     const fetchWorkers = async () => {
       try {
@@ -37,9 +38,10 @@ function Workers() {
     setShowAddForm(true);
   };
 
-  const handleWorkerSelect = (workerId, workerName) => {
+  const handleWorkerSelect = (workerId, workerName, isSettled) => {
     setSelectedWorkerId(workerId);
     setSelectedWorkerName(workerName);
+    setSelectedWorkerSettle(isSettled);
   };
 
   // Find selected worker for display
@@ -100,7 +102,11 @@ function Workers() {
                   <div 
                     key={worker._id} 
                     className={`flex-shrink-0 w-40 cursor-pointer transition-all duration-200 transform hover:scale-105 ${selectedWorkerId === worker._id ? 'ring-2 ring-blue-500 ring-offset-2 rounded-lg' : ''}`}
-                    onClick={() => handleWorkerSelect(worker._id,worker.workerName)}
+                    onClick={() => handleWorkerSelect(
+                      worker._id,
+                      worker.workerName,
+                      worker.isSettled
+                    )}
                   >
                     <Worker
                       key={worker._id}
@@ -109,6 +115,7 @@ function Workers() {
                       image={worker.workerImage}
                       mobile={worker.workerMobile}
                       createdAt={worker.createdAt}
+                      isSettled={worker.isSettled}
                     />
                   </div>
                 ))}
@@ -148,7 +155,11 @@ function Workers() {
       {/* Worker Detail Section - Reduced spacing and improved messaging */}
       <div className="flex-1 min-h-0">
         {selectedWorkerId ? (
-          <WorkerDetail workerId={selectedWorkerId} workerName={selectedWorkerName}/>
+          <WorkerDetail
+            workerId={selectedWorkerId}
+            workerName={selectedWorkerName}
+            isSettled={selectedWorkerSettle}
+          />
         ) : (
           <div className="flex flex-col items-center justify-center h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">

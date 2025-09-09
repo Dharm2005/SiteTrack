@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 
 const API_URL = "http://localhost:3000";
 
-function Worker({id, name, image, mobile}) {
+function Worker({id, name, image, mobile, isSettled}) {
   const [showActions, setShowActions] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);

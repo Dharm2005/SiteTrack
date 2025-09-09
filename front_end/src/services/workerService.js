@@ -119,7 +119,7 @@ export const updateEarnToDB = async (earnId , earnData) => {
 
 export const settledWorkerInDB = async (workerId , workerData) => {
   try{
-    const response = await axios.put(`https://localhost:3000/worker/${workerId}/settle`,
+    const response = await axios.put(`http://localhost:3000/worker/${workerId}/settle`,
       workerData,
       {headers : { "Content-Type": "application/json" }}
     )
