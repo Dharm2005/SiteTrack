@@ -1,18 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Phone, User, Edit3, Trash2, MoreVertical, Loader2 } from 'lucide-react'
-import { useState } from 'react'
 import { deleteWorkerFromDB } from '../../services/workerService';
-import {useDispatch} from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { deleteWorker } from '../../features/workerSlice';
 import { Link } from 'react-router-dom';
 
 const API_URL = "http://localhost:3000";
 
-function Worker({id, name, image, mobile, isSettled}) {
+function Worker({ id, name, image, mobile, isSettled }) {
   const [showActions, setShowActions] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   // Format mobile number
   const formatMobile = (mobile) => {
@@ -33,22 +32,22 @@ function Worker({id, name, image, mobile, isSettled}) {
   const handleDelete = async () => {
     const confirmed = window.confirm(`Are you really want to delete "${name || "this worker"}"?`)
 
-    if(confirmed){
+    if (confirmed) {
       setIsDeleting(true);
       setIsAnimatingOut(true);
       setShowActions(false); // Close the dropdown menu
-      
-      try{
+
+      try {
         // Add a small delay to show the animation
         await new Promise(resolve => setTimeout(resolve, 300));
         await deleteWorkerFromDB(id);
-        
+
         // Wait for fade animation to complete before removing from store
         setTimeout(() => {
           dispatch(deleteWorker(id))
         }, 400);
-      }catch(error){
-        console.error("Error while deleting worker" , error);
+      } catch (error) {
+        console.error("Error while deleting worker", error);
         // Reset states on error
         setIsDeleting(false);
         setIsAnimatingOut(false);
@@ -57,35 +56,41 @@ function Worker({id, name, image, mobile, isSettled}) {
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-500 border border-gray-200 group relative ${
-      isAnimatingOut 
-        ? 'opacity-0 scale-95 transform translate-y-4' 
-        : 'opacity-100 scale-100 transform translate-y-0'
-    } ${isDeleting ? 'pointer-events-none' : ''}`}>
+    <div
+      className={`rounded-lg border group relative transition-all duration-500 ${
+        isAnimatingOut
+          ? 'opacity-0 scale-95 transform translate-y-4'
+          : 'opacity-100 scale-100 transform translate-y-0'
+      } ${isDeleting ? 'pointer-events-none' : ''} ${
+        isSettled
+          ? 'bg-gray-100 border-gray-300 opacity-70'
+          : 'bg-white border-gray-200 shadow-sm hover:shadow-md'
+      }`}
+    >
       {/* Actions Menu - Top Right */}
       <div className="absolute top-2 right-2 z-10">
         <button
           onClick={() => setShowActions(!showActions)}
-          disabled={isDeleting}
-          className={`p-1 hover:bg-gray-100 rounded-md transition-all duration-200 ${
-            isDeleting 
-              ? 'opacity-50 cursor-not-allowed' 
-              : 'opacity-0 group-hover:opacity-100'
+          disabled={isDeleting || isSettled}
+          className={`p-1 rounded-md transition-all duration-200 ${
+            isDeleting || isSettled
+              ? 'opacity-50 cursor-not-allowed'
+              : 'hover:bg-gray-100 opacity-0 group-hover:opacity-100'
           }`}
         >
           <MoreVertical className="w-3 h-3 text-gray-500" />
         </button>
 
-        {showActions && !isDeleting && (
+        {showActions && !isDeleting && !isSettled && (
           <>
-            <div 
-              className="fixed inset-0 z-10" 
+            <div
+              className="fixed inset-0 z-10"
               onClick={() => setShowActions(false)}
             ></div>
-            
+
             <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg py-1 min-w-[100px] z-20">
               <Link
-                to = {`/edit-worker/${id}`}
+                to={`/edit-worker/${id}`}
                 className="w-full px-2 py-1.5 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center space-x-1"
               >
                 <Edit3 className="w-2.5 h-2.5" />
@@ -109,8 +114,8 @@ function Worker({id, name, image, mobile, isSettled}) {
         <div className="flex justify-center mb-3">
           {image ? (
             <>
-              <img 
-                src={`${API_URL}/uploads/workers/${image}`} 
+              <img
+                src={`${API_URL}/uploads/workers/${image}`}
                 alt={name || 'Worker'}
                 className="w-16 h-16 rounded-full object-cover border-2 border-gray-100"
                 onError={handleImageError}
@@ -127,12 +132,16 @@ function Worker({id, name, image, mobile, isSettled}) {
         </div>
 
         {/* Worker Name */}
-        <h3 className="text-sm font-semibold text-gray-900 mb-2 truncate">
+        <h3
+          className={`text-sm font-semibold mb-2 truncate ${
+            isSettled ? 'text-gray-500' : 'text-gray-900'
+          }`}
+        >
           {name || 'Unnamed Worker'}
         </h3>
 
         {/* Mobile Number */}
-        <p className="text-xs text-gray-600 truncate">
+        <p className={`text-xs truncate ${isSettled ? 'text-gray-400' : 'text-gray-600'}`}>
           {formatMobile(mobile)}
         </p>
 

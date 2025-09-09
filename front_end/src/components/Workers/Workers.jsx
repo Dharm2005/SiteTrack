@@ -11,7 +11,6 @@ function Workers() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedWorkerId, setSelectedWorkerId] = useState(null);
   const [selectedWorkerName, setSelectedWorkerName] = useState(null);
-  const [selectedWorkerSettle, setSelectedWorkerSettle] = useState(false);
   const allWorkers = useSelector((state) => state.worker.workers);
   const dispatch = useDispatch()
   const { id } = useParams()
@@ -38,10 +37,9 @@ function Workers() {
     setShowAddForm(true);
   };
 
-  const handleWorkerSelect = (workerId, workerName, isSettled) => {
+  const handleWorkerSelect = (workerId, workerName) => {
     setSelectedWorkerId(workerId);
     setSelectedWorkerName(workerName);
-    setSelectedWorkerSettle(isSettled);
   };
 
   // Find selected worker for display
@@ -104,8 +102,7 @@ function Workers() {
                     className={`flex-shrink-0 w-40 cursor-pointer transition-all duration-200 transform hover:scale-105 ${selectedWorkerId === worker._id ? 'ring-2 ring-blue-500 ring-offset-2 rounded-lg' : ''}`}
                     onClick={() => handleWorkerSelect(
                       worker._id,
-                      worker.workerName,
-                      worker.isSettled
+                      worker.workerName
                     )}
                   >
                     <Worker
@@ -158,7 +155,6 @@ function Workers() {
           <WorkerDetail
             workerId={selectedWorkerId}
             workerName={selectedWorkerName}
-            isSettled={selectedWorkerSettle}
           />
         ) : (
           <div className="flex flex-col items-center justify-center h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
