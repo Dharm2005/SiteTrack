@@ -13,7 +13,7 @@ function AddManager({ initialValues }) {
     type: '',
     managerName: '',
     managerImage: '',
-    managerMobile: '',  
+    managerMobile: '',
     managerDob: '',
     managerGender: ''
   })
@@ -90,13 +90,13 @@ function AddManager({ initialValues }) {
         managerName: initialValues.managerName,
         managerImage: null,
         managerMobile: initialValues.managerMobile,
-        managerDob: initialValues.managerDob 
-          ? new Date(initialValues.managerDob).toISOString().split("T")[0] 
+        managerDob: initialValues.managerDob
+          ? new Date(initialValues.managerDob).toISOString().split("T")[0]
           : '',
         managerGender: initialValues.managerGender
       })
 
-      if(initialValues.managerImage){
+      if (initialValues.managerImage) {
         const imageUrl = `${API_URL}/uploads/managers/${initialValues.managerImage}`
         setImagePreview(imageUrl)
       }
@@ -105,6 +105,7 @@ function AddManager({ initialValues }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const formData = new FormData();
       formData.append("type", "manager");
@@ -112,30 +113,50 @@ function AddManager({ initialValues }) {
       formData.append("managerMobile", form.managerMobile);
       formData.append("managerDob", form.managerDob);
       formData.append("managerGender", form.managerGender);
-      
+
       if (form.managerImage instanceof File) {
         formData.append("managerImage", form.managerImage);
       }
 
+      let res;
+      if (initialValues) {
+        // update
+        formData.append("_id", initialValues._id);
+        res = await updateManagerToDB(initialValues._id, formData);
+      } else {
+        // add new
+        res = await addManager(formData);
+      }
 
-      if(initialValues){
-        formData.append("_id",initialValues._id)
+      // 🛑 Handle validation or server errors
+      if (res.success === false) {
+        console.log("Validation/Server error:", res);
+        if (res.errors?.length) {
+          res.errors.forEach(err => {
+            toast.error(`${err.field || err.path}: ${err.msg}`);
+          });
+        } else {
+          toast.error(res.message || "❌ Something went wrong");
+        }
+        return; // stop execution
+      }
 
-        const updatedManager = await updateManagerToDB(initialValues._id,formData)
-        dispatch(updateManager(updatedManager))
-        toast.success("✅ manager updated successfully!");
-      }else {
-        const newManager = await addManager(formData);
-        dispatch(addNewManager(newManager))
+      // ✅ Success case
+      if (initialValues) {
+        dispatch(updateManager(res));
+        toast.success("✅ Manager updated successfully!");
+      } else {
+        dispatch(addNewManager(res));
         toast.success("✅ New manager added successfully!");
       }
-      navigate('/all-manager')
+
+      navigate("/all-manager");
     } catch (error) {
-      console.error("error while adding new manager", error);
-      navigate('/all-manager')
-      toast.error("❌ Error while adding manager!");
+      console.error("Unexpected error while adding/updating manager", error);
+      toast.error("❌ Unexpected error while saving manager!");
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-6">
@@ -152,7 +173,7 @@ function AddManager({ initialValues }) {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <label htmlFor="managerName" className="block text-sm font-semibold text-gray-700">
-              Manager Name <span className="text-red-500">*</span>
+              Manager Name
             </label>
             <input
               type="text"
@@ -160,7 +181,6 @@ function AddManager({ initialValues }) {
               name="managerName"
               value={form.managerName}
               onChange={handleChange}
-              required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 outline-none"
               placeholder="Enter manager's full name"
             />
@@ -175,8 +195,8 @@ function AddManager({ initialValues }) {
             {!imagePreview ? (
               <div
                 className={`relative w-full p-8 border-2 border-dashed rounded-lg transition-colors duration-200 ${dragActive
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-300 hover:border-gray-400'
+                  ? 'border-blue-500 bg-blue-50'
+                  : 'border-gray-300 hover:border-gray-400'
                   }`}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
@@ -238,7 +258,7 @@ function AddManager({ initialValues }) {
 
           <div className="space-y-2">
             <label htmlFor="managerMobile" className="block text-sm font-semibold text-gray-700">
-              Mobile Number <span className="text-red-500">*</span>
+              Mobile Number
             </label>
             <input
               type="tel"
@@ -246,7 +266,6 @@ function AddManager({ initialValues }) {
               name="managerMobile"
               value={form.managerMobile}
               onChange={handleChange}
-              required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 outline-none"
               placeholder="Enter mobile number"
             />
@@ -254,7 +273,7 @@ function AddManager({ initialValues }) {
 
           <div className="space-y-2">
             <label htmlFor="managerDob" className="block text-sm font-semibold text-gray-700">
-              Date of Birth <span className="text-red-500">*</span>
+              Date of Birth
             </label>
             <input
               type="date"
@@ -262,14 +281,13 @@ function AddManager({ initialValues }) {
               name="managerDob"
               value={form.managerDob}
               onChange={handleChange}
-              required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 outline-none"
             />
           </div>
 
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700">
-              Gender <span className="text-red-500">*</span>
+              Gender
             </label>
             <div className="flex space-x-6">
               <label className="flex items-center cursor-pointer">
@@ -279,7 +297,6 @@ function AddManager({ initialValues }) {
                   value="male"
                   checked={form.managerGender === 'male'}
                   onChange={handleChange}
-                  required
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                 />
                 <span className="ml-2 text-sm text-gray-700">Male</span>
@@ -291,7 +308,6 @@ function AddManager({ initialValues }) {
                   value="female"
                   checked={form.managerGender === 'female'}
                   onChange={handleChange}
-                  required
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                 />
                 <span className="ml-2 text-sm text-gray-700">Female</span>

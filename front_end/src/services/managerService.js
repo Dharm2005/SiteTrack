@@ -17,7 +17,20 @@ export const addManager = async (managerData) => {
     })
     return response.data;
   } catch (error) {
-    console.error("Error while adding manager ", error);
+    if(error.response){
+      return{
+        success: false,
+        status: error.response.status,
+        errors: error.response.data.errors || [],
+        message: error.response.data.message || "Validation failed",
+      };
+    }
+    return{
+      success: false,
+      status: null,
+      errors: [],
+      message:"Network error",
+    };
   }
 }
 
@@ -38,7 +51,20 @@ export const updateManagerToDB = async (managerId ,managerData) => {
     )
     return response.data
   } catch (error) {
-    console.error("Error while updating manager",error);
+    if(error.response){
+      return{
+        success: false,
+        status: error.response.status,
+        errors: error.response.data.errors || [],
+        message: error.response.data.message || "Validation failed",
+      };
+    }
+    return{
+      success: false,
+      status: null,
+      errors: [],
+      message:"Network error",
+    };
   }
 }
 

@@ -1,3 +1,4 @@
+const { validationResult } = require('express-validator');
 const Manager = require('../models/Manager')
 const fs = require('fs');
 const path = require('path');
@@ -24,6 +25,26 @@ exports.getManagerById = async (req, res, next) => {
 
 exports.postAddManager = async ( req, res, next) => {
   try{
+
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+
+      if(req.file){
+        const filePath = path.join(__dirname,"../uploads/managers",req.file.filename)
+          if(fs.existsSync(filePath)){
+            fs.unlinkSync(filePath);
+          }
+      }
+
+      return res.status(400).json({
+        message: "Validation faild",
+        errors: errors.array().map(err => ({
+          field: err.path,
+          msg: err.msg
+        }))
+      })
+    }
+
     const {managerName , managerMobile, managerDob, managerGender} = req.body;
     const managerImage = req.file ? req.file.filename : null;
 
@@ -36,7 +57,10 @@ exports.postAddManager = async ( req, res, next) => {
     });
   
     const savedManager = await manager.save();
-    res.status(201).json(savedManager);
+    res.status(201).json({
+      message: "manager added successsfully",
+      manager : savedManager
+    });
 
   }catch(err){
      res.status(500).json({ message: "Error creating sites", error: err.message });
@@ -65,6 +89,26 @@ exports.deleteManager = async (req, res, next) => {
 
 exports.updateManager = async (req , res , next) => {
   try {
+
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+
+      if(req.file){
+        const filePath = path.join(__dirname,"../uploads/managers",req.file.filename)
+          if(fs.existsSync(filePath)){
+            fs.unlinkSync(filePath);
+          }
+      }
+
+      return res.status(400).json({
+        message: "Validation faild",
+        errors: errors.array().map(err => ({
+          field: err.path,
+          msg: err.msg
+        }))
+      })
+    }
+
     const {managerId} = req.params;
     const updates = {...req.body};
 
@@ -91,7 +135,10 @@ exports.updateManager = async (req , res , next) => {
       return res.status(404).json({message : "manager not found for update"})
     }
 
-    return res.json(updatedManager)
+     res.status(201).json({
+      message: "manager added successsfully",
+      manager : updatedManager
+    });
 
   } catch (error) {
     console.error("Error while updating manager");
