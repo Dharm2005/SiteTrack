@@ -59,6 +59,19 @@ export const updateSiteToDB = async (siteId, siteData) => {
     )
     return response.data;
   } catch (error) {
-    console.error("Error while updating site", error);
+    if (error.response) {
+      return {
+        success: false,
+        status: error.response.status,
+        errors: error.response.data.errors || [],
+        message: error.response.data.message || "Validation failed",
+      };
+    }
+    return {
+      success: false,
+      status: null,
+      errors: [],
+      message: "Network error",
+    }
   }
 }

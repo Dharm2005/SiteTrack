@@ -27,6 +27,20 @@ siteRouter.get('/site/:siteId',siteController.getSiteDetails)
 
 siteRouter.delete('/site/:siteId',siteController.deleteSite)
 
-siteRouter.put('/site/:siteId',upload.single("siteImage"),siteController.updateSite)
+siteRouter.put('/site/:siteId',
+  upload.single("siteImage"),
+  [
+    body("siteName")
+    .notEmpty().withMessage("Site name is required")
+    .isLength({min : 2}).withMessage("Site name should be 2 character long"),
+
+    body("location")
+    .notEmpty().withMessage("Location is required"),
+
+    body("managerId")
+    .notEmpty().withMessage("Manager is required")
+    .isMongoId().withMessage("Manager is not created")
+  ],
+  siteController.updateSite)
 
 module.exports = siteRouter;

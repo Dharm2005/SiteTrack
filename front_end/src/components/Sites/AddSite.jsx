@@ -149,6 +149,8 @@ function AddSite({ initialValues }) {
     // 🟢 Success case
     const siteData = res.site; // backend sends { message, site }
     if (initialValues) {
+      console.log(siteData);
+      
       dispatch(updateSite(siteData));
       toast.success("✅ Site updated successfully!");
     } else {

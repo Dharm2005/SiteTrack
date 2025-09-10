@@ -18,7 +18,14 @@ exports.postAddSite = async (req, res, next) => {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      
+
+      if (req.file) {
+        const filePath = path.join(__dirname, "../uploads/sites", req.file.filename);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+
       return res.status(400).json({
         message: "Validation failed",
         errors: errors.array().map(err => ({
@@ -27,7 +34,6 @@ exports.postAddSite = async (req, res, next) => {
         }))
       });
     }
-
 
     const { siteName, location, managerId } = req.body;
     const siteImage = req.file ? req.file.filename : null;
@@ -41,7 +47,6 @@ exports.postAddSite = async (req, res, next) => {
 
     await site.save();
     await Manager.findByIdAndUpdate(managerId, { $push: { sites: site._id } });
-
 
     res.status(201).json({ message: "Site created successfully", site });
   } catch (err) {
@@ -83,6 +88,26 @@ exports.deleteSite = async (req, res, next) => {
 
 exports.updateSite = async (req, res, next) => {
   try {
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+
+      if (req.file) {
+        const filePath = path.join(__dirname, "../uploads/sites", req.file.filename);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: errors.array().map(err => ({
+          field: err.path,
+          msg: err.msg
+        }))
+      });
+    }
+
     const { siteId } = req.params;
     const updates = { ...req.body };
 
@@ -111,12 +136,15 @@ exports.updateSite = async (req, res, next) => {
     )
 
     if (!updatedSite) {
-      return res.status(404).json({ message: "site not found for update" })
+      return res.status(404).json({ message: "site not found for update" });
     }
-    return res.json(updatedSite)
+
+    return res.status(200).json({
+      message: "Site updated successfully",
+      site: updatedSite
+    });
 
   } catch (error) {
-    console.error("Error to update site", error);
-
+    res.status(500).json({ message: "Error updating sites", error: err.message });
   }
 }
