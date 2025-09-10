@@ -71,12 +71,6 @@ function Expenses() {
     setTo("");
   };
 
-  // Calculate total expenses
-  const totalExpenses = allExpenses?.reduce((sum, expense) => sum + (expense.totalCost || 0), 0) || 0;
-
-  // Get unique expense types for filter
-  const expenseTypes = ['all', ...new Set(allExpenses?.map(expense => expense.expenseType) || [])];
-
   // Filter and sort expenses based on search and type
   const filteredExpenses = allExpenses?.filter(expense => {
     const matchesSearch = 
@@ -86,6 +80,12 @@ function Expenses() {
     const matchesType = filterType === 'all' || expense.expenseType === filterType;
     return matchesSearch && matchesType;
   }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) || [];
+
+  // Calculate total expenses
+  const totalExpenses = filteredExpenses?.reduce((sum, expense) => sum + (expense.totalCost || 0), 0) || 0;
+
+  // Get unique expense types for filter
+  const expenseTypes = ['all', ...new Set(allExpenses?.map(expense => expense.expenseType) || [])];
 
   // Format currency
   const formatCurrency = (amount) => {
@@ -166,7 +166,7 @@ function Expenses() {
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Total Records</p>
                       <p className="text-2xl font-bold text-gray-900">
-                        {isLoading ? '...' : (allExpenses?.length || 0)}
+                        {isLoading ? '...' : (filteredExpenses?.length || 0)}
                       </p>
                     </div>
                     <div className="p-3 bg-blue-100 rounded-lg">
