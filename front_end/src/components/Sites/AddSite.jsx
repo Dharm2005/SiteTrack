@@ -19,7 +19,7 @@ function AddSite({ initialValues }) {
     siteName: '',
     location: '',
     siteImage: '',
-    managerId: ''  
+    managerId: ''
   })
   const [imagePreview, setImagePreview] = useState(null);
   const [dragActive, setDragActive] = useState(false);
@@ -114,33 +114,56 @@ function AddSite({ initialValues }) {
   }, [initialValues]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append("type", "site");
-      formData.append("siteName", form.siteName);
-      formData.append("location", form.location);
-      formData.append("managerId", form.managerId);
-      if (form.siteImage instanceof File) {
-        formData.append("siteImage", form.siteImage);
-      }
-      if (initialValues) {
-        formData.append("_id", initialValues._id);
+  e.preventDefault();
 
-        const updatedSite = await updateSiteToDB(initialValues._id, formData)
-        dispatch(updateSite(updatedSite))
-        toast.success("✅ site updated successfully!");
-      } else {
-        const newSite = await addSite(formData);
-        dispatch(addNewSite(newSite));
-        toast.success("✅ New site added successfully!");
-      }
-      navigate('/');
-    } catch (error) {
-      console.error("error while submit site", error);
-      toast.error("❌ Failed to submit site!");
+  try {
+    const formData = new FormData();
+    formData.append("type", "site");
+    formData.append("siteName", form.siteName);
+    formData.append("location", form.location);
+    formData.append("managerId", form.managerId);
+
+    if (form.siteImage instanceof File) {
+      formData.append("siteImage", form.siteImage);
     }
-  };
+
+    let res;
+    if (initialValues) {
+      // update
+      formData.append("_id", initialValues._id);
+      res = await updateSiteToDB(initialValues._id, formData);
+    } else {
+      // add new
+      res = await addSite(formData);
+    }
+
+    // 🟢 Handle validation errors
+    if (res.errors) {
+      console.log("Validation errors:", res.errors);
+      res.errors.forEach(err => {
+        toast.error(`${err.path}: ${err.msg}`); // use "path" from backend
+      });
+      return; // stop execution if validation failed
+    }
+
+    // 🟢 Success case
+    const siteData = res.site; // backend sends { message, site }
+    if (initialValues) {
+      dispatch(updateSite(siteData));
+      toast.success("✅ Site updated successfully!");
+    } else {
+      dispatch(addNewSite(siteData));
+      toast.success("✅ New site added successfully!");
+    }
+
+    navigate("/");
+  } catch (error) {
+    console.error("Unexpected error while submitting site", error);
+    toast.error("❌ Something went wrong!");
+  }
+};
+
+
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-6">
@@ -158,7 +181,7 @@ function AddSite({ initialValues }) {
           {/* Site Name */}
           <div className="space-y-2">
             <label htmlFor="siteName" className="block text-sm font-semibold text-gray-700">
-              Site Name <span className="text-red-500">*</span>
+              Site Name
             </label>
             <input
               type="text"
@@ -166,7 +189,6 @@ function AddSite({ initialValues }) {
               name="siteName"
               value={form.siteName}
               onChange={handleChange}
-              required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Enter site name"
             />
@@ -175,7 +197,7 @@ function AddSite({ initialValues }) {
           {/* Location */}
           <div className="space-y-2">
             <label htmlFor="location" className="block text-sm font-semibold text-gray-700">
-              Location <span className="text-red-500">*</span>
+              Location
             </label>
             <input
               type="text"
@@ -183,7 +205,6 @@ function AddSite({ initialValues }) {
               name="location"
               value={form.location}
               onChange={handleChange}
-              required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Enter site location"
             />
@@ -250,14 +271,13 @@ function AddSite({ initialValues }) {
           {/* Manager Select */}
           <div className="space-y-2">
             <label htmlFor="managerId" className="block text-sm font-semibold text-gray-700">
-              Select Manager <span className="text-red-500">*</span>
+              Select Manager
             </label>
             <select
               id="managerId"
               name="managerId"
               value={form.managerId}
               onChange={handleChange}
-              required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
               <option value="">-- Select a Manager --</option>

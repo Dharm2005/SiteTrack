@@ -16,7 +16,20 @@ export const addSite = async (siteData) => {
     })
     return response.data;
   } catch (error) {
-    console.error("Error while creating new site", error);
+    if (error.response) {
+      return {
+        success: false,
+        status: error.response.status,
+        errors: error.response.data.errors || [],
+        message: error.response.data.message || "Validation failed",
+      };
+    }
+    return {
+      success: false,
+      status: null,
+      errors: [],
+      message: "Network error",
+    };
   }
 }
 
@@ -38,7 +51,7 @@ export const deleteSiteFromDB = async (id) => {
   }
 }
 
-export const updateSiteToDB = async (siteId ,siteData) => {
+export const updateSiteToDB = async (siteId, siteData) => {
   try {
     const response = await axios.put(`http://localhost:3000/site/${siteId}`,
       siteData,

@@ -2,18 +2,33 @@ const Site = require('../models/Site')
 const Manager = require('../models/Manager')
 const fs = require("fs");
 const path = require("path");
+const { validationResult } = require('express-validator');
 
-exports.getSites = async (req , res , next) => {
-   try {
-    const sites = await Site.find({isDeleted : false});
+exports.getSites = async (req, res, next) => {
+  try {
+    const sites = await Site.find({ isDeleted: false });
     res.json(sites);
   } catch (error) {
     res.status(500).json({ message: "Error fetching sites", error: err.message });
   }
 }
 
-exports.postAddSite = async (req , res , next) => {
+exports.postAddSite = async (req, res, next) => {
   try {
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: errors.array().map(err => ({
+          field: err.path,
+          msg: err.msg
+        }))
+      });
+    }
+
+
     const { siteName, location, managerId } = req.body;
     const siteImage = req.file ? req.file.filename : null;
 
@@ -29,59 +44,59 @@ exports.postAddSite = async (req , res , next) => {
 
 
     res.status(201).json({ message: "Site created successfully", site });
-  }catch (err) {
-     res.status(500).json({ message: "Error creating sites", error: err.message });
+  } catch (err) {
+    res.status(500).json({ message: "Error creating sites", error: err.message });
   }
 }
 
-exports.getSiteDetails = async (req ,res, next) => {
-  try{
+exports.getSiteDetails = async (req, res, next) => {
+  try {
     const siteId = req.params.siteId;
     const site = await Site.findById(siteId)
-     
-    if (!site) 
+
+    if (!site)
       return res.status(404).json({ error: "Site not found" });
     res.json(site);
-  }catch(err){
-    res.status(500).json({error : err.message})
+  } catch (err) {
+    res.status(500).json({ error: err.message })
   }
 };
 
-exports.deleteSite = async (req , res, next) => {
-  try{
+exports.deleteSite = async (req, res, next) => {
+  try {
     const siteId = req.params.siteId;
     const updatedSite = await Site.findByIdAndUpdate(
       siteId,
-      {isDeleted : true},
-      {new : true}
+      { isDeleted: true },
+      { new: true }
     );
 
-    if(!updatedSite){
-      return res.status(404).json({message : "No site found"});
+    if (!updatedSite) {
+      return res.status(404).json({ message: "No site found" });
     }
-    
+
     res.json(updatedSite);
-  }catch(error){
+  } catch (error) {
     console.log("Error while deleting site", error);
   }
 }
 
 exports.updateSite = async (req, res, next) => {
   try {
-    const {siteId} = req.params;
-    const updates = {...req.body};
+    const { siteId } = req.params;
+    const updates = { ...req.body };
 
-    if(updates.managerId){
+    if (updates.managerId) {
       updates.manager = updates.managerId;
       delete updates.managerId;
     }
 
-    if(req.file){
+    if (req.file) {
       const oldSite = await Site.findById(siteId)
 
-      if(oldSite && oldSite.siteImage){
-        const oldPath = path.join(__dirname , "../uploads/sites" , oldSite.siteImage)
-        if(fs.existsSync(oldPath)){
+      if (oldSite && oldSite.siteImage) {
+        const oldPath = path.join(__dirname, "../uploads/sites", oldSite.siteImage)
+        if (fs.existsSync(oldPath)) {
           fs.unlinkSync(oldPath)
         }
       }
@@ -92,16 +107,16 @@ exports.updateSite = async (req, res, next) => {
     const updatedSite = await Site.findByIdAndUpdate(
       siteId,
       updates,
-      {new : true}
+      { new: true }
     )
 
-    if(!updatedSite){
-      return res.status(404).json({message : "site not found for update"})
+    if (!updatedSite) {
+      return res.status(404).json({ message: "site not found for update" })
     }
     return res.json(updatedSite)
 
   } catch (error) {
-    console.error("Error to update site" , error);
-    
+    console.error("Error to update site", error);
+
   }
 }
