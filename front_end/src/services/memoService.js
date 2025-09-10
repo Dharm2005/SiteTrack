@@ -29,3 +29,15 @@ export const deleteMemoFromDB = async (memoId) => {
     console.error("Error while deleting memo from DB" , error);
   }
 }
+
+export const completeMemoInDB = async (memoId, memoData) => {
+  try{
+    const response = await axios.put(`http://localhost:3000/memo/${memoId}`,
+      memoData,
+      {headers : { "Content-Type": "application/json" }}
+    )
+    return response.data;
+  }catch(error){
+    console.error("Error while copmleting memo" , error)
+  }
+}

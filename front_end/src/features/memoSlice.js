@@ -14,11 +14,17 @@ export const memoSlice = createSlice({
     addNewMemo : (state , action) => {
       state.memos.push(action.payload)
     },
+    updateMemo: (state , action) => {
+      const updatedMemo = action.payload;
+      state.memos = state.memos.map(memo => 
+        memo._id === updatedMemo._id ? updatedMemo : memo
+      )
+    },
     deleteMemo : (state , action) => {
       state.memos = state.memos.filter(memo => memo._id !== action.payload)
     }
   }
 })
 
-export const {setMemos , addNewMemo , deleteMemo} = memoSlice.actions
+export const {setMemos , addNewMemo , deleteMemo , updateMemo} = memoSlice.actions
 export default memoSlice.reducer;

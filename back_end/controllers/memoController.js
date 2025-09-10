@@ -55,3 +55,22 @@ exports.deleteMemo = async (req , res , next) => {
   }
 }
 
+exports.completeMemo = async (req, res, next) => {
+  try {
+    const {memoId} = req.params;
+    const {isCompleted} = req.body;
+
+    const completedMemo = await Memo.findByIdAndUpdate(
+      memoId,
+      {isCompleted},
+      {new : true}
+    )
+
+    if(!completedMemo){
+      return res.status(404).json({message : "memo not found to complete"})
+    }
+    return res.status(200).json(completedMemo)
+  } catch (error) {
+    console.error("Error while completing memo" , error);
+  }
+}

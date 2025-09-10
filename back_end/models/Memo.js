@@ -25,6 +25,10 @@ const memoSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Site",
     required : true
+  },
+  isCompleted: {
+    type : Boolean,
+    default: false
   }
 }, { timestamps: true }
 )
