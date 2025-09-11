@@ -7,8 +7,21 @@ export const addWorker = async (workerData) => {
     })
     
     return response.data;
-  }catch (err) {
-    console.log("error to add worker" , err);   
+  }catch (error) {
+    if (error.response) {
+      return {
+        success: false,
+        status: error.response.status,
+        errors: error.response.data.errors || [],
+        message: error.response.data.message || "Validation failed",
+      };
+    }
+    return {
+      success: false,
+      status: null,
+      errors: [],
+      message: "Network error",
+    };   
   }
 }
 
@@ -46,8 +59,21 @@ export const updateWorkerToDB = async (workerId , workerData) => {
       {headers : {"Content-Type" : "multipart/form-data"}}
     )
     return response.data;
-  } catch (err) {
-    throw new Error(err.response?.data?.message || "Failed to update worker");
+  } catch (error) {
+    if (error.response) {
+      return {
+        success: false,
+        status: error.response.status,
+        errors: error.response.data.errors || [],
+        message: error.response.data.message || "Validation failed",
+      };
+    }
+    return {
+      success: false,
+      status: null,
+      errors: [],
+      message: "Network error",
+    };
   }
 }
 

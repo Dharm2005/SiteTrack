@@ -3,6 +3,7 @@ const Advance = require('../models/Advance');
 const Earn = require('../models/Earn');
 const path = require('path');
 const fs = require('fs');
+const { validationResult } = require('express-validator');
 
 exports.getWorkersBySite = async (req , res , next) => {
   try{
@@ -29,6 +30,26 @@ exports.getWorkerById = async (req, res, next) => {
 
 exports.postAddWorker = async (req, res, next) => {
   try {
+    const errors = validationResult(req)
+    if(!errors.isEmpty()){
+
+      if(req.file){
+        const filePath = path.join(__dirname,"../uploads/workers",req.file.filename);
+
+        if(fs.existsSync(filePath)){
+          fs.unlinkSync(filePath)
+        }
+      }
+
+      return res.status(400).json({
+        message : "Validation failed",
+        errors : errors.array().map((err) => ({
+          field : err.path,
+          msg: err.msg
+        }))
+      })
+    }
+
     let { workerName, workerMobile, site } = req.body;
     const workerImage = req.file ? req.file.filename : null;
 
@@ -40,7 +61,7 @@ exports.postAddWorker = async (req, res, next) => {
     });
 
     const savedWorker = await worker.save();
-    res.status(201).json(savedWorker);
+    res.status(201).json({message:"worker added successfully", worker:savedWorker});
   } catch (error) {
     console.error("Error creating worker:", error);
     res.status(500).json({ message: "Error creating worker", error: error.message });
@@ -68,39 +89,61 @@ exports.deleteWorker = async (req, res, next) => {
   }
 }
 
-exports.updateWorker = async (req, res, next) => {
-  try {
-    const {workerId} = req.params;
-    const updates = {...req.body};
+  exports.updateWorker = async (req, res, next) => {
+    try {
+      
+      const errors = validationResult(req)
 
-    if(req.file){
-      const oldWorker = await Worker.findById(workerId);
+      if(!errors.isEmpty()){
 
-      if(oldWorker && oldWorker.workerImage){
-        const oldPath = path.join(__dirname,"../uploads/workers",oldWorker.workerImage)
-        if(fs.existsSync(oldPath)){
-          fs.unlinkSync(oldPath)
+        if(req.file){
+          const filePath = path.join(__dirname,"../uploads/workers",req.file.filename);
+
+          if(fs.existsSync(filePath)){
+            fs.unlinkSync(filePath)
+          }
         }
+
+        return res.status(400).json({
+          message : "Validation failed",
+          errors : errors.array().map((err) => ({
+            field : err.path,
+            msg: err.msg
+          }))
+        })
       }
-      updates.workerImage = req.file.filename;
+
+      const {workerId} = req.params;
+      const updates = {...req.body};
+
+      if(req.file){
+        const oldWorker = await Worker.findById(workerId);
+
+        if(oldWorker && oldWorker.workerImage){
+          const oldPath = path.join(__dirname,"../uploads/workers",oldWorker.workerImage)
+          if(fs.existsSync(oldPath)){
+            fs.unlinkSync(oldPath)
+          }
+        }
+        updates.workerImage = req.file.filename;
+      }
+
+      const updatedWorker = await Worker.findByIdAndUpdate(
+        workerId,
+        updates,
+        {new: true}
+      )
+
+      if(!updatedWorker){
+        return res.status(400).json({message : "No worker found for update"})
+      }
+
+      return res.json({message : "Worker updated" ,worker : updatedWorker});
+
+    } catch (error) {
+      res.status(500).json({ message: "Error updating worker", error: error.message });
     }
-
-    const updatedWorker = await Worker.findByIdAndUpdate(
-      workerId,
-      updates,
-      {new: true}
-    )
-
-    if(!updatedWorker){
-      return res.status(400).json({message : "No worker found for update"})
-    }
-
-    return res.json(updatedWorker);
-
-  } catch (error) {
-    console.error("Error while editing worker in backend" , error);
   }
-}
 
 
 exports.getAdvancesByWorker = async (req, res, next) => {

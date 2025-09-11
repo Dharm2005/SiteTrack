@@ -11,7 +11,7 @@ const API_URL = "http://localhost:3000";
 
 function AddWorkerForm({ siteId, onClose, initialValues }) {
   console.log(siteId);
-  
+
   const [form, setForm] = useState(initialValues || {
     type: 'worker',
     workerName: '',
@@ -20,45 +20,13 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
     site: '',
   })
 
-  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Validation functions
-  const validateForm = () => {
-    const newErrors = {};
-
-    // Worker Name validation
-    if (!form.workerName.trim()) {
-      newErrors.workerName = 'Worker name is required';
-    } else if (form.workerName.trim().length < 2) {
-      newErrors.workerName = 'Worker name must be at least 2 characters';
-    } else if (!/^[a-zA-Z\s]+$/.test(form.workerName.trim())) {
-      newErrors.workerName = 'Worker name should only contain letters and spaces';
-    }
-
-    // Image validation
-    if (form.workerImage) {
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-      if (!allowedTypes.includes(form.workerImage.type)) {
-        newErrors.workerImage = 'Please upload a valid image file (JPEG, PNG, WebP)';
-      } else if (form.workerImage.size > 5 * 1024 * 1024) { // 5MB limit
-        newErrors.workerImage = 'Image size should be less than 5MB';
-      }
-    }
-
-    return newErrors;
-  };
-
   const handleChange = (e) => {
     const { name, value, files, type } = e.target;
-
-    // Clear existing error for this field
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
 
     if (files && files.length > 0) {
       const file = files[0];
@@ -109,13 +77,6 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formErrors = validateForm();
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      toast.error("Please fix the errors in the form");
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
@@ -130,15 +91,29 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
         formData.append("site", siteId);
       }
 
+      let res;
+
       if (initialValues) {
         formData.append("_id", initialValues._id)
-        const updatedWorker = await updateWorkerToDB(initialValues._id, formData)
-        dispatch(updateWorker(updatedWorker))
+        res = await updateWorkerToDB(initialValues._id, formData)
+      } else {
+        res = await addWorker(formData);
+      }
+      if (res.errors) {
+        console.log("Validation errors:", res.errors);
+        res.errors.forEach(err => {
+          toast.error(`${err.path}: ${err.msg}`); // use "path" from backend
+        });
+        return; // stop execution if validation failed
+      }
+
+      const workerData = res.worker;
+      if (initialValues) {
+        dispatch(updateWorker(workerData))
         toast.success("✅ Worker edited successfully!");
         navigate(`/site/${siteId}/workers`)
       } else {
-        const newWorker = await addWorker(formData);
-        dispatch(addNewWorker(newWorker));
+        dispatch(addNewWorker(workerData));
         toast.success("✅ New worker added successfully!");
       }
       // Reset form
@@ -150,7 +125,6 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
         site: ''
       });
       setImagePreview(null);
-      setErrors({});
 
       if (onClose) onClose();
     } catch (error) {
@@ -164,9 +138,6 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
   const removeImage = () => {
     setForm({ ...form, workerImage: null });
     setImagePreview(null);
-    if (errors.workerImage) {
-      setErrors(prev => ({ ...prev, workerImage: '' }));
-    }
   };
 
   return (
@@ -178,7 +149,7 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
           </div>
           <div>
             <h3 className="text-xl font-bold text-gray-900">
-              {initialValues ? "Edit Worler" : "Add New Worker"}
+              {initialValues ? "Edit Worker" : "Add New Worker"}
             </h3>
             <p className="text-sm text-gray-600">
               {initialValues ? "Update worker details" : "Fill in the worker details"}
@@ -209,13 +180,9 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
               value={form.workerName}
               onChange={handleChange}
               placeholder="Enter worker's full name"
-              className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${errors.workerName ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
-                }`}
+              className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
           </div>
-          {errors.workerName && (
-            <p className="text-red-500 text-sm mt-1">{errors.workerName}</p>
-          )}
         </div>
 
         {/* Mobile Number */}
@@ -254,8 +221,7 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
               />
               <label
                 htmlFor="workerImageInput"
-                className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-xl cursor-pointer hover:bg-gray-50 transition-colors ${errors.workerImage ? 'border-red-300' : 'border-gray-300 hover:border-gray-400'
-                  }`}
+                className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50 hover:border-gray-400 transition-colors"
               >
                 <Upload className="w-8 h-8 text-gray-400 mb-2" />
                 <p className="text-sm text-gray-600">Click to upload worker photo</p>
@@ -277,10 +243,6 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
                 <X className="w-4 h-4" />
               </button>
             </div>
-          )}
-
-          {errors.workerImage && (
-            <p className="text-red-500 text-sm mt-1">{errors.workerImage}</p>
           )}
         </div>
 

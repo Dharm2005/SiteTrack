@@ -58,7 +58,7 @@ function AddMemoForm({ siteId, onClose }) {
         return;
       }
 
-      dispatch(addNewMemo(newMemo))
+      dispatch(addNewMemo(newMemo.memo))
       toast.success("✅ New memo added successfully!");
 
       setForm({
