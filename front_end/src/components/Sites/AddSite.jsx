@@ -141,9 +141,9 @@ function AddSite({ initialValues }) {
     if (res.errors) {
       console.log("Validation errors:", res.errors);
       res.errors.forEach(err => {
-        toast.error(`${err.path}: ${err.msg}`); // use "path" from backend
+        toast.error(`${err.field}: ${err.msg}`);
       });
-      return; // stop execution if validation failed
+      return;
     }
 
     // 🟢 Success case

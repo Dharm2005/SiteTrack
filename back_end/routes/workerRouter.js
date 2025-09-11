@@ -1,5 +1,5 @@
 const express = require('express');
-const {body , validationResult} = require('express-validator')
+const { body, validationResult } = require('express-validator')
 const workerRouter = express.Router();
 const workerController = require('../controllers/workerController');
 const upload = require('../middleware/imageUpload');
@@ -19,16 +19,89 @@ workerRouter.post('/add-worker',
   workerController.postAddWorker)
 
 workerRouter.get('/worker/:workerId/advance', workerController.getAdvancesByWorker)
-workerRouter.post('/worker/add-advance', upload.none(), workerController.addWorkerAdvance)
-workerRouter.put('/worker/advance/:advanceId', upload.none(), workerController.updateAdvance)
+workerRouter.post('/worker/add-advance',
+  upload.none(),
+  [
+    body("amount")
+      .notEmpty().withMessage("Amount is required"),
+
+    body("date")
+      .notEmpty().withMessage("Date of advance is required")
+      .custom((value) => {
+        const inputDate = new Date(value).setHours(0, 0, 0, 0);
+        const today = new Date().setHours(0, 0, 0, 0);
+
+        if (inputDate > today) {
+          throw new Error("Date of advance cannot be in the future");
+        }
+        return true;
+      })
+  ],
+  workerController.addWorkerAdvance)
+
+workerRouter.put('/worker/advance/:advanceId',
+  upload.none(),
+  [
+    body("amount")
+      .notEmpty().withMessage("Amount is required"),
+
+    body("date")
+      .notEmpty().withMessage("Date of advance is required")
+      .custom((value) => {
+        const inputDate = new Date(value).setHours(0, 0, 0, 0);
+        const today = new Date().setHours(0, 0, 0, 0);
+
+        if (inputDate > today) {
+          throw new Error("Date of advance cannot be in the future");
+        }
+        return true;
+      })
+  ],
+  workerController.updateAdvance)
 
 workerRouter.get('/worker/:workerId/earn', workerController.getEarnByWorker)
-workerRouter.post('/worker/add-earn', upload.none(), workerController.addWorkerEarn)
-workerRouter.put('/worker/earn/:earnId', upload.none(), workerController.updateEarn)
+workerRouter.post('/worker/add-earn', 
+  upload.none(),
+  [
+    body("amount")
+      .notEmpty().withMessage("Amount is required"),
+
+    body("date")
+      .notEmpty().withMessage("Date of advance is required")
+      .custom((value) => {
+        const inputDate = new Date(value).setHours(0, 0, 0, 0);
+        const today = new Date().setHours(0, 0, 0, 0);
+
+        if (inputDate > today) {
+          throw new Error("Date of advance cannot be in the future");
+        }
+        return true;
+      })
+  ],
+  workerController.addWorkerEarn)
+workerRouter.put('/worker/earn/:earnId', 
+  upload.none(),
+  [
+    body("amount")
+      .notEmpty().withMessage("Amount is required"),
+
+    body("date")
+      .notEmpty().withMessage("Date of advance is required")
+      .custom((value) => {
+        const inputDate = new Date(value).setHours(0, 0, 0, 0);
+        const today = new Date().setHours(0, 0, 0, 0);
+
+        if (inputDate > today) {
+          throw new Error("Date of advance cannot be in the future");
+        }
+        return true;
+      })
+  ],
+  workerController.updateEarn)
 
 workerRouter.delete('/worker/:workerId', workerController.deleteWorker)
-workerRouter.put('/worker/:workerId', 
-  upload.single("workerImage"), 
+workerRouter.put('/worker/:workerId',
+  upload.single("workerImage"),
   [
     body("workerName")
       .notEmpty().withMessage("Worker name is required")

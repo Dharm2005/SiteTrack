@@ -3,6 +3,7 @@ import { Calendar, FileText, Clock, DollarSign, Edit, Save, X, CalendarCheck } f
 import { useDispatch } from "react-redux";
 import { updateAdvanceToDB } from "../../services/workerService";
 import { updateAdvance } from "../../features/workerAdvanceSlice";
+import { toast } from "react-toastify";
 
 function Advance({ id, amount, date, note, createdAt, isSettled }) {
   const dispatch = useDispatch();
@@ -41,8 +42,19 @@ function Advance({ id, amount, date, note, createdAt, isSettled }) {
   const handleSave = async () => {
     try {
       setLoading(true);
-      const updatedAdvance = await updateAdvanceToDB(id, form);
-      dispatch(updateAdvance(updatedAdvance));
+      const res = await updateAdvanceToDB(id, form);
+
+      if (res.errors) {
+        console.log("Validation errors:", res.errors);
+        
+        res.errors.forEach(err => {
+          toast.error(`${err.field}: ${err.msg}`); 
+        });
+        return; // stop execution if validation failed
+      }
+
+      const advanceData = res.advance
+      dispatch(updateAdvance(advanceData));
       setIsEditing(false);
     } catch (err) {
       console.error("Error updating advance:", err);

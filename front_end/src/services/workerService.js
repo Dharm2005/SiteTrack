@@ -93,7 +93,20 @@ export const addAdvanceOfWorker = async (advanceData) => {
     })
     return response.data;
   } catch (error) {
-    console.error("Error while adding advance ",error);
+    if (error.response) {
+      return {
+        success: false,
+        status: error.response.status,
+        errors: error.response.data.errors || [],
+        message: error.response.data.message || "Validation failed",
+      };
+    }
+    return {
+      success: false,
+      status: null,
+      errors: [],
+      message: "Network error",
+    };
   }
 }
 
@@ -106,7 +119,20 @@ export const updateAdvanceToDB = async (advanceId , advanceData) => {
     return response.data;
     
   } catch (error) {
-    console.error("Error while editing advance",error);
+    if (error.response) {
+      return {
+        success: false,
+        status: error.response.status,
+        errors: error.response.data.errors || [],
+        message: error.response.data.message || "Validation failed",
+      };
+    }
+    return {
+      success: false,
+      status: null,
+      errors: [],
+      message: "Network error",
+    };
   }
 }
 
@@ -126,7 +152,20 @@ export const addEarnOfWorker = async (earnData) => {
     })
     return response.data;
   } catch (error) {
-    console.error("Error while adding earn ",error);
+    if (error.response) {
+      return {
+        success: false,
+        status: error.response.status,
+        errors: error.response.data.errors || [],
+        message: error.response.data.message || "Validation failed",
+      };
+    }
+    return {
+      success: false,
+      status: null,
+      errors: [],
+      message: "Network error",
+    };
   }
 }
 
@@ -139,7 +178,20 @@ export const updateEarnToDB = async (earnId , earnData) => {
     return response.data;
     
   } catch (error) {
-    console.error("Error while editing earn",error);
+    if (error.response) {
+      return {
+        success: false,
+        status: error.response.status,
+        errors: error.response.data.errors || [],
+        message: error.response.data.message || "Validation failed",
+      };
+    }
+    return {
+      success: false,
+      status: null,
+      errors: [],
+      message: "Network error",
+    };
   }
 }
 

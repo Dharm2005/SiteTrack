@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'
 import { addAdvanceOfWorker } from '../../services/workerService'
 import { addNewAdvance } from '../../features/workerAdvanceSlice'
 import { X, DollarSign, Calendar, FileText, Plus } from 'lucide-react'
+import { toast } from 'react-toastify'
 
 function AddAdvanceForm({ workerId, onClose }) {
   const [form, setFrom] = useState({
@@ -27,8 +28,7 @@ function AddAdvanceForm({ workerId, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.amount || !form.date) return;
-    
+
     setIsSubmitting(true);
     try {
       const formData = new FormData();
@@ -37,9 +37,18 @@ function AddAdvanceForm({ workerId, onClose }) {
       formData.append("date", form.date);
       formData.append("note", form.note);
 
-      const newAdvance = await addAdvanceOfWorker(formData);
-      console.log(newAdvance);
-      dispatch(addNewAdvance(newAdvance))
+      const res = await addAdvanceOfWorker(formData);
+
+      if (res.errors) {
+        console.log("Validation errors:", res.errors);
+        
+        res.errors.forEach(err => {
+          toast.error(`${err.field}: ${err.msg}`); // use "path" from backend
+        });
+        return; // stop execution if validation failed
+      }
+      const advanceData = res.advance;
+      dispatch(addNewAdvance(advanceData))
 
       setFrom({
         amount: '',
@@ -96,7 +105,7 @@ function AddAdvanceForm({ workerId, onClose }) {
           <div className="space-y-2">
             <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
               <DollarSign className="w-4 h-4" />
-              <span>Amount *</span>
+              <span>Amount</span>
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
@@ -110,7 +119,6 @@ function AddAdvanceForm({ workerId, onClose }) {
                 placeholder="Enter amount"
                 min="0"
                 step="0.01"
-                required
                 className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
               />
             </div>
@@ -120,14 +128,13 @@ function AddAdvanceForm({ workerId, onClose }) {
           <div className="space-y-2">
             <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
               <Calendar className="w-4 h-4" />
-              <span>Date *</span>
+              <span>Date</span>
             </label>
             <input
               type="date"
               name="date"
               value={form.date}
               onChange={handleChange}
-              required
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
             />
           </div>
@@ -162,7 +169,7 @@ function AddAdvanceForm({ workerId, onClose }) {
           )}
           <button
             type="submit"
-            disabled={isSubmitting || !form.amount || !form.date}
+            disabled={isSubmitting}
             className="px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-medium hover:from-green-700 hover:to-emerald-700 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {isSubmitting ? (

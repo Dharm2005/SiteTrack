@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { updateEarnToDB } from '../../services/workerService';
 import { updateEarn } from '../../features/workerEarnSlice';
 import { Calendar, FileText, Clock, DollarSign, Edit, Save, X, CalendarCheck } from "lucide-react";
+import { toast } from 'react-toastify';
 
 function Earn({ id, amount, date, note, createdAt, isSettled }) {
   const dispatch = useDispatch();
@@ -41,8 +42,19 @@ function Earn({ id, amount, date, note, createdAt, isSettled }) {
   const handleSave = async () => {
     try {
       setLoading(true);
-      const updatedEarn = await updateEarnToDB(id, form);
-      dispatch(updateEarn(updatedEarn));
+      const res = await updateEarnToDB(id, form);
+
+      if (res.errors) {
+        console.log("Validation errors:", res.errors);
+
+        res.errors.forEach(err => {
+          toast.error(`${err.field}: ${err.msg}`); // use "path" from backend
+        });
+        return; // stop execution if validation failed
+      }
+
+      const earnData = res.earning;
+      dispatch(updateEarn(earnData));
       setIsEditing(false)
     } catch (error) {
       console.log("Error while updating earning", error);

@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import { addEarnOfWorker } from '../../services/workerService'
 import { addNewEarn } from '../../features/workerEarnSlice'
 import { X, DollarSign, Calendar, FileText, Plus } from 'lucide-react'
+import { toast } from 'react-toastify'
 
 function AddEarnForm({ workerId, onClose }) {
   const [form, setFrom] = useState({
@@ -26,7 +27,6 @@ function AddEarnForm({ workerId, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.amount || !form.date) return;
 
     setIsSubmitting(true);
     try {
@@ -36,9 +36,19 @@ function AddEarnForm({ workerId, onClose }) {
       formData.append("date", form.date);
       formData.append("note", form.note);
 
-      const newEarn = await addEarnOfWorker(formData);
-      console.log(newEarn);
-      dispatch(addNewEarn(newEarn))
+      const res = await addEarnOfWorker(formData);
+
+      if (res.errors) {
+        console.log("Validation errors:", res.errors);
+
+        res.errors.forEach(err => {
+          toast.error(`${err.field}: ${err.msg}`); // use "path" from backend
+        });
+        return; // stop execution if validation failed
+      }
+
+      const earnData = res.earning;
+      dispatch(addNewEarn(earnData))
 
       setFrom({
         amount: '',
@@ -95,7 +105,7 @@ function AddEarnForm({ workerId, onClose }) {
           <div className="space-y-2">
             <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
               <DollarSign className="w-4 h-4" />
-              <span>Amount *</span>
+              <span>Amount</span>
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
@@ -109,7 +119,6 @@ function AddEarnForm({ workerId, onClose }) {
                 placeholder="Enter amount"
                 min="0"
                 step="0.01"
-                required
                 className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
               />
             </div>
@@ -119,14 +128,13 @@ function AddEarnForm({ workerId, onClose }) {
           <div className="space-y-2">
             <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
               <Calendar className="w-4 h-4" />
-              <span>Date *</span>
+              <span>Date</span>
             </label>
             <input
               type="date"
               name="date"
               value={form.date}
               onChange={handleChange}
-              required
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
             />
           </div>
@@ -161,7 +169,7 @@ function AddEarnForm({ workerId, onClose }) {
           )}
           <button
             type="submit"
-            disabled={isSubmitting || !form.amount || !form.date}
+            disabled={isSubmitting}
             className="px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-medium hover:from-green-700 hover:to-emerald-700 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {isSubmitting ? (
