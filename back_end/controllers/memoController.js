@@ -1,3 +1,4 @@
+const { validationResult } = require('express-validator');
 const Memo = require('../models/Memo');
 
 exports.getMemosBySite = async (req , res, next) => {
@@ -14,9 +15,20 @@ exports.getMemosBySite = async (req , res, next) => {
 }
 
 exports.postAddMemo = async (req , res, next) => {
-
   try{
-    let {memoType, text, dueDate, siteId} = req.body;
+
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      return res.status(400).json({
+        message : "Validation failed",
+        errors : errors.array().map(err => ({
+          field : err.path,
+          msg: err.msg
+        }))
+      })
+    }
+
+    const {memoType, text, dueDate, siteId} = req.body;
 
     const memo = new Memo({
       memoType,
@@ -26,7 +38,10 @@ exports.postAddMemo = async (req , res, next) => {
     })
 
     const savedMemo = await memo.save();
-    res.status(201).json(savedMemo)
+    res.status(201).json({
+      message : "Memo added successfully",
+      memo : savedMemo
+    })
 
   }catch(err){
     console.error("Error while creating memo ",err);

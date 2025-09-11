@@ -17,7 +17,20 @@ export const addMemo = async (memoData) => {
     })
     return response.data;
   } catch(error){
-    console.error("Error while adding memo",error);
+    if(error.response){
+      return {
+        success : false,
+        status : error.response.status,
+        errors : error.response.data.errors || [],
+        message : error.response.data.message || "Validation failed",
+      };
+    }
+    return{
+      success : false,
+      status : null,
+      errors : [],
+      message : "Network error"
+    }
   }
 }
 

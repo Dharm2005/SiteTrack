@@ -14,48 +14,13 @@ function AddMemoForm({ siteId, onClose }) {
     siteId: '',
   })
 
-  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Validation functions
-  const validateForm = () => {
-    const newErrors = {};
-
-    // Text validation
-    if (!form.text.trim()) {
-      newErrors.text = 'Memo text is required';
-    } else if (form.text.trim().length < 3) {
-      newErrors.text = 'Memo text must be at least 3 characters';
-    }
-
-    // Due date validation for reminders
-    if (form.memoType === 'reminder') {
-      if (!form.dueDate) {
-        newErrors.dueDate = 'Due date is required for reminders';
-      } else {
-        const selectedDate = new Date(form.dueDate);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        if (selectedDate < today) {
-          newErrors.dueDate = 'Due date cannot be in the past';
-        }
-      }
-    }
-
-    return newErrors;
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Clear existing error for this field
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-
     let processedValue = value;
-    
+
     if (name === 'text') {
       // Remove extra spaces
       processedValue = value.replace(/\s+/g, ' ');
@@ -65,23 +30,10 @@ function AddMemoForm({ siteId, onClose }) {
       ...form,
       [name]: processedValue
     });
-
-    // Clear dueDate error if switching to note type
-    if (name === 'memoType' && value === 'note' && errors.dueDate) {
-      setErrors(prev => ({ ...prev, dueDate: '' }));
-    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
-    // Validate form
-    const formErrors = validateForm();
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      toast.error("Please fix the errors in the form");
-      return;
-    }
 
     setIsSubmitting(true);
 
@@ -93,6 +45,19 @@ function AddMemoForm({ siteId, onClose }) {
       formData.append("siteId", siteId)
 
       const newMemo = await addMemo(formData);
+
+      if (newMemo.success === false) {
+        console.log("Validation errors", newMemo);
+        if (newMemo.errors?.length) {
+          newMemo.errors.forEach(err => {
+            toast.error(`${err.field || err.path} : ${err.msg}`);
+          })
+        } else {
+          toast.error(newMemo.message || "❌ Something went wrong")
+        }
+        return;
+      }
+
       dispatch(addNewMemo(newMemo))
       toast.success("✅ New memo added successfully!");
 
@@ -102,8 +67,6 @@ function AddMemoForm({ siteId, onClose }) {
         dueDate: '',
         siteId: ''
       });
-
-      setErrors({});
 
       if (onClose) onClose();
     } catch (error) {
@@ -146,11 +109,10 @@ function AddMemoForm({ siteId, onClose }) {
             <button
               type="button"
               onClick={() => setForm({ ...form, memoType: 'note', dueDate: '' })}
-              className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${
-                form.memoType === 'note'
+              className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${form.memoType === 'note'
                   ? 'border-blue-500 bg-blue-50 text-blue-700'
                   : 'border-gray-200 hover:border-gray-300 text-gray-700'
-              }`}
+                }`}
             >
               <div className="flex items-center space-x-2">
                 <StickyNote className="w-5 h-5" />
@@ -160,15 +122,14 @@ function AddMemoForm({ siteId, onClose }) {
                 </div>
               </div>
             </button>
-            
+
             <button
               type="button"
               onClick={() => setForm({ ...form, memoType: 'reminder' })}
-              className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${
-                form.memoType === 'reminder'
+              className={`p-4 rounded-xl border-2 transition-all duration-200 text-left ${form.memoType === 'reminder'
                   ? 'border-orange-500 bg-orange-50 text-orange-700'
                   : 'border-gray-200 hover:border-gray-300 text-gray-700'
-              }`}
+                }`}
             >
               <div className="flex items-center space-x-2">
                 <AlertCircle className="w-5 h-5" />
@@ -194,14 +155,9 @@ function AddMemoForm({ siteId, onClose }) {
               onChange={handleChange}
               placeholder="Enter your memo text..."
               rows={4}
-              className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors resize-none ${
-                errors.text ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-purple-500'
-              }`}
+              className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors resize-none"
             />
           </div>
-          {errors.text && (
-            <p className="text-red-500 text-sm mt-1">{errors.text}</p>
-          )}
         </div>
 
         {/* Due Date - Only for reminders */}
@@ -217,14 +173,9 @@ function AddMemoForm({ siteId, onClose }) {
                 name="dueDate"
                 value={form.dueDate}
                 onChange={handleChange}
-                className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors ${
-                  errors.dueDate ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-purple-500'
-                }`}
+                className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
               />
             </div>
-            {errors.dueDate && (
-              <p className="text-red-500 text-sm mt-1">{errors.dueDate}</p>
-            )}
           </div>
         )}
 
@@ -237,7 +188,7 @@ function AddMemoForm({ siteId, onClose }) {
           >
             {isSubmitting ? 'Adding Memo...' : 'Add Memo'}
           </button>
-          
+
           {onClose && (
             <button
               type="button"

@@ -38,7 +38,6 @@ managerRouter.put('/manager/:managerId',
   upload.single("managerImage"), 
   [
     body("managerName")
-      .notEmpty().withMessage("Manager name is required")
       .isLength({ min: 2 }).withMessage("Name should be 2 characters long"),
 
     body("managerMobile")
@@ -50,7 +49,6 @@ managerRouter.put('/manager/:managerId',
       .withMessage("Date of birth cannot be in the future"),
 
     body("managerGender")
-      .notEmpty().withMessage("Gender is required")
       .isIn(["male", "female"])
       .withMessage("Gender must be either male or female")
   ],
