@@ -127,13 +127,14 @@ function AddManager({ initialValues }) {
         // add new
         res = await addManager(formData);
       }
-
+      console.log(res);
+      
       // 🛑 Handle validation or server errors
       if (res.success === false) {
         console.log("Validation/Server error:", res);
         if (res.errors?.length) {
           res.errors.forEach(err => {
-            toast.error(`${err.field || err.path}: ${err.msg}`);
+            toast.error(`${err.field}: ${err.msg}`);
           });
         } else {
           toast.error(res.message || "❌ Something went wrong");
@@ -143,10 +144,10 @@ function AddManager({ initialValues }) {
 
       // ✅ Success case
       if (initialValues) {
-        dispatch(updateManager(res));
+        dispatch(updateManager(res.manager));
         toast.success("✅ Manager updated successfully!");
       } else {
-        dispatch(addNewManager(res));
+        dispatch(addNewManager(res.manager));
         toast.success("✅ New manager added successfully!");
       }
 

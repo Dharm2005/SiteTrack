@@ -11,10 +11,10 @@ const API_URL = "http://localhost:3000";
 
 function AddExpenseForm({ siteId, onClose, initialValues }) {
   console.log(siteId);
-  
+
   // Determine if we're in edit mode
   const isEditMode = !!initialValues;
-  
+
   const [form, setForm] = useState(initialValues || {
     type: 'expense',
     expenseType: 'other',
@@ -30,7 +30,6 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
     siteId: '',
   })
 
-  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const [stoneTypes, setStoneTypes] = useState([]);
@@ -80,85 +79,8 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
     return unitOptions;
   };
 
-  // Validation functions
-  const validateForm = () => {
-    const newErrors = {};
-
-    // Expense Type validation
-    if (!form.expenseType) {
-      newErrors.expenseType = 'Expense type is required';
-    }
-
-    // Stone type validation for crushed stone
-    if (form.expenseType === 'crushedStone' && stoneTypes.length === 0) {
-      newErrors.stoneTypes = 'Please select at least one stone type for crushed stone';
-    }
-
-    // Quantity validation - only required if unit is required
-    if (isUnitRequired() && form.quantity <= 0) {
-      newErrors.quantity = 'Quantity must be greater than 0';
-    }
-
-    // Unit validation - required only for specific expense types
-    if (isUnitRequired() && !form.unit) {
-      newErrors.unit = 'Unit is required for this expense type';
-    }
-
-    // Special validation for petrol/diesel - unit must be litre
-    if ((form.expenseType === 'petrol' || form.expenseType === 'diesel') && form.unit !== 'litre') {
-      newErrors.unit = `Unit must be "litre" for ${form.expenseType}`;
-    }
-
-    // Supplier name validation - required for material and vehicle expenses
-    if (isSupplierRequired() && form.supplierName.trim() === '') {
-      newErrors.supplierName = 'Supplier name is required for this expense type';
-    }
-
-    // Total cost validation
-    if (form.totalCost <= 0) {
-      newErrors.totalCost = 'Total cost must be greater than 0';
-    }
-
-    // Arrival Date validation
-    if (!form.arrivalDate) {
-      newErrors.arrivalDate = 'Arrival date is required';
-    } else {
-      const selectedDate = new Date(form.arrivalDate);
-      const today = new Date();
-      today.setHours(23, 59, 59, 999); // Set to end of today
-      if (selectedDate > today) {
-        newErrors.arrivalDate = 'Arrival date cannot be in the future';
-      }
-    }
-
-    // Vehicle Number validation (optional but if provided should be valid format)
-    if (form.vehicleNumber.trim() && !/^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$/.test(form.vehicleNumber.trim().replace(/\s/g, '').toUpperCase())) {
-      // Basic Indian vehicle number format validation
-      if (form.vehicleNumber.trim().length < 4) {
-        newErrors.vehicleNumber = 'Vehicle number seems too short';
-      }
-    }
-
-    // Image validation
-    if (form.billImage) {
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-      if (!allowedTypes.includes(form.billImage.type)) {
-        newErrors.billImage = 'Please upload a valid image file (JPEG, PNG, WebP)';
-      } else if (form.billImage.size > 5 * 1024 * 1024) { // 5MB limit
-        newErrors.billImage = 'Image size should be less than 5MB';
-      }
-    }
-
-    return newErrors;
-  };
-
   const handleChange = (e) => {
     const { name, value, files, type } = e.target;
-
-    // Clear existing error for this field
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
 
     if (files && files.length > 0) {
       const file = files[0];
@@ -196,32 +118,17 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
             unit: 'other',
             quantity: 0
           };
-          // Clear related errors
-          setErrors(prev => ({
-            ...prev,
-            unit: '',
-            quantity: ''
-          }));
         } else if (processedValue === 'petrol' || processedValue === 'diesel') {
           // Automatically set unit to litre for petrol/diesel
           updatedForm = {
             ...updatedForm,
             unit: 'litre'
           };
-          // Clear unit error if exists
-          setErrors(prev => ({
-            ...prev,
-            unit: ''
-          }));
         }
 
         // Reset stone types when expense type changes
         if (processedValue !== 'crushedStone') {
           setStoneTypes([]);
-          setErrors(prev => ({
-            ...prev,
-            stoneTypes: ''
-          }));
         }
 
         // Clear supplier name when expense type changes to other/diesel
@@ -230,10 +137,6 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
             ...updatedForm,
             supplierName: ''
           };
-          setErrors(prev => ({
-            ...prev,
-            supplierName: ''
-          }));
         }
       }
 
@@ -243,11 +146,6 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
 
   const handleCheckboxChange = (e) => {
     const value = e.target.value;
-
-    // Clear stone types error
-    if (errors.stoneTypes) {
-      setErrors(prev => ({ ...prev, stoneTypes: '' }));
-    }
 
     if (e.target.checked) {
       setStoneTypes(prev => [...prev, value])
@@ -267,15 +165,15 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
         quantity: initialValues.quantity,
         unit: initialValues.unit,
         totalCost: initialValues.totalCost,
-        arrivalDate: initialValues.arrivalDate 
-          ? new Date(initialValues.arrivalDate).toISOString().split("T")[0] 
+        arrivalDate: initialValues.arrivalDate
+          ? new Date(initialValues.arrivalDate).toISOString().split("T")[0]
           : '',
         vehicleNumber: initialValues.vehicleNumber,
         supplierName: initialValues.supplierName,
         details: initialValues.details,
         siteId: initialValues.siteId,
       })
-      
+
       // Set stone types for editing crushed stone expenses
       if (initialValues.stoneType && Array.isArray(initialValues.stoneType)) {
         setStoneTypes(initialValues.stoneType);
@@ -291,14 +189,6 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validate form
-    const formErrors = validateForm();
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      toast.error("Please fix the errors in the form");
-      return;
-    }
 
     setIsSubmitting(true);
 
@@ -319,9 +209,9 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
         formData.append("quantity", 0);
         formData.append("unit", "other");
       }
-      if(form.expenseType === 'crushedStone'){
+      if (form.expenseType === 'crushedStone') {
         formData.append("stoneType", JSON.stringify(stoneTypes));
-      }else{
+      } else {
         formData.append("stoneType", JSON.stringify([]));
       }
       formData.append("totalCost", form.totalCost);
@@ -333,15 +223,38 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
         formData.append("siteId", siteId);
       }
 
+      console.log(formData);
+      
+
+      let res;
+
       if (initialValues) {
         formData.append("_id", initialValues._id)
-        const updatedExpense = await updateExpenseToDB(initialValues._id, formData)
-        dispatch(updateExpense(updatedExpense))
+        res = await updateExpenseToDB(initialValues._id, formData)
+      } else {
+        res = await addExpens(formData);
+      }
+
+      if (res.success === false) {
+        console.log("Validation/Server error:", res);
+        if (res.errors?.length) {
+          res.errors.forEach(err => {
+            toast.error(`${err.field}: ${err.msg}`);
+          });
+        } else {
+          toast.error(res.message || "❌ Something went wrong");
+        }
+        return; // stop execution
+      }
+
+      const expenseData = res.expense;
+      if (initialValues) {
+        dispatch(updateExpense(expenseData))
         toast.success("✅ Expense updated successfully!");
         navigate(`/site/${siteId}/expenses`)
-      }else{
-        const newExpense = await addExpens(formData);
-        dispatch(addNewExpense(newExpense));
+      } else {
+
+        dispatch(addNewExpense(expenseData));
         toast.success("✅ New expense added successfully!");
         // Reset form
         setForm({
@@ -359,7 +272,6 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
         });
         setStoneTypes([]);
         setImagePreview(null);
-        setErrors({});
       }
 
       if (onClose) onClose();
@@ -374,9 +286,6 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
   const removeImage = () => {
     setForm({ ...form, billImage: null });
     setImagePreview(null);
-    if (errors.billImage) {
-      setErrors(prev => ({ ...prev, billImage: '' }));
-    }
   };
 
   // Get today's date in YYYY-MM-DD format for max date
@@ -421,7 +330,7 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Expense Type *
+              Expense Type
             </label>
             <div className="relative">
               <Tag className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -429,8 +338,7 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
                 name="expenseType"
                 value={form.expenseType}
                 onChange={handleChange}
-                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${errors.expenseType ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                className="w-full pl-8 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
               >
                 {expenseTypeOptions.map(option => (
                   <option key={option.value} value={option.value}>
@@ -439,14 +347,11 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
                 ))}
               </select>
             </div>
-            {errors.expenseType && (
-              <p className="text-red-500 text-xs mt-1">{errors.expenseType}</p>
-            )}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Total Cost (₹) *
+              Total Cost (₹)
             </label>
             <div className="relative">
               <IndianRupee className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -458,18 +363,14 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
                 min="0"
                 step="0.01"
                 placeholder="Enter total cost"
-                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${errors.totalCost ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                className="w-full pl-8 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
               />
             </div>
-            {errors.totalCost && (
-              <p className="text-red-500 text-xs mt-1">{errors.totalCost}</p>
-            )}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Arrival Date *
+              Arrival Date
             </label>
             <div className="relative">
               <Calendar className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -479,13 +380,9 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
                 value={form.arrivalDate}
                 onChange={handleChange}
                 max={getTodayDate()}
-                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${errors.arrivalDate ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                className="w-full pl-8 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
               />
             </div>
-            {errors.arrivalDate && (
-              <p className="text-red-500 text-xs mt-1">{errors.arrivalDate}</p>
-            )}
           </div>
         </div>
 
@@ -493,7 +390,7 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
         {form.expenseType === 'crushedStone' && (
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Stone Types *
+              Stone Types
             </label>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
               {stoneTypeOptions.map(option => (
@@ -509,9 +406,6 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
                 </label>
               ))}
             </div>
-            {errors.stoneTypes && (
-              <p className="text-red-500 text-xs mt-1">{errors.stoneTypes}</p>
-            )}
             {stoneTypes.length > 0 && (
               <div className="mt-2">
                 <p className="text-sm text-green-600">
@@ -528,7 +422,7 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Quantity *
+                  Quantity
                 </label>
                 <div className="relative">
                   <Hash className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -540,18 +434,14 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
                     min="0"
                     step="0.01"
                     placeholder="Enter quantity"
-                    className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${errors.quantity ? 'border-red-300' : 'border-gray-300'
-                      }`}
+                    className="w-full pl-8 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                   />
                 </div>
-                {errors.quantity && (
-                  <p className="text-red-500 text-xs mt-1">{errors.quantity}</p>
-                )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Unit *
+                  Unit
                   {(form.expenseType === 'petrol' || form.expenseType === 'diesel') && (
                     <span className="text-blue-600 text-xs ml-1">(Auto-set to Litre)</span>
                   )}
@@ -563,8 +453,7 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
                     value={form.unit}
                     onChange={handleChange}
                     disabled={form.expenseType === 'petrol' || form.expenseType === 'diesel'}
-                    className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${errors.unit ? 'border-red-300' : 'border-gray-300'
-                      } ${(form.expenseType === 'petrol' || form.expenseType === 'diesel') ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                    className={`w-full pl-8 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${(form.expenseType === 'petrol' || form.expenseType === 'diesel') ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                   >
                     {allowedUnits.map(unit => (
                       <option key={unit} value={unit}>
@@ -573,9 +462,6 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
                     ))}
                   </select>
                 </div>
-                {errors.unit && (
-                  <p className="text-red-500 text-xs mt-1">{errors.unit}</p>
-                )}
               </div>
             </>
           ) : (
@@ -594,13 +480,9 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
                 value={form.vehicleNumber}
                 onChange={handleChange}
                 placeholder="Enter vehicle number"
-                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${errors.vehicleNumber ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                className="w-full pl-8 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
               />
             </div>
-            {errors.vehicleNumber && (
-              <p className="text-red-500 text-xs mt-1">{errors.vehicleNumber}</p>
-            )}
           </div>
         </div>
 
@@ -608,7 +490,7 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
         {isSupplierRequired() && (
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Supplier Name *
+              Supplier Name
             </label>
             <div className="relative">
               <User className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -618,13 +500,9 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
                 value={form.supplierName}
                 onChange={handleChange}
                 placeholder="Enter supplier name"
-                className={`w-full pl-8 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm ${errors.supplierName ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                className="w-full pl-8 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
               />
             </div>
-            {errors.supplierName && (
-              <p className="text-red-500 text-xs mt-1">{errors.supplierName}</p>
-            )}
           </div>
         )}
 
@@ -664,8 +542,7 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
               />
               <label
                 htmlFor="billImageInput"
-                className={`flex flex-col items-center justify-center w-full h-20 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 transition-colors ${errors.billImage ? 'border-red-300' : 'border-gray-300 hover:border-gray-400'
-                  }`}
+                className="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 hover:border-gray-400 transition-colors"
               >
                 <Upload className="w-5 h-5 text-gray-400 mb-1" />
                 <p className="text-sm text-gray-600">
@@ -689,10 +566,6 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
                 <X className="w-3 h-3" />
               </button>
             </div>
-          )}
-
-          {errors.billImage && (
-            <p className="text-red-500 text-xs mt-1">{errors.billImage}</p>
           )}
         </div>
 
@@ -742,14 +615,13 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`flex-1 ${
-              isEditMode 
-                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700' 
-                : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700'
-            } text-white px-4 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-md disabled:opacity-50 disabled:cursor-not-allowed text-sm`}
+            className={`flex-1 ${isEditMode
+              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+              : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700'
+              } text-white px-4 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-md disabled:opacity-50 disabled:cursor-not-allowed text-sm`}
           >
-            {isSubmitting 
-              ? (isEditMode ? 'Updating...' : 'Adding...') 
+            {isSubmitting
+              ? (isEditMode ? 'Updating...' : 'Adding...')
               : (isEditMode ? 'Update Expense' : 'Add Expense')
             }
           </button>
