@@ -80,8 +80,8 @@ function AddAdvanceForm({ workerId, onClose }) {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-green-100 rounded-lg">
-            <Plus className="w-6 h-6 text-green-600" />
+          <div className="p-2 bg-red-100 rounded-lg">
+            <Plus className="w-6 h-6 text-red-600" />
           </div>
           <div>
             <h3 className="text-xl font-bold text-gray-900">Add New Advance</h3>

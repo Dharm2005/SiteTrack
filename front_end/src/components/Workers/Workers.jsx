@@ -46,17 +46,17 @@ function Workers() {
   const selectedWorker = allWorkers?.find(worker => worker._id === selectedWorkerId);
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="h-full flex flex-col p-3">
       {/* Header Section - Reduced padding */}
-      <div className="flex-shrink-0 mb-4">
+      <div className="flex-shrink-0 mb-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Users className="w-6 h-6 text-blue-600" />
+          <div className="flex items-center space-x-2">
+            <div className="p-1.5 bg-blue-100 rounded-lg">
+              <Users className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Workers</h2>
-              <p className="text-gray-600">
+              <h2 className="text-xl font-bold text-gray-900">Workers</h2>
+              <p className="text-sm text-gray-600">
                 {allWorkers?.length ? `${allWorkers.length} workers found` : 'No workers available'}
                 {selectedWorker && (
                   <span className="ml-2 text-blue-600 font-medium">
@@ -70,9 +70,9 @@ function Workers() {
           {!showAddForm && (
             <button
               onClick={handleShowForm}
-              className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+              className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-md text-sm"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-4 h-4" />
               <span>Add Worker</span>
             </button>
           )}
@@ -80,7 +80,7 @@ function Workers() {
 
         {/* Add Worker Form - Only show when needed */}
         {showAddForm && (
-          <div className="mt-4">
+          <div className="mt-3">
             <AddWorkerForm
               siteId={id}
               onClose={handleCloseForm}
@@ -89,17 +89,17 @@ function Workers() {
         )}
       </div>
 
-      {/* Workers Section - Reduced margin */}
-      <div className="flex-shrink-0 mb-4">
+      {/* Workers Section - Reduced height and spacing */}
+      <div className="flex-shrink-0 mb-3">
         {allWorkers && allWorkers.length > 0 ? (
           <div className="relative">
-            {/* Horizontal Scrollable Container */}
-            <div className="overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 px-2 py-2">
-              <div className="flex space-x-6 min-w-max">
+            {/* Horizontal Scrollable Container - Reduced height */}
+            <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 px-1 py-1">
+              <div className="flex space-x-4 min-w-max">
                 {allWorkers.map(worker => (
                   <div 
                     key={worker._id} 
-                    className={`flex-shrink-0 w-40 cursor-pointer transition-all duration-200 transform hover:scale-105 ${selectedWorkerId === worker._id ? 'ring-2 ring-blue-500 ring-offset-2 rounded-lg' : ''}`}
+                    className={`flex-shrink-0 w-32 cursor-pointer transition-all duration-200 transform hover:scale-105 ${selectedWorkerId === worker._id ? 'ring-2 ring-blue-500 ring-offset-1 rounded-lg' : ''}`}
                     onClick={() => handleWorkerSelect(
                       worker._id,
                       worker.workerName
@@ -120,28 +120,28 @@ function Workers() {
             </div>
 
             {/* Scroll Indicator */}
-            {allWorkers.length > 3 && (
-              <div className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gradient-to-l from-gray-50 to-transparent w-8 h-full pointer-events-none flex items-center justify-end pr-2">
-                <div className="w-1 h-8 bg-gray-300 rounded-full opacity-50"></div>
+            {allWorkers.length > 4 && (
+              <div className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gradient-to-l from-gray-50 to-transparent w-6 h-full pointer-events-none flex items-center justify-end pr-1">
+                <div className="w-0.5 h-6 bg-gray-300 rounded-full opacity-50"></div>
               </div>
             )}
           </div>
         ) : (
-          /* Empty State */
-          <div className="flex flex-col items-center justify-center py-8 bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-200">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <Users className="w-8 h-8 text-gray-400" />
+          /* Empty State - Reduced padding */
+          <div className="flex flex-col items-center justify-center py-6 bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-200">
+            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+              <Users className="w-6 h-6 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No workers found</h3>
-            <p className="text-gray-500 text-center max-w-md mb-4">
+            <h3 className="text-base font-medium text-gray-900 mb-2">No workers found</h3>
+            <p className="text-sm text-gray-500 text-center max-w-md mb-3">
               There are no workers assigned to this site yet. Add your first worker to get started.
             </p>
             {!showAddForm && (
               <button
                 onClick={handleShowForm}
-                className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
+                className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 text-sm"
               >
-                <Plus className="w-5 h-5" />
+                <Plus className="w-4 h-4" />
                 <span>Add First Worker</span>
               </button>
             )}
@@ -149,7 +149,7 @@ function Workers() {
         )}
       </div>
 
-      {/* Worker Detail Section - Reduced spacing and improved messaging */}
+      {/* Worker Detail Section - Maximized space */}
       <div className="flex-1 min-h-0">
         {selectedWorkerId ? (
           <WorkerDetail
@@ -158,11 +158,11 @@ function Workers() {
           />
         ) : (
           <div className="flex flex-col items-center justify-center h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <Users className="w-8 h-8 text-gray-400" />
+            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+              <Users className="w-6 h-6 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-700 mb-2">No Worker Selected</h3>
-            <p className="text-gray-500 text-center">
+            <h3 className="text-base font-medium text-gray-700 mb-2">No Worker Selected</h3>
+            <p className="text-sm text-gray-500 text-center">
               {allWorkers?.length > 0 
                 ? "Click on a worker above to view their details and advances"
                 : "Add workers to get started"
