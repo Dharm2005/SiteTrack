@@ -41,7 +41,7 @@ function Managers() {
                 mobile={manager.managerMobile}
                 dob={manager.managerDob}
                 gender={manager.managerGender}
-                username={manager.username}
+                username={manager.userId.username}
                 createdAt={manager.createdAt}
               />
             ))}

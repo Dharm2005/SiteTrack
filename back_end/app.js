@@ -2,8 +2,12 @@
 const express = require('express');
 const { default: mongoose } = require('mongoose');
 const cors = require('cors');
+const dotenv = require('dotenv');
+
+dotenv.config()
 
 // local module
+const authRouter = require('./routes/authRouter');
 const siteRouter = require('./routes/siteRouter');
 const workerRouter = require('./routes/workerRouter');
 const expenseRouter = require('./routes/expenseRouter');
@@ -11,10 +15,6 @@ const managerRouter = require('./routes/managerRouter');
 const memoRouter = require('./routes/memoRouter');
 
 const errors = require('./controllers/errors');
-
-// mongo connection string
-const DB_PATH = 'mongodb+srv://root:shaktimaanMongo1@cluster1.ctvxcgv.mongodb.net/site_management?retryWrites=true&w=majority&appName=Cluster1'
-
 
 const app = express();
 
@@ -26,7 +26,8 @@ app.use("/uploads", express.static("uploads"));
 
 
 // Routers
-app.use('/',siteRouter)
+app.use('/',authRouter);
+app.use('/',siteRouter);
 app.use('/', workerRouter);
 app.use('/', expenseRouter);
 app.use('/', managerRouter);
@@ -39,12 +40,12 @@ app.use(errors.getNotFound);
 
 // Connect DB and start server
 
-const PORT = 3000;
+const port = process.env.PORT;
 
-mongoose.connect(DB_PATH).then(() => {
+mongoose.connect(process.env.MONGO_URL).then(() => {
   console.log("Database connected successfully");
-  app.listen(PORT,() => {
-    console.log(`http://localhost:${PORT}`);
+  app.listen(port,() => {
+    console.log(`http://localhost:${port}`);
   })
 }).catch(error => {
   console.log("Error to connect database");

@@ -1,11 +1,14 @@
 const { validationResult } = require('express-validator');
 const Manager = require('../models/Manager')
+const User = require('../models/User')
 const fs = require('fs');
 const path = require('path');
+const bcrypt = require('bcryptjs');
 
-exports.getManagers = async (req , res , next) => {
-   try {
-    const manager = await Manager.find({isDeleted : false});
+exports.getManagers = async (req, res, next) => {
+  try {
+    const manager = await Manager.find({ isDeleted: false })
+      .populate("userId", "username");
     res.json(manager);
   } catch (err) {
     res.status(500).json({ message: "Error fetching managers", error: err.message });
@@ -13,27 +16,27 @@ exports.getManagers = async (req , res , next) => {
 }
 
 exports.getManagerById = async (req, res, next) => {
-  try{
-    const {managerId} = req.params;
+  try {
+    const { managerId } = req.params;
     const manager = await Manager.findById(managerId)
     res.status(200).json(manager);
-  } catch(err) {
+  } catch (err) {
     console.error("Error fetching manager:", err);
     res.status(500).json({ err: "Failed to fetch manager" });
   }
 }
 
-exports.postAddManager = async ( req, res, next) => {
-  try{
+exports.postAddManager = async (req, res, next) => {
+  try {
 
     const errors = validationResult(req);
-    if(!errors.isEmpty()){
+    if (!errors.isEmpty()) {
 
-      if(req.file){
-        const filePath = path.join(__dirname,"../uploads/managers",req.file.filename)
-          if(fs.existsSync(filePath)){
-            fs.unlinkSync(filePath);
-          }
+      if (req.file) {
+        const filePath = path.join(__dirname, "../uploads/managers", req.file.filename)
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
       }
 
       return res.status(400).json({
@@ -45,7 +48,7 @@ exports.postAddManager = async ( req, res, next) => {
       })
     }
 
-    const {managerName , managerMobile, managerDob, managerGender} = req.body;
+    const { managerName, managerMobile, managerDob, managerGender } = req.body;
     const managerImage = req.file ? req.file.filename : null;
 
     const manager = new Manager({
@@ -55,15 +58,33 @@ exports.postAddManager = async ( req, res, next) => {
       managerDob,
       managerGender,
     });
-  
+
     const savedManager = await manager.save();
-    res.status(201).json({
-      message: "manager added successsfully",
-      manager : savedManager
+
+    const username = managerName.toLowerCase().replace(/\s+/g, "") + Math.floor(1000 + Math.random() * 9000);
+    const password = username;
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = new User({
+      username,
+      password: hashedPassword,
+      role: "manager",
     });
 
-  }catch(err){
-     res.status(500).json({ message: "Error creating sites", error: err.message });
+    const savedUser = await user.save();
+    savedManager.userId = savedUser._id;
+    await savedManager.save();
+
+    res.status(201).json({
+      message: "manager added successsfully",
+      manager: savedManager
+    });
+
+  } catch (err) {
+    console.error(err);
+    
+    res.status(500).json({ message: "Error creating manager", error: err.message });
   }
 }
 
@@ -72,32 +93,32 @@ exports.deleteManager = async (req, res, next) => {
     const managerId = req.params.managerId;
     const updatedManager = await Manager.findByIdAndUpdate(
       managerId,
-      {isDeleted : true},
-      {new : true}
+      { isDeleted: true },
+      { new: true }
     )
 
-    if(!updatedManager){
-      return res.status(404).json({message : "no manager found"})
+    if (!updatedManager) {
+      return res.status(404).json({ message: "no manager found" })
     }
 
     return res.json(updatedManager)
 
   } catch (error) {
-    console.error("Error while deleteing manager" , error);
+    console.error("Error while deleteing manager", error);
   }
 }
 
-exports.updateManager = async (req , res , next) => {
+exports.updateManager = async (req, res, next) => {
   try {
 
     const errors = validationResult(req);
-    if(!errors.isEmpty()){
+    if (!errors.isEmpty()) {
 
-      if(req.file){
-        const filePath = path.join(__dirname,"../uploads/managers",req.file.filename)
-          if(fs.existsSync(filePath)){
-            fs.unlinkSync(filePath);
-          }
+      if (req.file) {
+        const filePath = path.join(__dirname, "../uploads/managers", req.file.filename)
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
       }
 
       return res.status(400).json({
@@ -109,15 +130,15 @@ exports.updateManager = async (req , res , next) => {
       })
     }
 
-    const {managerId} = req.params;
-    const updates = {...req.body};
+    const { managerId } = req.params;
+    const updates = { ...req.body };
 
-    if(req.file){
+    if (req.file) {
       const oldManager = await Manager.findById(managerId)
 
-      if(oldManager && oldManager.managerImage){
-        const oldPath = path.join(__dirname,"../uploads/managers",oldManager.managerImage)
-        if(fs.existsSync(oldPath)){
+      if (oldManager && oldManager.managerImage) {
+        const oldPath = path.join(__dirname, "../uploads/managers", oldManager.managerImage)
+        if (fs.existsSync(oldPath)) {
           fs.unlinkSync(oldPath)
         }
       }
@@ -128,16 +149,16 @@ exports.updateManager = async (req , res , next) => {
     const updatedManager = await Manager.findByIdAndUpdate(
       managerId,
       updates,
-      {new : true}
+      { new: true }
     )
 
-    if(!updatedManager){
-      return res.status(404).json({message : "manager not found for update"})
+    if (!updatedManager) {
+      return res.status(404).json({ message: "manager not found for update" })
     }
 
-     res.status(201).json({
+    res.status(201).json({
       message: "manager added successsfully",
-      manager : updatedManager
+      manager: updatedManager
     });
 
   } catch (error) {
