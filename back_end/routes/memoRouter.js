@@ -3,10 +3,12 @@ const { body, validateResult } = require('express-validator')
 const memoRouter = express.Router()
 const memoController = require("../controllers/memoController")
 const upload = require('../middleware/imageUpload');
+const { isManager } = require('../middleware/auth');
 
 memoRouter.get("/memo/:siteId", memoController.getMemosBySite)
 
 memoRouter.post("/add-memo",
+  isManager,
   upload.none(),
   [
     body("memoType")
@@ -31,8 +33,8 @@ memoRouter.post("/add-memo",
   ],
   memoController.postAddMemo);
 
-memoRouter.delete("/memo/:memoId", memoController.deleteMemo);
+memoRouter.delete("/memo/:memoId",isManager, memoController.deleteMemo);
 
-memoRouter.put("/memo/:memoId", memoController.completeMemo);
+memoRouter.put("/memo/:memoId",isManager, memoController.completeMemo);
 
 module.exports = memoRouter;

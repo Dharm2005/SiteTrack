@@ -8,6 +8,7 @@ import { deleteSite } from '../../features/siteSlice'
 const API_URL = "http://localhost:3000";
 
 function Site({ id, name, location, image, managerId, createdAt }) {
+  const { user } = useSelector(state => state.auth);
   const managers = useSelector(state => state.manager.managers)
   const manager = managers.find((m) => m._id === managerId)
   const dispatch = useDispatch()
@@ -166,32 +167,37 @@ function Site({ id, name, location, image, managerId, createdAt }) {
               View Details
             </Link>
 
-            {/* Edit Button Icon */}
-            <Link
-              to={`/edit-site/${id}`}
-              className={`p-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-md ${isDeleting ? 'opacity-50 pointer-events-none' : ''
-                }`}
-              title="Edit Site"
-            >
-              <Edit className="w-5 h-5" />
-            </Link>
+            {user.role === 'admin' ? (
+              <>
+                {/* Edit Button Icon */}
+                <Link
+                  to={`/edit-site/${id}`}
+                  className={`p-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-md ${isDeleting ? 'opacity-50 pointer-events-none' : ''
+                    }`}
+                  title="Edit Site"
+                >
+                  <Edit className="w-5 h-5" />
+                </Link>
 
-            {/* Delete Button Icon */}
-            <button
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className={`p-3 transition-all duration-200 transform hover:scale-105 shadow-md rounded-xl ${isDeleting
-                ? 'bg-red-300 text-red-600 cursor-not-allowed'
-                : 'bg-red-100 hover:bg-red-200 text-red-700'
-                }`}
-              title="Delete Site"
-            >
-              {isDeleting ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <Trash2 className="w-5 h-5" />
-              )}
-            </button>
+                {/* Delete Button Icon */}
+                <button
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className={`p-3 transition-all duration-200 transform hover:scale-105 shadow-md rounded-xl ${isDeleting
+                    ? 'bg-red-300 text-red-600 cursor-not-allowed'
+                    : 'bg-red-100 hover:bg-red-200 text-red-700'
+                    }`}
+                  title="Delete Site"
+                >
+                  {isDeleting ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-5 h-5" />
+                  )}
+                </button>
+              </>
+            ) : (<></>)}
+
           </div>
         </div>
       </div>

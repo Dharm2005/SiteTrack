@@ -1,5 +1,6 @@
 const express = require('express');
 const { body, validateResult } = require('express-validator')
+const {isAdmin , isManager} = require('../middleware/auth')
 
 const expenseRouter = express.Router();
 const expenseController = require('../controllers/expenseController');
@@ -10,6 +11,7 @@ expenseRouter.get('/expense/:siteId', expenseController.getExpensesBySite)
 expenseRouter.get('/expense/data/:expenseId', expenseController.getExpenseById)
 
 expenseRouter.post('/add-expense',
+  isManager,
   upload.single("billImage"),
   [
     body("expenseType")
@@ -88,9 +90,10 @@ expenseRouter.post('/add-expense',
 
 expenseRouter.get('/expense/:siteId/filter', expenseController.getFilteredExpenses)
 
-expenseRouter.delete('/expense/:expenseId', expenseController.deleteExpense)
+expenseRouter.delete('/expense/:expenseId',isManager, expenseController.deleteExpense)
 
 expenseRouter.put('/expense/:expenseId',
+  isManager,
   upload.single("billImage"),
   [
     body("expenseType")

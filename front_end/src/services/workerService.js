@@ -1,13 +1,13 @@
-import axios from "axios";
+import api from "./api";
 
 export const addWorker = async (workerData) => {
-  try{
-    const response = await axios.post("http://localhost:3000/add-worker",workerData,  {
+  try {
+    const response = await api.post("http://localhost:3000/workers/add-worker", workerData, {
       headers: { "Content-Type": "multipart/form-data" },
     })
-    
+
     return response.data;
-  }catch (error) {
+  } catch (error) {
     if (error.response) {
       return {
         success: false,
@@ -21,42 +21,42 @@ export const addWorker = async (workerData) => {
       status: null,
       errors: [],
       message: "Network error",
-    };   
+    };
   }
 }
 
 export const getWorkersBySite = async (id) => {
   try {
-    const response = await axios.get(`http://localhost:3000/worker/${id}`);
+    const response = await api.get(`http://localhost:3000/workers/worker/${id}`);
     return response.data;
-  }catch (err) {
+  } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to fetch workers");
   }
 }
 
 export const getWorkerById = async (id) => {
   try {
-    const response = await axios.get(`http://localhost:3000/worker/data/${id}`);
+    const response = await api.get(`http://localhost:3000/workers/worker/data/${id}`);
     return response.data;
   } catch (error) {
-    console.error("Error while fetching worker by id" , error);
+    console.error("Error while fetching worker by id", error);
   }
 }
 
 export const deleteWorkerFromDB = async (workerId) => {
-  try{
-    const response = await axios.delete(`http://localhost:3000/worker/${workerId}`)
+  try {
+    const response = await api.delete(`http://localhost:3000/workers/worker/${workerId}`)
     return response.data;
-  }catch (err){
+  } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to delete worker");
   }
 }
 
-export const updateWorkerToDB = async (workerId , workerData) => {
+export const updateWorkerToDB = async (workerId, workerData) => {
   try {
-    const response = await axios.put(`http://localhost:3000/worker/${workerId}`,
+    const response = await api.put(`http://localhost:3000/workers/worker/${workerId}`,
       workerData,
-      {headers : {"Content-Type" : "multipart/form-data"}}
+      { headers: { "Content-Type": "multipart/form-data" } }
     )
     return response.data;
   } catch (error) {
@@ -78,18 +78,18 @@ export const updateWorkerToDB = async (workerId , workerData) => {
 }
 
 export const getAdvancesByWorker = async (workerId) => {
-  try{
-    const response = await axios.get(`http://localhost:3000/worker/${workerId}/advance`);
+  try {
+    const response = await api.get(`http://localhost:3000/workers/worker/${workerId}/advance`);
     return response.data;
-  } catch(err) {
+  } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to fetch advances");
   }
 }
 
 export const addAdvanceOfWorker = async (advanceData) => {
   try {
-    const response = await axios.post("http://localhost:3000/worker/add-advance",advanceData,{
-      headers: {"Content-Type": "multipart/form-data"},
+    const response = await api.post("http://localhost:3000/workers/worker/add-advance", advanceData, {
+      headers: { "Content-Type": "multipart/form-data" },
     })
     return response.data;
   } catch (error) {
@@ -110,14 +110,14 @@ export const addAdvanceOfWorker = async (advanceData) => {
   }
 }
 
-export const updateAdvanceToDB = async (advanceId , advanceData) => {
-  try{
-    const response = await axios.put(`http://localhost:3000/worker/advance/${advanceId}`,
+export const updateAdvanceToDB = async (advanceId, advanceData) => {
+  try {
+    const response = await api.put(`http://localhost:3000/workers/worker/advance/${advanceId}`,
       advanceData,
-      {headers : {"Content-Type" : "multipart/form-data"}}
+      { headers: { "Content-Type": "multipart/form-data" } }
     )
     return response.data;
-    
+
   } catch (error) {
     if (error.response) {
       return {
@@ -137,18 +137,18 @@ export const updateAdvanceToDB = async (advanceId , advanceData) => {
 }
 
 export const getEarnByWorker = async (workerId) => {
-  try{
-    const response = await axios.get(`http://localhost:3000/worker/${workerId}/earn`);
+  try {
+    const response = await api.get(`http://localhost:3000/workers/worker/${workerId}/earn`);
     return response.data;
-  } catch(err) {
+  } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to fetch earn");
   }
 }
 
 export const addEarnOfWorker = async (earnData) => {
   try {
-    const response = await axios.post("http://localhost:3000/worker/add-earn",earnData,{
-      headers: {"Content-Type": "multipart/form-data"},
+    const response = await api.post("http://localhost:3000/workers/worker/add-earn", earnData, {
+      headers: { "Content-Type": "multipart/form-data" },
     })
     return response.data;
   } catch (error) {
@@ -169,14 +169,14 @@ export const addEarnOfWorker = async (earnData) => {
   }
 }
 
-export const updateEarnToDB = async (earnId , earnData) => {
-  try{
-    const response = await axios.put(`http://localhost:3000/worker/earn/${earnId}`,
+export const updateEarnToDB = async (earnId, earnData) => {
+  try {
+    const response = await api.put(`http://localhost:3000/workers/worker/earn/${earnId}`,
       earnData,
-      {headers : {"Content-Type" : "multipart/form-data"}}
+      { headers: { "Content-Type": "multipart/form-data" } }
     )
     return response.data;
-    
+
   } catch (error) {
     if (error.response) {
       return {
@@ -195,14 +195,14 @@ export const updateEarnToDB = async (earnId , earnData) => {
   }
 }
 
-export const settledWorkerInDB = async (workerId , workerData) => {
-  try{
-    const response = await axios.put(`http://localhost:3000/worker/${workerId}/settle`,
+export const settledWorkerInDB = async (workerId, workerData) => {
+  try {
+    const response = await api.put(`http://localhost:3000/workers/worker/${workerId}/settle`,
       workerData,
-      {headers : { "Content-Type": "application/json" }}
+      { headers: { "Content-Type": "application/json" } }
     )
     return response.data;
-  }catch(error){
-    console.error("Error while settling worker" , error)
+  } catch (error) {
+    console.error("Error while settling worker", error)
   }
 }

@@ -1,5 +1,6 @@
 const express = require('express');
 const {body , validationResult} = require("express-validator")
+const {isAdmin , isManager} = require('../middleware/auth')
 
 const siteRouter = express.Router();
 const siteController = require('../controllers/siteController');
@@ -8,6 +9,7 @@ const upload = require('../middleware/imageUpload');
 siteRouter.get('/',siteController.getSites)
 
 siteRouter.post('/add-site',
+  isAdmin,
   upload.single("siteImage"),
   [
     body("siteName")
@@ -25,9 +27,10 @@ siteRouter.post('/add-site',
 
 siteRouter.get('/site/:siteId',siteController.getSiteDetails)
 
-siteRouter.delete('/site/:siteId',siteController.deleteSite)
+siteRouter.delete('/site/:siteId',isAdmin,siteController.deleteSite)
 
 siteRouter.put('/site/:siteId',
+  isAdmin,
   upload.single("siteImage"),
   [
     body("siteName")

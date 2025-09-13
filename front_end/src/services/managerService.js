@@ -1,78 +1,79 @@
-import axios from 'axios'
+import api from "./api";
+
 
 export const getAllManager = async () => {
-  try{
-    const response = await axios.get("http://localhost:3000/managers")
-    return response.data; 
+  try {
+    const response = await api.get("http://localhost:3000/managers/managers")
+    return response.data;
   }
-  catch(err){
-    console.error("Error while getting managers" , err);
+  catch (err) {
+    console.error("Error while getting managers", err);
   }
 }
 
 export const addManager = async (managerData) => {
   try {
-    const response = await axios.post("http://localhost:3000/add-manager",managerData,{
+    const response = await api.post("http://localhost:3000/managers/add-manager", managerData, {
       headers: { "Content-Type": "multipart/form-data" },
     })
     return response.data;
   } catch (error) {
-    if(error.response){
-      return{
+    if (error.response) {
+      return {
         success: false,
         status: error.response.status,
         errors: error.response.data.errors || [],
         message: error.response.data.message || "Validation failed",
       };
     }
-    return{
+    return {
       success: false,
       status: null,
       errors: [],
-      message:"Network error",
+      message: "Network error",
     };
   }
 }
 
 export const deleteManagerFromDB = async (managerId) => {
   try {
-    const response = await axios.delete(`http://localhost:3000/manager/${managerId}`)
+    const response = await api.delete(`http://localhost:3000/managers/manager/${managerId}`)
     return response.data;
   } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to delete manager");
   }
 }
 
-export const updateManagerToDB = async (managerId ,managerData) => {
+export const updateManagerToDB = async (managerId, managerData) => {
   try {
-    const response = await axios.put(`http://localhost:3000/manager/${managerId}`,
+    const response = await api.put(`http://localhost:3000/managers/manager/${managerId}`,
       managerData,
-      {headers : {"Content-Type" : "multipart/form-data"}}
+      { headers: { "Content-Type": "multipart/form-data" } }
     )
     return response.data
   } catch (error) {
-    if(error.response){
-      return{
+    if (error.response) {
+      return {
         success: false,
         status: error.response.status,
         errors: error.response.data.errors || [],
         message: error.response.data.message || "Validation failed",
       };
     }
-    return{
+    return {
       success: false,
       status: null,
       errors: [],
-      message:"Network error",
+      message: "Network error",
     };
   }
 }
 
 export const getManagerById = async (managerId) => {
   try {
-    const response = await axios.get(`http://localhost:3000/manager/${managerId}`);
+    const response = await api.get(`http://localhost:3000/managers/manager/${managerId}`);
     return response.data;
   } catch (error) {
-    console.error("Error while fetching manager" , error);
+    console.error("Error while fetching manager", error);
   }
 }

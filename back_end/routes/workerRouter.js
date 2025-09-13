@@ -3,10 +3,12 @@ const { body, validationResult } = require('express-validator')
 const workerRouter = express.Router();
 const workerController = require('../controllers/workerController');
 const upload = require('../middleware/imageUpload');
+const { isManager } = require('../middleware/auth');
 
 workerRouter.get('/worker/:siteId', workerController.getWorkersBySite)
 workerRouter.get('/worker/data/:workerId', workerController.getWorkerById)
 workerRouter.post('/add-worker',
+  isManager,
   upload.single("workerImage"),
   [
     body("workerName")
@@ -20,6 +22,7 @@ workerRouter.post('/add-worker',
 
 workerRouter.get('/worker/:workerId/advance', workerController.getAdvancesByWorker)
 workerRouter.post('/worker/add-advance',
+  isManager,
   upload.none(),
   [
     body("amount")
@@ -40,6 +43,7 @@ workerRouter.post('/worker/add-advance',
   workerController.addWorkerAdvance)
 
 workerRouter.put('/worker/advance/:advanceId',
+  isManager,
   upload.none(),
   [
     body("amount")
@@ -60,7 +64,8 @@ workerRouter.put('/worker/advance/:advanceId',
   workerController.updateAdvance)
 
 workerRouter.get('/worker/:workerId/earn', workerController.getEarnByWorker)
-workerRouter.post('/worker/add-earn', 
+workerRouter.post('/worker/add-earn',
+  isManager,
   upload.none(),
   [
     body("amount")
@@ -79,7 +84,9 @@ workerRouter.post('/worker/add-earn',
       })
   ],
   workerController.addWorkerEarn)
-workerRouter.put('/worker/earn/:earnId', 
+
+workerRouter.put('/worker/earn/:earnId',
+  isManager,
   upload.none(),
   [
     body("amount")
@@ -99,8 +106,9 @@ workerRouter.put('/worker/earn/:earnId',
   ],
   workerController.updateEarn)
 
-workerRouter.delete('/worker/:workerId', workerController.deleteWorker)
+workerRouter.delete('/worker/:workerId', isManager, workerController.deleteWorker)
 workerRouter.put('/worker/:workerId',
+  isManager,
   upload.single("workerImage"),
   [
     body("workerName")
@@ -112,6 +120,6 @@ workerRouter.put('/worker/:workerId',
   ],
   workerController.updateWorker)
 
-workerRouter.put('/worker/:workerId/settle', workerController.settleWorker)
+workerRouter.put('/worker/:workerId/settle', isManager, workerController.settleWorker)
 
 module.exports = workerRouter;

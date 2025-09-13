@@ -34,5 +34,8 @@ export {default as Memos} from "./Memos/Memos"
 export {default as Memo} from "./Memos/Memo"
 export {default as AddMemoForm} from "./Memos/AddMemoForm"
 
+export {default as Login} from "./Auth/Login"
+export {default as Signup} from "./Auth/Signup"
+
 export {default as NotFound} from "./Errors/NotFound"
 export {default as ScrollToTop} from "./Layout/ScrollToTop"

@@ -15,6 +15,8 @@ const managerRouter = require('./routes/managerRouter');
 const memoRouter = require('./routes/memoRouter');
 
 const errors = require('./controllers/errors');
+const { auth } = require('./middleware/auth');
+
 
 const app = express();
 
@@ -26,12 +28,12 @@ app.use("/uploads", express.static("uploads"));
 
 
 // Routers
-app.use('/',authRouter);
-app.use('/',siteRouter);
-app.use('/', workerRouter);
-app.use('/', expenseRouter);
-app.use('/', managerRouter);
-app.use('/', memoRouter);
+app.use('/auth',authRouter);
+app.use('/sites',auth,siteRouter);
+app.use('/workers',auth, workerRouter);
+app.use('/expenses',auth, expenseRouter);
+app.use('/managers',auth, managerRouter);
+app.use('/memos',auth, memoRouter);
 
 
 // Error Handling

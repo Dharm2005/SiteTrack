@@ -285,7 +285,7 @@ function AddSite({ initialValues }) {
               <option value="">-- Select a Manager --</option>
               {managers.map((m) => (
                 <option key={m._id} value={m._id.toString()}>
-                  {m.managerName} ({m.username})
+                  {m.managerName} ({m.userId.username})
                 </option>
               ))}
             </select>

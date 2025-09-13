@@ -1,16 +1,17 @@
 const express = require('express');
 const { body, validationResult } = require("express-validator")
 
-
 const managerRouter = express.Router();
 const managerController = require('../controllers/managerController');
 const upload = require('../middleware/imageUpload');
+const { isAdmin, isAdminOrManager } = require('../middleware/auth');
 
-managerRouter.get('/managers', managerController.getManagers)
+managerRouter.get('/managers',isAdminOrManager, managerController.getManagers)
 
 managerRouter.get('/manager/:managerId', managerController.getManagerById)
 
 managerRouter.post('/add-manager',
+  isAdmin,
   upload.single("managerImage"),
   [
     body("managerName")
@@ -32,9 +33,10 @@ managerRouter.post('/add-manager',
   ],
   managerController.postAddManager)
 
-managerRouter.delete('/manager/:managerId', managerController.deleteManager)
+managerRouter.delete('/manager/:managerId',isAdmin, managerController.deleteManager)
 
 managerRouter.put('/manager/:managerId',
+  isAdmin,
   upload.single("managerImage"), 
   [
     body("managerName")

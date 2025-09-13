@@ -1,8 +1,8 @@
-import axios from "axios";
+import api from "./api";
 
 export const getExpensesBySite = async (id) => {
   try {
-    const response = await axios.get(`http://localhost:3000/expense/${id}`);
+    const response = await api.get(`http://localhost:3000/expenses/expense/${id}`);
     return response.data;
   } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to fetch expenses");
@@ -11,7 +11,7 @@ export const getExpensesBySite = async (id) => {
 
 export const getExpenseById = async (id) => {
   try {
-    const response = await axios.get(`http://localhost:3000/expense/data/${id}`);
+    const response = await api.get(`http://localhost:3000/expenses/expense/data/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error while fetching expense", error);
@@ -20,7 +20,7 @@ export const getExpenseById = async (id) => {
 
 export const getFilteredExpenses = async (id, startDate, endDate) => {
   try {
-    const response = await axios.get(`http://localhost:3000/expense/${id}/filter?from=${startDate}&to=${endDate}`);
+    const response = await api.get(`http://localhost:3000/expenses/expense/${id}/filter?from=${startDate}&to=${endDate}`);
     return response.data;
   } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to fetch filtered expenses");
@@ -29,7 +29,7 @@ export const getFilteredExpenses = async (id, startDate, endDate) => {
 
 export const addExpens = async (materialData) => {
   try {
-    const response = await axios.post("http://localhost:3000/add-expense", materialData, {
+    const response = await api.post("http://localhost:3000/expenses/add-expense", materialData, {
       headers: { "Content-Type": "multipart/form-data" },
     })
     return response.data;
@@ -53,7 +53,7 @@ export const addExpens = async (materialData) => {
 
 export const deleteExpenseFromDB = async (expenseId) => {
   try {
-    const response = await axios.delete(`http://localhost:3000/expense/${expenseId}`)
+    const response = await api.delete(`http://localhost:3000/expenses/expense/${expenseId}`)
     return response.data
   } catch (error) {
     console.error("Error while deleting expense", error);
@@ -62,7 +62,7 @@ export const deleteExpenseFromDB = async (expenseId) => {
 
 export const updateExpenseToDB = async (expenseId, expenseData) => {
   try {
-    const response = await axios.put(`http://localhost:3000/expense/${expenseId}`,
+    const response = await api.put(`http://localhost:3000/expenses/expense/${expenseId}`,
       expenseData,
       { headers: { "Content-Type": "multipart/form-data" } }
     )

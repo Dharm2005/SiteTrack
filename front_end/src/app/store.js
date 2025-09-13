@@ -6,9 +6,11 @@ import managerReducer from '../features/managerSlice'
 import memoReducer from '../features/memoSlice'
 import workerAdvanceReducer from '../features/workerAdvanceSlice'
 import workerEarnReducer from '../features/workerEarnSlice'
+import authReducer from '../features/authSlice'
 
 export const store = configureStore({
   reducer : {
+    auth : authReducer,
     site : siteReducer,
     worker : workerReducer,
     expense : expenseReducer,

@@ -1,4 +1,7 @@
 const jwt = require("jsonwebtoken");
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 function auth(req, res, next) {
   const authHeader = req.headers["authorization"];
@@ -17,4 +20,27 @@ function auth(req, res, next) {
   }
 }
 
-module.exports = auth;
+function isAdmin(req, res, next) {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "Access denied: Admins only" });
+  }
+  next();
+}
+
+function isManager(req, res, next) {
+  if(req.user.role !== "manager") {
+    return res.status(403).json({message : "Access denied: Managers only"})
+  }
+  next();
+}
+
+function isAdminOrManager(req, res, next) {
+  if (req.user.role === "admin" || req.user.role === "manager") {
+    next();
+  } else {
+    return res.status(403).json({ message: "Access denied: Admins or Managers only" });
+  }
+}
+
+
+module.exports = {auth, isAdmin, isManager, isAdminOrManager};
