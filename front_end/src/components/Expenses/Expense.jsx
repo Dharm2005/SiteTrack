@@ -3,7 +3,7 @@ import {
   Package, Calendar,IndianRupee, Truck, Hash, Scale,
   Edit3, Trash2, Tag, Clock, Image as ImageIcon, X, User, FileText, Gem, Loader2
 } from 'lucide-react'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { deleteExpenseFromDB } from '../../services/expenseService';
 import { deleteExpense } from '../../features/expenseSlice';
 import { Link } from 'react-router-dom';
@@ -11,6 +11,8 @@ import { Link } from 'react-router-dom';
 const API_URL = "http://localhost:3000";
 
 function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalCost, arrivalDate, vehicleNumber, supplierName, details, createdAt, searchTerm }) {
+
+  const {user} = useSelector(state => state.auth);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
@@ -356,7 +358,9 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
                   </div>
                 )}
 
-                {/* Action Buttons */}
+                {user.role === 'manager' ? (
+                  <>
+                  {/* Action Buttons */}
                 <div className="flex items-center justify-center space-x-1">
                   <Link
                     to={`/edit-expense/${id}`}
@@ -388,6 +392,8 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
                     )}
                   </button>
                 </div>
+                  </>
+                ) : (<></>)}
               </div>
             </div>
 

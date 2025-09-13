@@ -3,7 +3,7 @@ import AddExpenseForm from './AddExpenseForm'
 import { useSelector } from 'react-redux'
 import { Expense, ExpenseChart } from '../index'
 import { useState } from 'react'
-import { Plus, Package,IndianRupee, Calendar, Filter, Search, ArrowLeft, X, BarChart3 } from 'lucide-react'
+import { Plus, Package, IndianRupee, Calendar, Filter, Search, ArrowLeft, X, BarChart3 } from 'lucide-react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { getExpensesBySite, getFilteredExpenses } from '../../services/expenseService'
@@ -11,6 +11,7 @@ import { setExpenses } from '../../features/expenseSlice'
 import { useEffect } from 'react'
 
 function Expenses() {
+  const { user } = useSelector(state => state.auth);
 
   const { id } = useParams()
   const navigate = useNavigate()
@@ -21,7 +22,7 @@ function Expenses() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [refresh , setRefresh] = useState(0);
+  const [refresh, setRefresh] = useState(0);
 
 
   const allExpenses = useSelector((state) => state.expense.expenses);
@@ -36,14 +37,14 @@ function Expenses() {
     try {
       setIsLoading(true);
       let expenseData;
-      if(from && to){
+      if (from && to) {
         expenseData = await getFilteredExpenses(id, from, to);
       }
-      else{
+      else {
         expenseData = await getExpensesBySite(id)
       }
       console.log(expenseData);
-      
+
       dispatch(setExpenses(expenseData));
     } catch (error) {
       console.error("Error fetching expense:", error);
@@ -73,7 +74,7 @@ function Expenses() {
 
   // Filter and sort expenses based on search and type
   const filteredExpenses = allExpenses?.filter(expense => {
-    const matchesSearch = 
+    const matchesSearch =
       expense.expenseType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       expense.vehicleNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       expense.supplierName?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -125,26 +126,30 @@ function Expenses() {
             </div>
 
             {/* Right section */}
-            <div className="flex items-center space-x-3">
-              {!showAddForm && (
-                <button
-                  onClick={handleShowForm}
-                  className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-all"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span className="hidden sm:inline">Add Expense</span>
-                </button>
-              )}
-            </div>
+            {user.role === 'manager' ? (
+              <>
+                <div className="flex items-center space-x-3">
+                  {!showAddForm && (
+                    <button
+                      onClick={handleShowForm}
+                      className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-all"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span className="hidden sm:inline">Add Expense</span>
+                    </button>
+                  )}
+                </div>
+              </>
+            ) : <></>}
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        
+
         {/* New Layout: Stats | Chart | Filters */}
         <div className="grid grid-cols-12 gap-4 mb-6">
-          
+
           {/* Left: Combined Stats Card */}
           <div className="col-span-3">
             <div className="bg-white rounded-lg shadow-sm border p-6 h-full flex flex-col justify-center">
@@ -160,7 +165,7 @@ function Expenses() {
                     <IndianRupee className="w-6 h-6 text-green-600" />
                   </div>
                 </div>
-                
+
                 <div className="border-t pt-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -177,12 +182,12 @@ function Expenses() {
               </div>
             </div>
           </div>
-            
+
           {/* Center: Chart Section */}
           <div className="col-span-6">
-            <ExpenseChart 
+            <ExpenseChart
               siteId={id}
-              refresh = {refresh}
+              refresh={refresh}
             />
           </div>
 
@@ -264,9 +269,9 @@ function Expenses() {
                   {/* Active filters display */}
                   {(from || to) && (
                     <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1.5 rounded">
-                      {from && to ? `${new Date(from).toLocaleDateString()} - ${new Date(to).toLocaleDateString()}` 
-                                  : from ? `From ${new Date(from).toLocaleDateString()}` 
-                                         : `Until ${new Date(to).toLocaleDateString()}`}
+                      {from && to ? `${new Date(from).toLocaleDateString()} - ${new Date(to).toLocaleDateString()}`
+                        : from ? `From ${new Date(from).toLocaleDateString()}`
+                          : `Until ${new Date(to).toLocaleDateString()}`}
                     </div>
                   )}
                 </div>
@@ -288,7 +293,7 @@ function Expenses() {
         {/* Results Info */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">
-            Expense Records 
+            Expense Records
             {(from && to) && (
               <span className="text-sm font-normal text-gray-500 ml-2">
                 ({new Date(from).toLocaleDateString()} - {new Date(to).toLocaleDateString()})
@@ -341,26 +346,30 @@ function Expenses() {
                 <Package className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {searchTerm || filterType !== 'all' ? 'No matching expenses found' : 
-                 (from && to) ? 'No expenses in selected period' : 'No expenses yet'}
+                {searchTerm || filterType !== 'all' ? 'No matching expenses found' :
+                  (from && to) ? 'No expenses in selected period' : 'No expenses yet'}
               </h3>
               <p className="text-gray-500 text-center max-w-md mb-6">
                 {searchTerm || filterType !== 'all'
                   ? 'Try adjusting your search or filter criteria.'
-                  : (from && to) 
+                  : (from && to)
                     ? 'No expenses recorded for the selected time period.'
-                    : 'Add your first expense to get started.'
+                    : ''
                 }
               </p>
-              {!showAddForm && (!searchTerm && filterType === 'all' && !from && !to) && (
-                <button
-                  onClick={handleShowForm}
-                  className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-all"
-                >
-                  <Plus className="w-5 h-5" />
-                  <span>Add First Expense</span>
-                </button>
-              )}
+              {user.role === 'manager' ? (
+                <>
+                  {!showAddForm && (!searchTerm && filterType === 'all' && !from && !to) && (
+                    <button
+                      onClick={handleShowForm}
+                      className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-all"
+                    >
+                      <Plus className="w-5 h-5" />
+                      <span>Add First Expense</span>
+                    </button>
+                  )}
+                </>
+              ) : (<></>)}
             </div>
           )}
         </div>

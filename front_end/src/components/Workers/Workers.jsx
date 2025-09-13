@@ -8,6 +8,7 @@ import { setWorkers } from '../../features/workerSlice'
 import { useParams } from 'react-router-dom'
 
 function Workers() {
+  const {user} = useSelector(state => state.auth)
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedWorkerId, setSelectedWorkerId] = useState(null);
   const [selectedWorkerName, setSelectedWorkerName] = useState(null);
@@ -66,8 +67,9 @@ function Workers() {
               </p>
             </div>
           </div>
-
-          {!showAddForm && (
+          
+          {user.role === 'manager' ? (<>
+            {!showAddForm && (
             <button
               onClick={handleShowForm}
               className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-md text-sm"
@@ -76,6 +78,7 @@ function Workers() {
               <span>Add Worker</span>
             </button>
           )}
+          </>) : (<></>)}
         </div>
 
         {/* Add Worker Form - Only show when needed */}
@@ -134,9 +137,11 @@ function Workers() {
             </div>
             <h3 className="text-base font-medium text-gray-900 mb-2">No workers found</h3>
             <p className="text-sm text-gray-500 text-center max-w-md mb-3">
-              There are no workers assigned to this site yet. Add your first worker to get started.
+              There are no workers assigned to this site yet.
             </p>
-            {!showAddForm && (
+            {user.role === 'manager' ? (
+              <>
+              {!showAddForm && (
               <button
                 onClick={handleShowForm}
                 className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 text-sm"
@@ -145,6 +150,8 @@ function Workers() {
                 <span>Add First Worker</span>
               </button>
             )}
+              </>
+            ) : (<></>)}
           </div>
         )}
       </div>

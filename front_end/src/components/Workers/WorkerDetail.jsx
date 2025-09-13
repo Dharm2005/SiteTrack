@@ -12,7 +12,7 @@ import AddEarnForm from './AddEarnForm';
 import { updateWorker } from '../../features/workerSlice';
 
 function WorkerDetail({ workerId, workerName }) {
-
+  const {user} = useSelector(state => state.auth)
   const worker = useSelector(state =>
     state.worker.workers.find(w =>
       w._id === workerId
@@ -201,6 +201,7 @@ function WorkerDetail({ workerId, workerName }) {
               </div>
             </div>
 
+            {user.role === 'manager' ? (<>
             {!showAddForm && !localIsSettled && (
               <button
                 onClick={handleShowForm}
@@ -210,6 +211,7 @@ function WorkerDetail({ workerId, workerName }) {
                 <span>Add Advance</span>
               </button>
             )}
+            </>) : (<></>)}
           </div>
 
           {/* Add Advance Form - Only show when needed */}
@@ -250,9 +252,12 @@ function WorkerDetail({ workerId, workerName }) {
               </div>
               <h3 className={`text-xl font-medium mb-2 ${localIsSettled ? 'text-purple-700' : 'text-gray-900'}`}>No advances found</h3>
               <p className={`text-center max-w-md mb-6 ${localIsSettled ? 'text-purple-600' : 'text-gray-500'}`}>
-                This worker hasn't received any advances yet. {!localIsSettled && 'Add the first advance to get started.'}
+                This worker hasn't received any advances yet. 
               </p>
-              {!showAddForm && !localIsSettled && (
+
+              {user.role === 'manager' ? (
+                <>
+                {!showAddForm && !localIsSettled && (
                 <button
                   onClick={handleShowForm}
                   className="flex items-center space-x-2 bg-gradient-to-r from-red-400 to-rose-400 text-white px-6 py-3 rounded-xl font-semibold hover:from-red-500 hover:to-rose-500 transition-all duration-200 transform hover:scale-105 shadow-md"
@@ -261,6 +266,8 @@ function WorkerDetail({ workerId, workerName }) {
                   <span>Add First Advance</span>
                 </button>
               )}
+                </>
+              ) : (<></>)}
             </div>
           )}
         </div>
@@ -288,7 +295,8 @@ function WorkerDetail({ workerId, workerName }) {
               </div>
             </div>
 
-            {!showAddForm && !localIsSettled && (
+            {user.role === 'manager' ? (<>
+              {!showAddForm && !localIsSettled && (
               <button
                 onClick={handleShowForm}
                 className="flex items-center space-x-2 bg-gradient-to-r from-green-400 to-emerald-400 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-500 hover:to-emerald-500 transition-all duration-200 transform hover:scale-105 shadow-md"
@@ -297,6 +305,7 @@ function WorkerDetail({ workerId, workerName }) {
                 <span>Add Earning</span>
               </button>
             )}
+            </>) : <></>}
           </div>
 
           {/* Add Earning Form - Only show when needed */}
@@ -337,17 +346,19 @@ function WorkerDetail({ workerId, workerName }) {
               </div>
               <h3 className={`text-xl font-medium mb-2 ${localIsSettled ? 'text-purple-700' : 'text-gray-900'}`}>No Earning found</h3>
               <p className={`text-center max-w-md mb-6 ${localIsSettled ? 'text-purple-600' : 'text-gray-500'}`}>
-                This worker hasn't earned any amount yet. {!localIsSettled && 'Add the first earning to get started.'}
+                This worker hasn't earned any amount yet. 
               </p>
+              {user.role === 'manager' ? (<>
               {!showAddForm && !localIsSettled && (
-                <button
-                  onClick={handleShowForm}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-green-400 to-emerald-400 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-500 hover:to-emerald-500 transition-all duration-200 transform hover:scale-105 shadow-md"
-                >
-                  <Plus className="w-5 h-5" />
-                  <span>Add First Earning</span>
-                </button>
-              )}
+              <button
+                onClick={handleShowForm}
+                className="flex items-center space-x-2 bg-gradient-to-r from-green-400 to-emerald-400 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-500 hover:to-emerald-500 transition-all duration-200 transform hover:scale-105 shadow-md"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Add Earning</span>
+              </button>
+            )}
+            </>) : <></>}
             </div>
           )}
         </div>
@@ -547,7 +558,9 @@ function WorkerDetail({ workerId, workerName }) {
                 </div>
 
                 {/* Settlement form or completed message */}
-                {localIsSettled ? (
+                {user.role === 'manager' ? (
+                  <>
+                  {localIsSettled ? (
                   <div className="bg-purple-100 p-4 rounded-lg border border-purple-200">
                     <div className="text-center">
                       <div className="flex items-center justify-center space-x-2 mb-3">
@@ -653,6 +666,8 @@ function WorkerDetail({ workerId, workerName }) {
                     </form>
                   </div>
                 )}
+                  </>
+                ) : (<></>)}
               </div>
             </div>
           </div>

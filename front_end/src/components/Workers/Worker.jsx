@@ -1,13 +1,15 @@
 import React, { useState } from 'react'
 import { Phone, User, Edit3, Trash2, MoreVertical, Loader2 } from 'lucide-react'
 import { deleteWorkerFromDB } from '../../services/workerService';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { deleteWorker } from '../../features/workerSlice';
 import { Link } from 'react-router-dom';
 
 const API_URL = "http://localhost:3000";
 
 function Worker({ id, name, image, mobile, isSettled }) {
+  
+  const {user} = useSelector(state => state.auth)
   const [showActions, setShowActions] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
@@ -68,7 +70,9 @@ function Worker({ id, name, image, mobile, isSettled }) {
       }`}
     >
       {/* Actions Menu - Top Right */}
-      <div className="absolute top-2 right-2 z-10">
+      {user.role === 'manager' ? (
+        <>
+        <div className="absolute top-2 right-2 z-10">
         <button
           onClick={() => setShowActions(!showActions)}
           disabled={isDeleting || isSettled}
@@ -107,6 +111,9 @@ function Worker({ id, name, image, mobile, isSettled }) {
           </>
         )}
       </div>
+        </>
+      ) : (<></>)}
+      
 
       {/* Content */}
       <div className="p-4 text-center relative">

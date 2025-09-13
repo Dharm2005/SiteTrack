@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Calendar, FileText, Clock, IndianRupee, Edit, Save, X, CalendarCheck } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateAdvanceToDB } from "../../services/workerService";
 import { updateAdvance } from "../../features/workerAdvanceSlice";
 import { toast } from "react-toastify";
 
 function Advance({ id, amount, date, note, createdAt, isSettled }) {
   const dispatch = useDispatch();
-
+  const {user} = useSelector(state => state.auth);
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({
     amount,
@@ -141,6 +141,7 @@ function Advance({ id, amount, date, note, createdAt, isSettled }) {
         </div>
       </div>
 
+      {user.role === 'manager' ? (<>
       {!isSettled ? (
         <div className="flex items-center space-x-1 flex-shrink-0">
           {isEditing ? (
@@ -172,6 +173,7 @@ function Advance({ id, amount, date, note, createdAt, isSettled }) {
           )}
         </div>
       ) : (<></>)}
+      </>) : (<></>)}
     </div>
   </div>
 );
