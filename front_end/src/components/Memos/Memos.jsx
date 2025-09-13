@@ -12,6 +12,7 @@ function Memos({ siteId }) {
   const [sortBy, setSortBy] = useState('newest'); // newest, oldest, dueDate
 
   const allMemos = useSelector(state => state.memo.memos)
+  const { user } = useSelector(state => state.auth);
   const dispatch = useDispatch();
 
   const handleCloseForm = () => {
@@ -73,7 +74,7 @@ function Memos({ siteId }) {
   // Get counts for filter badges
   const getCounts = () => {
     if (!allMemos) return { all: 0, note: 0, reminder: 0, overdue: 0, dueToday: 0 };
-    
+
     const counts = {
       all: allMemos.length,
       note: allMemos.filter(memo => memo.memoType === 'note').length,
@@ -87,13 +88,13 @@ function Memos({ siteId }) {
     const today = new Date();
     now.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
-    
+
     allMemos.forEach(memo => {
       if (memo.memoType === 'reminder' && memo.dueDate) {
         try {
           const due = new Date(memo.dueDate);
           due.setHours(0, 0, 0, 0);
-          
+
           if (due < now) {
             counts.overdue++;
           } else if (due.getTime() === today.getTime()) {
@@ -130,21 +131,26 @@ function Memos({ siteId }) {
             </p>
           </div>
         </div>
-        
-        {!showAddForm && (
-          <button
-            onClick={handleShowForm}
-            className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
-          >
-            <Plus className="w-5 h-5" />
-            <span>Add Memo</span>
-          </button>
-        )}
+
+        {user.role === 'manager' ? (
+          <>
+            {!showAddForm && (
+              <button
+                onClick={handleShowForm}
+                className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Add Memo</span>
+              </button>
+            )}
+          </>
+        ) : (<></>)}
+
       </div>
 
       {/* Add Memo Form - Only show when needed */}
       {showAddForm && (
-        <AddMemoForm 
+        <AddMemoForm
           siteId={siteId}
           onClose={handleCloseForm}
         />
@@ -162,7 +168,7 @@ function Memos({ siteId }) {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center space-x-2">
               <AlertCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
@@ -172,7 +178,7 @@ function Memos({ siteId }) {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center space-x-2">
               <Calendar className="w-4 h-4 text-orange-600 flex-shrink-0" />
@@ -182,7 +188,7 @@ function Memos({ siteId }) {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center space-x-2">
               <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
@@ -210,12 +216,11 @@ function Memos({ siteId }) {
                 ].map(filter => (
                   <button
                     key={filter.key}
-                    onClick={() => setFilterType(filter.key)} 
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                      filterType === filter.key
-                        ? 'bg-purple-100 text-purple-700'
-                        : 'text-gray-600 hover:bg-gray-100'
-                    }`}
+                    onClick={() => setFilterType(filter.key)}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filterType === filter.key
+                      ? 'bg-purple-100 text-purple-700'
+                      : 'text-gray-600 hover:bg-gray-100'
+                      }`}
                   >
                     {filter.label}
                     <span className="ml-1 text-xs">({filter.count})</span>
@@ -279,18 +284,22 @@ function Memos({ siteId }) {
             <StickyNote className="w-12 h-12 text-gray-400" />
           </div>
           <h3 className="text-xl font-medium text-gray-900 mb-2">No memos yet</h3>
-          <p className="text-gray-500 text-center max-w-md mb-6">
-            Keep track of important information and set reminders for this site. Add your first memo to get started.
-          </p>
-          {!showAddForm && (
-            <button
-              onClick={handleShowForm}
-              className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105"
-            >
-              <Plus className="w-5 h-5" />
-              <span>Add First Memo</span>
-            </button>
-          )}
+          {user.role === 'manager' ? (
+            <>
+              <p className="text-gray-500 text-center max-w-md mb-6">
+                Keep track of important information and set reminders for this site. Add your first memo to get started.
+              </p>
+              {!showAddForm && (
+                <button
+                  onClick={handleShowForm}
+                  className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span>Add Memo</span>
+                </button>
+              )}
+            </>
+          ) : (<></>)}
         </div>
       )}
     </div>

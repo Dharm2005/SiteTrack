@@ -6,6 +6,8 @@ import { deleteMemo, updateMemo } from '../../features/memoSlice';
 
 function Memo({ id, memoType, text, dueDate, createdAt }) {
 
+  const { user } = useSelector(state => state.auth);
+
   const memo = useSelector(state =>
     state.memo.memos.find(m =>
       m._id === id
@@ -155,13 +157,12 @@ function Memo({ id, memoType, text, dueDate, createdAt }) {
   const IconComponent = priority.icon;
 
   return (
-    <div className={`rounded-xl shadow-sm hover:shadow-md transition-all duration-500 border overflow-hidden relative ${
-      localIsCompleted ? 'bg-gray-100 border-gray-300' : 'bg-white border-gray-200'
-    } ${isAnimatingOut
-      ? 'opacity-0 scale-95 transform translate-y-4'
-      : 'opacity-100 scale-100 transform translate-y-0'
+    <div className={`rounded-xl shadow-sm hover:shadow-md transition-all duration-500 border overflow-hidden relative ${localIsCompleted ? 'bg-gray-100 border-gray-300' : 'bg-white border-gray-200'
+      } ${isAnimatingOut
+        ? 'opacity-0 scale-95 transform translate-y-4'
+        : 'opacity-100 scale-100 transform translate-y-0'
       } ${isDeleting ? 'pointer-events-none' : ''}`}>
-      
+
       {/* Completed Banner */}
       {localIsCompleted && (
         <div className="bg-gray-200 border-b border-gray-300 p-2">
@@ -180,17 +181,15 @@ function Memo({ id, memoType, text, dueDate, createdAt }) {
           {/* Left Section - Memo Basic Info */}
           <div className="flex items-start space-x-3 flex-1">
             {/* Memo Type Icon */}
-            <div className={`p-2 rounded-lg flex-shrink-0 ${
-              localIsCompleted 
-                ? 'bg-gray-200' 
+            <div className={`p-2 rounded-lg flex-shrink-0 ${localIsCompleted
+                ? 'bg-gray-200'
                 : priority.color === 'blue' ? 'bg-blue-100' :
                   priority.color === 'green' ? 'bg-green-100' :
                     priority.color === 'orange' ? 'bg-orange-100' :
                       'bg-red-100'
               }`}>
-              <IconComponent className={`w-5 h-5 ${
-                localIsCompleted 
-                  ? 'text-gray-500' 
+              <IconComponent className={`w-5 h-5 ${localIsCompleted
+                  ? 'text-gray-500'
                   : priority.color === 'blue' ? 'text-blue-600' :
                     priority.color === 'green' ? 'text-green-600' :
                       priority.color === 'orange' ? 'text-orange-600' :
@@ -201,8 +200,7 @@ function Memo({ id, memoType, text, dueDate, createdAt }) {
             {/* Memo Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2 mb-1">
-                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                  localIsCompleted 
+                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${localIsCompleted
                     ? 'bg-gray-200 text-gray-600'
                     : priority.color === 'blue' ? 'bg-blue-100 text-blue-700' :
                       priority.color === 'green' ? 'bg-green-100 text-green-700' :
@@ -220,9 +218,8 @@ function Memo({ id, memoType, text, dueDate, createdAt }) {
                 )}
               </div>
 
-              <p className={`text-sm line-clamp-2 ${
-                localIsCompleted ? 'text-gray-600' : 'text-gray-900'
-              } ${isExpanded ? '' : 'truncate'}`}>
+              <p className={`text-sm line-clamp-2 ${localIsCompleted ? 'text-gray-600' : 'text-gray-900'
+                } ${isExpanded ? '' : 'truncate'}`}>
                 {text || 'No memo text'}
               </p>
 
@@ -241,38 +238,43 @@ function Memo({ id, memoType, text, dueDate, createdAt }) {
                 }`}></div>
             )}
 
-            {/* Delete Button */}
-            <button
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className={`p-1.5 rounded-lg transition-colors group flex items-center justify-center ${isDeleting
-                ? 'bg-red-100 cursor-not-allowed'
-                : localIsCompleted
-                  ? 'hover:bg-gray-200'
-                  : 'hover:bg-red-100'
-                }`}
-              title="Delete memo"
-            >
-              {isDeleting ? (
-                <Loader2 className="w-4 h-4 text-red-600 animate-spin" />
-              ) : (
-                <Trash2 className={`w-4 h-4 ${
-                  localIsCompleted 
-                    ? 'text-gray-500 group-hover:text-gray-600' 
-                    : 'text-gray-500 group-hover:text-red-600'
-                }`} />
-              )}
-            </button>
+            {user.role === 'manager' ? (
+              <>
 
-            {/* Complete Button - Only show for reminders that are not completed */}
-            {memoType === 'reminder' && !localIsCompleted && !isOverdue() && !isDueToday() && (
-              <button 
-                onClick={handleComplete} 
-                className="text-xs bg-green-100 text-green-700 px-3 py-1.5 rounded-md hover:bg-green-200 transition-colors font-medium"
-              >
-                Mark Complete
-              </button>
-            )}
+                {/* Delete Button */}
+                <button
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className={`p-1.5 rounded-lg transition-colors group flex items-center justify-center ${isDeleting
+                    ? 'bg-red-100 cursor-not-allowed'
+                    : localIsCompleted
+                      ? 'hover:bg-gray-200'
+                      : 'hover:bg-red-100'
+                    }`}
+                  title="Delete memo"
+                >
+                  {isDeleting ? (
+                    <Loader2 className="w-4 h-4 text-red-600 animate-spin" />
+                  ) : (
+                    <Trash2 className={`w-4 h-4 ${localIsCompleted
+                        ? 'text-gray-500 group-hover:text-gray-600'
+                        : 'text-gray-500 group-hover:text-red-600'
+                      }`} />
+                  )}
+                </button>
+
+                {/* Complete Button - Only show for reminders that are not completed */}
+                {memoType === 'reminder' && !localIsCompleted && !isOverdue() && !isDueToday() && (
+                  <button
+                    onClick={handleComplete}
+                    className="text-xs bg-green-100 text-green-700 px-3 py-1.5 rounded-md hover:bg-green-200 transition-colors font-medium"
+                  >
+                    Mark Complete
+                  </button>
+                )}
+              </>
+            ) : (<></>)}
+
 
             {/* Expand/Collapse Button */}
             <button
@@ -332,14 +334,12 @@ function Memo({ id, memoType, text, dueDate, createdAt }) {
               {memoType === 'reminder' && dueDate && (
                 <div className={`rounded-lg p-3 shadow-sm ${localIsCompleted ? 'bg-gray-100' : 'bg-white'}`}>
                   <div className="flex items-center space-x-2 mb-1">
-                    <div className={`p-1 rounded ${
-                      localIsCompleted 
-                        ? 'bg-gray-200' 
+                    <div className={`p-1 rounded ${localIsCompleted
+                        ? 'bg-gray-200'
                         : isOverdue() ? 'bg-red-100' : isDueToday() ? 'bg-orange-100' : 'bg-green-100'
                       }`}>
-                      <Calendar className={`w-3 h-3 ${
-                        localIsCompleted 
-                          ? 'text-gray-500' 
+                      <Calendar className={`w-3 h-3 ${localIsCompleted
+                          ? 'text-gray-500'
                           : isOverdue() ? 'text-red-600' : isDueToday() ? 'text-orange-600' : 'text-green-600'
                         }`} />
                     </div>
@@ -347,9 +347,8 @@ function Memo({ id, memoType, text, dueDate, createdAt }) {
                       Due Date
                     </span>
                   </div>
-                  <p className={`text-sm font-semibold ${
-                    localIsCompleted 
-                      ? 'text-gray-600' 
+                  <p className={`text-sm font-semibold ${localIsCompleted
+                      ? 'text-gray-600'
                       : isOverdue() ? 'text-red-600' : isDueToday() ? 'text-orange-600' : 'text-gray-900'
                     }`}>
                     {formatDate(dueDate)}
@@ -366,13 +365,7 @@ function Memo({ id, memoType, text, dueDate, createdAt }) {
                 Memo ID: #{id}
               </div>
 
-              <div className="flex items-center space-x-2">
-                {!localIsCompleted && (
-                  <button className="text-xs bg-purple-100 text-purple-700 px-3 py-1.5 rounded-md hover:bg-purple-200 transition-colors font-medium">
-                    Edit Memo
-                  </button>
-                )}
-              </div>
+
             </div>
           </div>
         </div>
