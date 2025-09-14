@@ -77,3 +77,28 @@ export const getManagerById = async (managerId) => {
     console.error("Error while fetching manager", error);
   }
 }
+
+export const generatePDF = async (startDate, endDate, siteId) => {
+  try {
+    const response = await api.post(
+      "http://localhost:3000/managers/reports",
+      { startDate, endDate, siteId },
+      { 
+        responseType: 'blob',
+        headers: {
+          'Accept': 'application/pdf'
+        }
+      }
+    );
+    
+    // Verify that we received a PDF
+    if (response.data.type !== 'application/pdf') {
+      throw new Error('Received invalid file format');
+    }
+    
+    return response.data;
+  } catch (error) {
+    console.error("Error while generating PDF", error);
+    throw error;
+  }
+};

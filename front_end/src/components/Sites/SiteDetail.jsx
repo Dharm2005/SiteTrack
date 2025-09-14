@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon, UserCheck, Users, IndianRupee, FileText, Edit, Trash2,X } from 'lucide-react'
+import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon, UserCheck, Users, IndianRupee, FileText, Edit, Trash2, X, Download } from 'lucide-react'
 import { getSite } from '../../services/siteService';
 import { Memos } from '../index';
 import { getWorkersBySite } from '../../services/workerService'
@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { getAllManager } from '../../services/managerService';
 import { setManagers } from '../../features/managerSlice';
+import {ReportForm} from '../index';
 import { Link } from 'react-router-dom';
 const API_URL = "http://localhost:3000";
 
@@ -19,8 +20,10 @@ function SiteDetail() {
   const [loading, setLoading] = useState(true)
   const dispatch = useDispatch()
   const managers = useSelector(state => state.manager.managers)
+  const { user } = useSelector(state => state.auth);
   const [manager, setManager] = useState(null)
   const [selectedImage, setSelectedImage] = useState(null);
+  const [showReportForm, setShowReportForm] = useState(false);
 
   useEffect(() => {
     const fetchWorkers = async () => {
@@ -111,6 +114,16 @@ function SiteDetail() {
   const handleManagerImageClick = (e) => {
     e.stopPropagation(); // Prevent the site image click from firing
     setSelectedImage(`${API_URL}/uploads/managers/${manager.managerImage}`);
+  };
+
+  // Handle generate report button click
+  const handleGenerateReport = () => {
+    setShowReportForm(true);
+  };
+
+  // Handle close report form
+  const handleCloseReportForm = () => {
+    setShowReportForm(false);
   };
 
   if (loading) {
@@ -243,6 +256,19 @@ function SiteDetail() {
                           <span className="text-gray-600">Created</span>
                           <span className="font-medium text-gray-900">{formatDate(site.createdAt)}</span>
                         </div>
+
+                        {/* Generate Report Button - New Position */}
+                        {user.role === 'manager' && (
+                          <div className="pt-3 border-t border-gray-100">
+                            <button
+                              onClick={handleGenerateReport}
+                              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2.5 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center space-x-2"
+                            >
+                              <Download className="w-4 h-4" />
+                              <span>Generate Report</span>
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -275,9 +301,6 @@ function SiteDetail() {
                       )}
                     </div>
                   </div>
-
-                  {/* Action Buttons */}
-
                 </div>
               </div>
             </div>
@@ -351,6 +374,8 @@ function SiteDetail() {
 
         </div>
       </div>
+
+      {/* Image Modal */}
       {selectedImage && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
           <div className="relative max-w-4xl max-h-[90vh]">
@@ -367,6 +392,11 @@ function SiteDetail() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Report Form - Inline Style like Add Memo */}
+      {showReportForm && (
+        <ReportForm siteId={id} onClose={handleCloseReportForm} />
       )}
     </>
   );

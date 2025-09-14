@@ -7,6 +7,7 @@ export {default as EditSite} from "./Sites/EditSite"
 export {default as Sites} from "./Sites/Sites"
 export {default as Site} from "./Sites/Site"
 export {default as SiteDetail} from "./Sites/SiteDetail"
+export {default as ReportForm} from "./Sites/ReportForm"
 
 export {default as Workers} from "./Workers/Workers"
 export {default as Worker} from "./Workers/Worker"

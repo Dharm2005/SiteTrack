@@ -56,4 +56,6 @@ managerRouter.put('/manager/:managerId',
   ],
   managerController.updateManager)
 
+managerRouter.post('/reports' , isAdminOrManager,managerController.generateReport)
+
 module.exports = managerRouter;

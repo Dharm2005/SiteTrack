@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import { Home, AddSite, NotFound, SiteDetail, AddManager, AllManager, Expenses, Workers, EditSite, EditManager, EditWorker, EditExpense, Login, Signup } from "./components"
+import { Home, AddSite, NotFound, SiteDetail, AddManager, AllManager, Expenses, Workers, EditSite, EditManager, EditWorker, EditExpense, Login, Signup,} from "./components"
 import App from './App.jsx'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import { store } from './app/store.js'
