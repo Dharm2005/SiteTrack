@@ -3,6 +3,7 @@ import { login } from '../../services/authService'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux';
 import { setAuth } from '../../features/authSlice';
+import { toast } from 'react-toastify';
 
 function Login() {
   const dispatch = useDispatch();
@@ -27,14 +28,21 @@ function Login() {
     e.preventDefault();
 
     try {
-      console.log(form);
-      
-      const newLogin = await login(form);
-      console.log(newLogin);
-      
-      if (newLogin.token) {
-        localStorage.setItem("token", newLogin.token); // save JWT
-        dispatch(setAuth(newLogin))
+      const res = await login(form)
+
+      if (res.success === false) {
+        if (res.error) {
+          console.log("Validation/Server error:", res);
+          toast.error(`${res.error}`);
+        } else {
+          toast.error(res.error || "❌ Something went wrong");
+        }
+        return;
+      }
+      if (res.token) {
+        localStorage.setItem("token", res.token); // save JWT
+        dispatch(setAuth(res))
+        toast.success("Login Successfully");
         navigate("/"); // redirect after login
       }
     } catch (error) {
@@ -53,7 +61,7 @@ function Login() {
             Please enter your credentials to continue
           </p>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow-lg p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
