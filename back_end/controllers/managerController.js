@@ -7,7 +7,19 @@ const bcrypt = require('bcryptjs');
 
 exports.getManagers = async (req, res, next) => {
   try {
-    const manager = await Manager.find({ isDeleted: false })
+
+    let query = { isDeleted: false };
+
+    if (req.user.role === 'admin') {
+      query.createdBy = req.user.userId;
+    }
+
+    else if (req.user.role === "manager") {
+      const manager = await Manager.findOne({ userId: req.user.userId })
+      query._id = manager?._id;
+    }
+
+    const manager = await Manager.find(query)
       .populate("userId", "username");
     res.json(manager);
   } catch (err) {
@@ -57,6 +69,7 @@ exports.postAddManager = async (req, res, next) => {
       managerMobile,
       managerDob,
       managerGender,
+      createdBy: req.user.userId
     });
 
     const savedManager = await manager.save();
@@ -83,7 +96,7 @@ exports.postAddManager = async (req, res, next) => {
 
   } catch (err) {
     console.error(err);
-    
+
     res.status(500).json({ message: "Error creating manager", error: err.message });
   }
 }

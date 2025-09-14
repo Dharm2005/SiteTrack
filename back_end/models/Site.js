@@ -1,28 +1,33 @@
 const mongoose = require('mongoose');
 
 const siteSchema = mongoose.Schema({
-  siteName : {
-    type : String,
-    required : true
+  siteName: {
+    type: String,
+    required: true
   },
-  location : {
-    type : String,
-    required : true
+  location: {
+    type: String,
+    required: true
   },
-  siteImage : {
-    type : String,
+  siteImage: {
+    type: String,
     // required : true
   },
-  manager : {
-    type : mongoose.Schema.ObjectId,
-    reg : "Manager"
+  manager: {
+    type: mongoose.Schema.ObjectId,
+    reg: "Manager"
   },
-  isDeleted : {
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
+  isDeleted: {
     type: Boolean,
     default: false,
   }
 },
-{timestamps : true}
+  { timestamps: true }
 )
 
-module.exports = mongoose.model("Site",siteSchema)
+module.exports = mongoose.model("Site", siteSchema)

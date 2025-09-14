@@ -6,12 +6,24 @@ const { validationResult } = require('express-validator');
 
 exports.getSites = async (req, res, next) => {
   try {
-    const sites = await Site.find({ isDeleted: false });
+    let query = { isDeleted: false };
+
+    if (req.user.role === "admin") {
+      query.createdBy = req.user.userId; // sites created by this admin
+    }
+    else if (req.user.role === "manager") {
+      const manager = await Manager.findOne({userId : req.user.userId})
+      query.manager = manager?._id;
+    }
+
+    const sites = await Site.find(query);
     res.json(sites);
-  } catch (error) {
+
+  } catch (err) {
     res.status(500).json({ message: "Error fetching sites", error: err.message });
   }
-}
+};
+
 
 exports.postAddSite = async (req, res, next) => {
   try {
@@ -42,7 +54,8 @@ exports.postAddSite = async (req, res, next) => {
       siteName,
       location,
       siteImage,
-      manager: managerId
+      manager: managerId,
+      createdBy: req.user.userId
     })
 
     await site.save();
