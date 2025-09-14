@@ -10,15 +10,20 @@ export const login = async (data) => {
     
   }catch(err){
     console.error("Error while login" , err);
+
     if(err.response){
+      console.log(err);
+      
       return {
         success : false,
-        error : err.response.data.message || "Something went wrong"
+        errors : err.response.data.errors || [],
+        message : err.response.data.message || null
       }
     }
     return{
       success : false,
-      error : "Network Error"
+      errors : [],
+      message : "Network Error"
     }
   }
 }
@@ -33,14 +38,18 @@ export const signup = async (data) => {
   } catch (err) {
     console.error("Error while registration" , err);
     if(err.response){
+      console.log(err);
+      
       return {
         success : false,
-        error : err.response.data.message || "Something went wrong"
+        errors : err.response.data.errors || [],
+        message : err.response.data.message || null
       }
     }
     return{
       success : false,
-      error : "Network Error"
+      errors : [],
+      message : "Network Error"
     }
   }
 }

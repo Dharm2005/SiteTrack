@@ -2,12 +2,23 @@ const User = require('../models/User')
 
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const { validationResult } = require('express-validator');
 
 dotenv.config();
 
 exports.login = async (req, res, next) => {
   try {
+
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+      return res.status(400).json({
+        success: false,
+        errors : errors.array().map(err => err.msg)
+      })
+    }
+
     const {username , password} = req.body;
 
     const user = await User.findOne({username})
@@ -43,6 +54,16 @@ exports.login = async (req, res, next) => {
 
 exports.signup = async (req, res, next) => {
   try{
+
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+      return res.status(400).json({
+        success: false,
+        errors : errors.array().map(err => err.msg)
+      })
+    }
+    
     const {username, password, role} = req.body;
 
     const existUser = await User.findOne({username});

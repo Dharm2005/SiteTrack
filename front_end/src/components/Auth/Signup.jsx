@@ -28,30 +28,23 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if passwords match
-    if (form.password !== form.confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
-
-    // Check password length (optional validation)
-    if (form.password.length < 6) {
-      toast.error("Password must be at least 6 characters long");
-      return;
-    }
-
     try {
       // Remove confirmPassword from the data sent to API
       const { confirmPassword, ...signupData } = form;
+      console.log(confirmPassword);
+
       const res = await signup(signupData);
       console.log(res);
 
       if (res.success === false) {
-        if (res.error) {
+        
+        if (res.errors && res.errors.length > 0) {
           console.log("Validation/Server error:", res);
-          toast.error(`${res.error}`);
+          res.errors.forEach(err => toast.error(err))
+        } else if (res.message) {
+          toast.error(res.message);
         } else {
-          toast.error(res.error || "❌ Something went wrong");
+          toast.error("Something went wrong");
         }
         return;
       }
@@ -91,7 +84,6 @@ function Signup() {
                 value={form.username}
                 onChange={handleChange}
                 name="username"
-                required
                 className="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition duration-200"
                 placeholder="Enter your username"
               />
@@ -107,7 +99,6 @@ function Signup() {
                 value={form.password}
                 onChange={handleChange}
                 name="password"
-                required
                 className="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition duration-200"
                 placeholder="Enter your password"
               />
@@ -123,7 +114,6 @@ function Signup() {
                 value={form.confirmPassword}
                 onChange={handleChange}
                 name="confirmPassword"
-                required
                 className="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition duration-200"
                 placeholder="Confirm your password"
               />

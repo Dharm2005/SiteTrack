@@ -30,12 +30,16 @@ function Login() {
     try {
       const res = await login(form)
 
+      console.log(res);
+      
       if (res.success === false) {
-        if (res.error) {
+        if (res.errors && res.errors.length > 0) {
           console.log("Validation/Server error:", res);
-          toast.error(`${res.error}`);
+          res.errors.forEach(err => toast.error(err))
+        } else if(res.message){
+          toast.error(res.message);
         } else {
-          toast.error(res.error || "❌ Something went wrong");
+          toast.error("Something went wrong");
         }
         return;
       }
@@ -74,7 +78,6 @@ function Login() {
                 value={form.username}
                 onChange={handleChange}
                 name="username"
-                required
                 className="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition duration-200"
                 placeholder="Enter your username"
               />
@@ -90,7 +93,6 @@ function Login() {
                 value={form.password}
                 onChange={handleChange}
                 name="password"
-                required
                 className="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition duration-200"
                 placeholder="Enter your password"
               />
@@ -135,7 +137,7 @@ function Login() {
                 type="submit"
                 className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 transform hover:scale-105"
               >
-                Sign In
+                Log In
               </button>
             </div>
           </form>
