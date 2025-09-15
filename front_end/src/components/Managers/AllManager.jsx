@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react'
 import Managers from './Managers';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { getAllManager } from '../../services/managerService';
 import { setManagers } from '../../features/managerSlice';
 import {Loader} from '../index'
 
 function AllManager() {
   // Read managers from Redux
-  const managers = useSelector(state => state.manager.managers)
   const dispatch = useDispatch();
   
   useEffect(() => {
@@ -19,15 +18,6 @@ function AllManager() {
       console.error("Error while fetching managers" , err);
     })
   })
-
-  // If managers are not loaded yet
-  if (!managers || managers.length === 0) {
-    return (
-      <div className="flex justify-center items-center h-screen w-full -mt-12">
-        <Loader message={"Loading managers..."} />
-      </div>
-    )
-  }
 
   return <Managers />;
 }

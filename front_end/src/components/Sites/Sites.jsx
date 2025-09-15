@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 function Sites() {
   const allSites = useSelector((state) => state.site.sites)
+    const { user } = useSelector(state => state.auth);
   
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-6">
@@ -44,11 +45,14 @@ function Sites() {
             </div>
             <h3 className="text-xl font-medium text-gray-900 mb-2">No sites found</h3>
             <p className="text-gray-500 text-center max-w-md">
-              There are no sites to display at the moment. Add your first site to get started.
+              There are no sites to display at the moment.
             </p>
-            <Link to='/add-site' className="mt-6 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105">
+            {user.role === 'admin' ? (
+              <Link to='/add-site' className="mt-6 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105">
               Add First Site
             </Link>
+            ) : (<></>)}
+            
           </div>
         )}
       </div>

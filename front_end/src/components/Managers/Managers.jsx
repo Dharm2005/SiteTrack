@@ -2,9 +2,19 @@ import React from 'react'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Manager from './Manager';
+import Loader from '../Layout/Loader';
 
 function Managers() {
   const allManagers = useSelector((state) => state.manager.managers)
+  const { user } = useSelector(state => state.auth);
+
+  if (!allManagers) {
+    return (
+      <div className="flex justify-center items-center h-screen w-full -mt-12">
+        <Loader message={"Loading managers..."} />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-6">
@@ -17,16 +27,18 @@ function Managers() {
               {allManagers?.length ? `${allManagers.length} managers found` : 'No managers available'}
             </p>
           </div>
-          
-          {/* Add Manager Button */}
+
           {allManagers && allManagers.length > 0 && (
-            <Link 
-              to='/add-manager' 
-              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
-            >
-              Add New Manager
-            </Link>
+            user.role === 'admin' ? (
+              <Link
+                to='/add-manager'
+                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+              >
+                Add New Manager
+              </Link>
+            ) : null
           )}
+
         </div>
 
         {/* Managers Grid */}
@@ -58,8 +70,8 @@ function Managers() {
             <p className="text-gray-500 text-center max-w-md mb-6">
               There are no managers to display at the moment. Add your first manager to get started.
             </p>
-            <Link 
-              to='/add-manager' 
+            <Link
+              to='/add-manager'
               className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
             >
               Add First Manager

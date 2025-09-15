@@ -18,22 +18,25 @@ function Workers() {
   const dispatch = useDispatch()
   const { id } = useParams()
   
-  useEffect(() => {
-    const fetchWorkers = async () => {
-      try {
-        setLoading(true);
-        if (!allWorkers || allWorkers.length === 0) {
-          const workerData = await getWorkersBySite(id);
-          dispatch(setWorkers(workerData));
-        }
-      } catch (error) {
-        console.error("Error fetching workers:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchWorkers();
-  }, [id, dispatch, allWorkers]);
+ useEffect(() => {
+  const fetchWorkers = async () => {
+    if (allWorkers && allWorkers.length > 0) {
+      setLoading(false);
+      return; // Skip fetch
+    }
+    try {
+      setLoading(true);
+      const workerData = await getWorkersBySite(id);
+      dispatch(setWorkers(workerData));
+    } catch (error) {
+      console.error("Error fetching workers:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchWorkers();
+}, [id, dispatch]); // <-- no allWorkers here
+
 
   const handleCloseForm = () => {
     setShowAddForm(false);
