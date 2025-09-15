@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import {setSites} from '../../features/siteSlice';
 import { getAllManager } from '../../services/managerService';
 import { setManagers } from '../../features/managerSlice';
-
+import Loader from './Loader'
 
 function Home() {
   const dispatch =  useDispatch();
@@ -34,12 +34,16 @@ function Home() {
     fetchData();
   }, [dispatch]);
 
-
-  if (loading) return <p className="text-center py-10">Loading...</p>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen w-full -mt-12">
+        <Loader message={"Loading sites..."} />
+      </div>
+    );
+  }
   
   return (
     <Sites />
   )
 }
-
 export default Home

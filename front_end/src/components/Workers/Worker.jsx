@@ -4,10 +4,11 @@ import { deleteWorkerFromDB } from '../../services/workerService';
 import { useDispatch, useSelector } from 'react-redux'
 import { deleteWorker } from '../../features/workerSlice';
 import { Link } from 'react-router-dom';
+import Loader from '../Layout/Loader';
 
 const API_URL = "http://localhost:3000";
 
-function Worker({ id, name, image, mobile, isSettled }) {
+function Worker({ id, name, image, mobile, isSettled, loading = false }) {
   
   const {user} = useSelector(state => state.auth)
   const [showActions, setShowActions] = useState(false);
@@ -56,6 +57,15 @@ function Worker({ id, name, image, mobile, isSettled }) {
       }
     }
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen w-full -mt-12">
+        <Loader message={"Loading worker..."} />
+      </div>
+    );
+  }
 
   return (
     <div

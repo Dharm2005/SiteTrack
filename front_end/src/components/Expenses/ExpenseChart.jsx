@@ -21,6 +21,7 @@ function ExpenseChart({ siteId, refresh }) {
 
   const [month, setMonth] = useState(getCurrentMonth());
   const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // --- Get first and last day of selected month ---
   const getMonthRange = (monthStr) => {
@@ -35,26 +36,33 @@ function ExpenseChart({ siteId, refresh }) {
 
   useEffect(() => {
     const fetchGraphData = async () => {
-      const { from, to } = getMonthRange(month);
-      const expenses = await getFilteredExpenses(siteId, from, to);
+      try {
+        setLoading(true);
+        const { from, to } = getMonthRange(month);
+        const expenses = await getFilteredExpenses(siteId, from, to);
 
-      // Group by day
-      const dailyTotals = expenses.reduce((acc, exp) => {
-        const day = new Date(exp.arrivalDate).getDate();
-        acc[day] = (acc[day] || 0) + exp.totalCost;
-        return acc;
-      }, {});
+        // Group by day
+        const dailyTotals = expenses.reduce((acc, exp) => {
+          const day = new Date(exp.arrivalDate).getDate();
+          acc[day] = (acc[day] || 0) + exp.totalCost;
+          return acc;
+        }, {});
 
-      // Convert to array for Recharts
-      const chartData = Object.entries(dailyTotals).map(([day, spend]) => ({
-        day: Number(day),
-        spend,
-      }));
+        // Convert to array for Recharts
+        const chartData = Object.entries(dailyTotals).map(([day, spend]) => ({
+          day: Number(day),
+          spend,
+        }));
 
-      // Sort by day
-      chartData.sort((a, b) => a.day - b.day);
+        // Sort by day
+        chartData.sort((a, b) => a.day - b.day);
 
-      setChartData(chartData);
+        setChartData(chartData);
+      } catch (error) {
+        console.error("Error fetching expense data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchGraphData();
@@ -82,6 +90,47 @@ function ExpenseChart({ siteId, refresh }) {
   };
 
   const totalExpense = chartData.reduce((sum, item) => sum + item.spend, 0);
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border h-full">
+        <div className="grid grid-cols-12 h-full">
+          {/* Left Side Skeleton */}
+          <div className="col-span-4 border-r p-4 flex flex-col justify-between">
+            <div>
+              <div className="h-3 bg-gray-200 rounded animate-pulse mb-2"></div>
+              <div className="h-8 bg-gray-200 rounded animate-pulse mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded animate-pulse w-2/3"></div>
+            </div>
+
+            <div className="mt-4 bg-gray-100 rounded-lg p-3 border">
+              <div className="text-center">
+                <div className="h-3 bg-gray-200 rounded animate-pulse mb-2 w-3/4 mx-auto"></div>
+                <div className="h-6 bg-gray-200 rounded animate-pulse mb-2 w-2/3 mx-auto"></div>
+                <div className="h-3 bg-gray-200 rounded animate-pulse w-1/2 mx-auto"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side Skeleton */}
+          <div className="col-span-8 p-4 flex flex-col">
+            <div className="mb-3">
+              <div className="h-5 bg-gray-200 rounded animate-pulse mb-2 w-1/3"></div>
+              <div className="h-3 bg-gray-200 rounded animate-pulse w-1/2"></div>
+            </div>
+
+            <div className="flex-1 bg-gray-50 rounded-lg p-3 flex items-center justify-center">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gray-200 rounded-full animate-pulse mx-auto mb-3"></div>
+                <div className="h-4 bg-gray-200 rounded animate-pulse mb-2 w-24 mx-auto"></div>
+                <div className="text-gray-600 text-sm">Loading chart data...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-sm border h-full">

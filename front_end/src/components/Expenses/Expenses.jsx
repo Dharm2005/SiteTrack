@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux'
 import { getExpensesBySite, getFilteredExpenses } from '../../services/expenseService'
 import { setExpenses } from '../../features/expenseSlice'
 import { useEffect } from 'react'
+import {Loader} from '../index'
 
 function Expenses() {
   const { user } = useSelector(state => state.auth);
@@ -313,10 +314,7 @@ function Expenses() {
         {/* Expenses List */}
         <div className="bg-white rounded-lg shadow-sm border">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-16">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mb-4"></div>
-              <p className="text-gray-500">Loading expenses...</p>
-            </div>
+              <Loader message={"Loading expenses..."} />
           ) : filteredExpenses && filteredExpenses.length > 0 ? (
             <div className="divide-y divide-gray-100">
               {filteredExpenses.map(expense => (

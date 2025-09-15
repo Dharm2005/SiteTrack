@@ -11,6 +11,7 @@ import { getAllManager } from '../../services/managerService';
 import { setManagers } from '../../features/managerSlice';
 import { ReportForm } from '../index';
 import { Link } from 'react-router-dom';
+import {Loader} from '../index';
 const API_URL = "http://localhost:3000";
 
 function SiteDetail() {
@@ -127,11 +128,8 @@ function SiteDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-xl text-gray-600">Loading site details...</p>
-        </div>
+      <div className="flex justify-center items-center h-screen w-full -mt-12">
+        <Loader message={"Loading site details..."} />
       </div>
     );
   }

@@ -6,12 +6,14 @@ import { Plus, Users } from 'lucide-react'
 import { getWorkersBySite } from '../../services/workerService'
 import { setWorkers } from '../../features/workerSlice'
 import { useParams } from 'react-router-dom'
+import {Loader} from '../index'
 
 function Workers() {
   const {user} = useSelector(state => state.auth)
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedWorkerId, setSelectedWorkerId] = useState(null);
   const [selectedWorkerName, setSelectedWorkerName] = useState(null);
+  const [loading, setLoading] = useState(true);
   const allWorkers = useSelector((state) => state.worker.workers);
   const dispatch = useDispatch()
   const { id } = useParams()
@@ -19,12 +21,15 @@ function Workers() {
   useEffect(() => {
     const fetchWorkers = async () => {
       try {
+        setLoading(true);
         if (!allWorkers || allWorkers.length === 0) {
           const workerData = await getWorkersBySite(id);
           dispatch(setWorkers(workerData));
         }
       } catch (error) {
         console.error("Error fetching workers:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchWorkers();
@@ -45,6 +50,14 @@ function Workers() {
 
   // Find selected worker for display
   const selectedWorker = allWorkers?.find(worker => worker._id === selectedWorkerId);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen w-full -mt-12">
+        <Loader message={"Loading details..."} />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col p-3">
@@ -116,6 +129,7 @@ function Workers() {
                       mobile={worker.workerMobile}
                       createdAt={worker.createdAt}
                       isSettled={worker.isSettled}
+                      loading = {loading}
                     />
                   </div>
                 ))}

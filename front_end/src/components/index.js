@@ -1,6 +1,7 @@
 export {default as Navbar} from "./Layout/Navbar"
 export {default as Footer} from "./Layout/Footer"
 export {default as Home} from "./Layout/Home"
+export {default as Loader} from "./Layout/Loader"
 
 export {default as AddSite} from "./Sites/AddSite"
 export {default as EditSite} from "./Sites/EditSite"
