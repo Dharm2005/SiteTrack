@@ -193,13 +193,13 @@ exports.generateReport = async (req, res) => {
     const end = new Date(endDate);
 
     // 1️⃣ Fetch all workers for this site
-    const workers = await Worker.find({ site: siteId });
+    const workers = await Worker.find({ site: siteId , isDeleted : false});
     const workerIds = workers.map(w => w._id);
 
     // 2️⃣ Fetch all advances & earnings in range (for workers of this site)
     const advances = await Advance.find({
       date: { $gte: start, $lte: end },
-      worker: { $in: workerIds }
+      worker: { $in: workerIds },
     });
 
     const earnings = await Earn.find({
@@ -210,7 +210,8 @@ exports.generateReport = async (req, res) => {
     // 3️⃣ Fetch expenses in range (filtered by siteId directly)
     const expenses = await Expense.find({
       arrivalDate: { $gte: start, $lte: end },
-      siteId: siteId
+      siteId: siteId,
+      isDeleted : false
     });
 
     // 4️⃣ Group expenses by type
@@ -335,8 +336,8 @@ exports.generateReport = async (req, res) => {
            .text("Advances:", 40, currentY);
         currentY += 20;
 
-        // Advances table
-        const advanceHeaders = ['Date', 'Amount (₹)'];
+        // Advances table - Fixed header
+        const advanceHeaders = ['Date', 'Amount (Rs)'];
         const advanceColumnWidths = [pageWidth * 0.6, pageWidth * 0.4];
         
         currentY = drawTableHeader(doc, advanceHeaders, 40, currentY, advanceColumnWidths);
@@ -345,14 +346,14 @@ exports.generateReport = async (req, res) => {
         workerAdvances.forEach(advance => {
           const rowData = [
             advance.date.toLocaleDateString(),
-            `₹${advance.amount.toFixed(2)}`
+            `Rs${advance.amount.toFixed(2)}`
           ];
           currentY = drawTableRow(doc, rowData, 40, currentY, advanceColumnWidths);
           workerAdvanceTotal += advance.amount;
         });
 
         // Advance total row
-        const totalRowData = ['Total Advances', `₹${workerAdvanceTotal.toFixed(2)}`];
+        const totalRowData = ['Total Advances', `Rs${workerAdvanceTotal.toFixed(2)}`];
         doc.fontSize(10).font('Helvetica-Bold');
         currentY = drawTableRow(doc, totalRowData, 40, currentY, advanceColumnWidths);
         totalAdvances += workerAdvanceTotal;
@@ -378,8 +379,8 @@ exports.generateReport = async (req, res) => {
            .text("Earnings:", 40, currentY);
         currentY += 20;
 
-        // Earnings table
-        const earningHeaders = ['Date', 'Amount (₹)'];
+        // Earnings table - Fixed header
+        const earningHeaders = ['Date', 'Amount (Rs)'];
         const earningColumnWidths = [pageWidth * 0.6, pageWidth * 0.4];
         
         currentY = drawTableHeader(doc, earningHeaders, 40, currentY, earningColumnWidths);
@@ -388,14 +389,14 @@ exports.generateReport = async (req, res) => {
         workerEarnings.forEach(earning => {
           const rowData = [
             earning.date.toLocaleDateString(),
-            `₹${earning.amount.toFixed(2)}`
+            `Rs${earning.amount.toFixed(2)}`
           ];
           currentY = drawTableRow(doc, rowData, 40, currentY, earningColumnWidths);
           workerEarningTotal += earning.amount;
         });
 
         // Earning total row
-        const totalRowData = ['Total Earnings', `₹${workerEarningTotal.toFixed(2)}`];
+        const totalRowData = ['Total Earnings', `Rs${workerEarningTotal.toFixed(2)}`];
         doc.fontSize(10).font('Helvetica-Bold');
         currentY = drawTableRow(doc, totalRowData, 40, currentY, earningColumnWidths);
         totalEarnings += workerEarningTotal;
@@ -417,7 +418,7 @@ exports.generateReport = async (req, res) => {
       doc.fontSize(11)
          .font('Helvetica-Bold')
          .fillColor(balance >= 0 ? '#27ae60' : '#e74c3c')
-         .text(`Worker Balance: ₹${balance.toFixed(2)} ${balance >= 0 ? '(Credit)' : '(Debit)'}`, 40, currentY);
+         .text(`Worker Balance: Rs${balance.toFixed(2)} ${balance >= 0 ? '(Credit)' : '(Debit)'}`, 40, currentY);
       
       currentY += 30;
 
@@ -462,24 +463,69 @@ exports.generateReport = async (req, res) => {
         
         currentY += 20;
 
-        // Expenses table
-        const expenseHeaders = ['Date', 'Cost (₹)'];
-        const expenseColumnWidths = [pageWidth * 0.6, pageWidth * 0.4];
+        // Expenses table - Updated headers and column widths based on expense type
+        let expenseHeaders, expenseColumnWidths;
+        
+        if (type === 'crushedStone') {
+          // For crushed stone: Date, Supplier, Quantity/Unit, Stone Type, Cost
+          expenseHeaders = ['Date', 'Supplier', 'Quantity', 'Stone Type', 'Cost (Rs)'];
+          expenseColumnWidths = [pageWidth * 0.2, pageWidth * 0.25, pageWidth * 0.2, pageWidth * 0.15, pageWidth * 0.2];
+        } else {
+          // For other expenses: Date, Supplier, Quantity/Unit, Cost
+          expenseHeaders = ['Date', 'Supplier', 'Quantity', 'Cost (Rs)'];
+          expenseColumnWidths = [pageWidth * 0.25, pageWidth * 0.3, pageWidth * 0.25, pageWidth * 0.2];
+        }
         
         currentY = drawTableHeader(doc, expenseHeaders, 40, currentY, expenseColumnWidths);
         
         let typeTotal = 0;
         list.forEach(exp => {
-          const rowData = [
-            exp.arrivalDate.toLocaleDateString(),
-            `₹${exp.totalCost.toFixed(2)}`
-          ];
+          // Format quantity and unit
+          let quantityUnit = '';
+          if (exp.quantity && exp.unit) {
+            quantityUnit = `${exp.quantity} ${exp.unit}`;
+          } else if (exp.quantity) {
+            quantityUnit = exp.quantity.toString();
+          }
+          
+          // Format supplier name
+          const supplierName = exp.supplierName || '';
+          
+          let rowData;
+          if (type === 'crushedStone') {
+            // Format stone types (array to string)
+            const stoneTypes = (exp.stoneType && Array.isArray(exp.stoneType)) 
+              ? exp.stoneType.join(', ') 
+              : '';
+              
+            rowData = [
+              exp.arrivalDate.toLocaleDateString(),
+              supplierName,
+              quantityUnit,
+              stoneTypes,
+              `Rs${exp.totalCost.toFixed(2)}`
+            ];
+          } else {
+            rowData = [
+              exp.arrivalDate.toLocaleDateString(),
+              supplierName,
+              quantityUnit,
+              `Rs${exp.totalCost.toFixed(2)}`
+            ];
+          }
+          
           currentY = drawTableRow(doc, rowData, 40, currentY, expenseColumnWidths);
           typeTotal += exp.totalCost;
         });
 
         // Type total row
-        const totalRowData = [`Total ${type}`, `₹${typeTotal.toFixed(2)}`];
+        let totalRowData;
+        if (type === 'crushedStone') {
+          totalRowData = ['', '', '', `Total ${type}`, `Rs${typeTotal.toFixed(2)}`];
+        } else {
+          totalRowData = ['', '', `Total ${type}`, `Rs${typeTotal.toFixed(2)}`];
+        }
+        
         doc.fontSize(10).font('Helvetica-Bold');
         currentY = drawTableRow(doc, totalRowData, 40, currentY, expenseColumnWidths);
         
@@ -495,33 +541,51 @@ exports.generateReport = async (req, res) => {
     }
 
     // --- Summary Section ---
-    currentY += 20;
+    doc.addPage();
+    currentY = 40;
     
-    // Summary box
-    const summaryBoxY = currentY;
-    const summaryBoxHeight = 120;
+    // Worker Summary box
+    const workerSummaryBoxY = currentY;
+    const summaryBoxHeight = 100;
     
-    doc.rect(40, summaryBoxY, pageWidth, summaryBoxHeight)
-       .fillAndStroke('#ecf0f1', '#bdc3c7');
+    doc.rect(40, workerSummaryBoxY, pageWidth, summaryBoxHeight)
+       .fillAndStroke('#e8f5e8', '#27ae60');
     
     doc.fontSize(16)
        .font('Helvetica-Bold')
        .fillColor('#2c3e50')
-       .text("Report Summary", 50, summaryBoxY + 10);
+       .text("Worker Summary", 50, workerSummaryBoxY + 10);
     
     doc.fontSize(12)
        .font('Helvetica')
        .fillColor('#000000')
-       .text(`Total Workers: ${workers.length}`, 50, summaryBoxY + 35)
-       .text(`Total Advances: ₹${totalAdvances.toFixed(2)}`, 50, summaryBoxY + 50)
-       .text(`Total Earnings: ₹${totalEarnings.toFixed(2)}`, 50, summaryBoxY + 65)
-       .text(`Total Expenses: ₹${grandTotal.toFixed(2)}`, 50, summaryBoxY + 80);
+       .text(`Total Workers: ${workers.length}`, 50, workerSummaryBoxY + 35)
+       .text(`Total Advances: Rs${totalAdvances.toFixed(2)}`, 50, workerSummaryBoxY + 50)
+       .text(`Total Earnings: Rs${totalEarnings.toFixed(2)}`, 50, workerSummaryBoxY + 65);
     
     const netBalance = totalEarnings - totalAdvances;
     doc.fontSize(14)
        .font('Helvetica-Bold')
        .fillColor(netBalance >= 0 ? '#27ae60' : '#e74c3c')
-       .text(`Net Worker Balance: ₹${netBalance.toFixed(2)}`, 50, summaryBoxY + 100);
+       .text(`Net Worker Balance: Rs${netBalance.toFixed(2)}`, 50, workerSummaryBoxY + 80);
+
+    currentY = workerSummaryBoxY + summaryBoxHeight + 20;
+
+    // Expense Summary box
+    const expenseSummaryBoxY = currentY;
+    
+    doc.rect(40, expenseSummaryBoxY, pageWidth, 60)
+       .fillAndStroke('#fff3e0', '#ff9800');
+    
+    doc.fontSize(16)
+       .font('Helvetica-Bold')
+       .fillColor('#2c3e50')
+       .text("Expense Summary", 50, expenseSummaryBoxY + 10);
+    
+    doc.fontSize(12)
+       .font('Helvetica')
+       .fillColor('#000000')
+       .text(`Total Expenses: Rs${grandTotal.toFixed(2)}`, 50, expenseSummaryBoxY + 35);
 
     doc.end();
 

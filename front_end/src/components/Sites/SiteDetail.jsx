@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { getAllManager } from '../../services/managerService';
 import { setManagers } from '../../features/managerSlice';
-import {ReportForm} from '../index';
+import { ReportForm } from '../index';
 import { Link } from 'react-router-dom';
 const API_URL = "http://localhost:3000";
 
@@ -20,7 +20,6 @@ function SiteDetail() {
   const [loading, setLoading] = useState(true)
   const dispatch = useDispatch()
   const managers = useSelector(state => state.manager.managers)
-  const { user } = useSelector(state => state.auth);
   const [manager, setManager] = useState(null)
   const [selectedImage, setSelectedImage] = useState(null);
   const [showReportForm, setShowReportForm] = useState(false);
@@ -179,7 +178,7 @@ function SiteDetail() {
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden h-full">
 
                 {/* Better Site Header */}
-                <div 
+                <div
                   className="relative bg-gradient-to-br from-blue-500 to-purple-600 h-40 cursor-pointer"
                   onClick={handleSiteImageClick}
                 >
@@ -212,7 +211,7 @@ function SiteDetail() {
 
                   {/* Manager Image in Top Right Corner */}
                   {manager && (
-                    <div 
+                    <div
                       className="absolute top-3 right-3 w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform duration-200"
                       onClick={handleManagerImageClick}
                     >
@@ -257,18 +256,17 @@ function SiteDetail() {
                           <span className="font-medium text-gray-900">{formatDate(site.createdAt)}</span>
                         </div>
 
-                        {/* Generate Report Button - New Position */}
-                        {user.role === 'manager' && (
-                          <div className="pt-3 border-t border-gray-100">
-                            <button
-                              onClick={handleGenerateReport}
-                              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2.5 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center space-x-2"
-                            >
-                              <Download className="w-4 h-4" />
-                              <span>Generate Report</span>
-                            </button>
-                          </div>
-                        )}
+                        {/* Generate Report Button */}
+
+                        <div className="pt-3 border-t border-gray-100">
+                          <button
+                            onClick={handleGenerateReport}
+                            className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                          >
+                            <Download className="w-5 h-5" />
+                            <span>Generate Report</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
 
@@ -354,6 +352,11 @@ function SiteDetail() {
             </div>
           </div>
 
+          {/* Pdf Form */}
+          {showReportForm && (
+            <ReportForm siteId={id} onClose={handleCloseReportForm} />
+          )}
+
           {/* Notes & Reminders - Full Width */}
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-4 text-white">
@@ -394,10 +397,6 @@ function SiteDetail() {
         </div>
       )}
 
-      {/* Report Form - Inline Style like Add Memo */}
-      {showReportForm && (
-        <ReportForm siteId={id} onClose={handleCloseReportForm} />
-      )}
     </>
   );
 }
