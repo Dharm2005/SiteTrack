@@ -56,6 +56,15 @@ managerRouter.put('/manager/:managerId',
   ],
   managerController.updateManager)
 
-managerRouter.post('/reports' , isAdminOrManager,managerController.generateReport)
+managerRouter.post('/reports',
+  isAdminOrManager,
+  [
+    body("startDate")
+    .notEmpty().withMessage("Start date is required"),
+
+    body("endDate")
+    .notEmpty().withMessage("End date is required")
+  ],
+  managerController.generateReport)
 
 module.exports = managerRouter;

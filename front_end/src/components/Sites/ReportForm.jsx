@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import { Calendar, Download, FileText, AlertCircle, CheckCircle, X, Clock, BarChart3 } from 'lucide-react'
 import { generatePDF } from '../../services/managerService';
+import { toast } from 'react-toastify';
 
 function ReportForm({ siteId, onClose }) {
   const [form, setForm] = useState({
     startDate: '',
     endDate: '',
   })
-  
+
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -23,68 +24,58 @@ function ReportForm({ siteId, onClose }) {
     if (success) setSuccess(false)
   }
 
-  const validateForm = () => {
-    if (!form.startDate) {
-      setError('Please select a start date')
-      return false
-    }
-    if (!form.endDate) {
-      setError('Please select an end date')
-      return false
-    }
-    if (new Date(form.startDate) > new Date(form.endDate)) {
-      setError('Start date cannot be later than end date')
-      return false
-    }
-    return true
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) return;
-    
+
     setIsLoading(true);
     setError('');
-    
+
     try {
       const pdfBlob = await generatePDF(form.startDate, form.endDate, siteId);
+      console.log(pdfBlob);
       
-      // Create a blob URL
+
+      if (pdfBlob.success === false) {
+        if (pdfBlob.errors && pdfBlob.errors.length > 0) {
+          console.log("Validation/Server error:", pdfBlob);
+          pdfBlob.errors.forEach(err => toast.error(err))
+        }
+        return;
+      }
+
       const url = window.URL.createObjectURL(
         new Blob([pdfBlob], { type: 'application/pdf' })
       );
-      
-      // Create filename
+
       const startDate = new Date(form.startDate).toLocaleDateString('en-GB').replace(/\//g, '-');
       const endDate = new Date(form.endDate).toLocaleDateString('en-GB').replace(/\//g, '-');
       const filename = `site-report-${startDate}-to-${endDate}.pdf`;
-      
+
       // Option 1: Direct download
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
-      
+
       // Option 2: Open in new tab (as fallback)
       if (!link.download) {
         window.open(url, '_blank');
       }
-      
+
       // Cleanup
       document.body.removeChild(link);
       setTimeout(() => {
         window.URL.revokeObjectURL(url);
       }, 100);
-      
+
       setSuccess(true);
-      
+
       // Auto close after successful download
       setTimeout(() => {
         if (onClose) onClose();
       }, 2000);
-      
+
     } catch (err) {
       console.error("Failed to download PDF", err);
       setError('Failed to generate report. Please try again.');
@@ -174,7 +165,7 @@ function ReportForm({ siteId, onClose }) {
           <label className="block text-sm font-semibold text-gray-700 mb-3">
             Select Date Range *
           </label>
-          
+
           <div className="grid md:grid-cols-2 gap-4">
             {/* Start Date */}
             <div>
@@ -214,7 +205,7 @@ function ReportForm({ siteId, onClose }) {
             <div className="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
               <p className="text-sm text-purple-800 flex items-center">
                 <BarChart3 className="w-4 h-4 mr-2" />
-                <strong>Report Period:</strong> 
+                <strong>Report Period:</strong>
                 <span className="ml-1">{formatDate(form.startDate)} to {formatDate(form.endDate)}</span>
                 {(() => {
                   const days = Math.ceil((new Date(form.endDate) - new Date(form.startDate)) / (1000 * 60 * 60 * 24)) + 1
@@ -244,13 +235,13 @@ function ReportForm({ siteId, onClose }) {
                 onClick={() => {
                   const endDate = new Date();
                   let startDate = new Date();
-                  
+
                   if (preset.days === 'month') {
                     startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
                   } else {
                     startDate.setDate(endDate.getDate() - preset.days + 1);
                   }
-                  
+
                   setForm({
                     startDate: startDate.toISOString().split('T')[0],
                     endDate: endDate.toISOString().split('T')[0]
@@ -286,7 +277,7 @@ function ReportForm({ siteId, onClose }) {
           {/* Generate Report Button */}
           <button
             type="submit"
-            disabled={isLoading || !form.startDate || !form.endDate}
+            disabled={isLoading}
             className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center space-x-2"
           >
             {isLoading ? (
@@ -312,7 +303,7 @@ function ReportForm({ siteId, onClose }) {
             >
               Cancel
             </button>
-            )}
+          )}
         </div>
       </form>
 
