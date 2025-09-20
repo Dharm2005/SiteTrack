@@ -95,14 +95,14 @@ function WorkerDetail({ workerId, workerName }) {
     <>
       {/* Settled Banner */}
       {localIsSettled && (
-        <div className="mb-4 bg-gray-50 border border-gray-200 rounded-lg p-4">
+        <div className="mb-4 bg-gray-100 border border-gray-300 rounded-lg p-4">
           <div className="flex items-center justify-center space-x-3">
-            <div className="p-2 bg-gray-100 rounded-lg">
-              <Lock className="w-5 h-5 text-gray-600" />
+            <div className="p-2 bg-gray-200 rounded-lg">
+              <Lock className="w-5 h-5 text-gray-700" />
             </div>
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-700">Settlement Completed</h3>
-              <p className="text-sm text-gray-600">This worker's account has been settled and is now read-only</p>
+              <h3 className="text-lg font-semibold text-gray-800">Settlement Completed</h3>
+              <p className="text-sm text-gray-700">This worker's account has been settled and is now read-only</p>
             </div>
           </div>
         </div>
@@ -111,15 +111,15 @@ function WorkerDetail({ workerId, workerName }) {
       <nav className="mb-6">
         <div className="flex items-center justify-between">
           {/* Navigation Tabs */}
-          <div className={`flex p-1 rounded-lg w-fit ${localIsSettled ? 'bg-gray-50' : 'bg-gray-100'}`}>
+          <div className={`flex p-1 rounded-lg w-fit ${localIsSettled ? 'bg-gray-100' : 'bg-gray-100'}`}>
             <button
               onClick={() => setSelectedPage("settlement")}
               className={`px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 ${selectedPage === 'settlement'
                 ? localIsSettled
-                  ? 'bg-gray-100 text-gray-700 shadow-sm'
+                  ? 'bg-gray-200 text-gray-800 shadow-sm'
                   : 'bg-white text-gray-900 shadow-sm'
                 : localIsSettled
-                  ? 'text-gray-500 hover:text-gray-600'
+                  ? 'text-gray-600 hover:text-gray-700'
                   : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
@@ -129,10 +129,10 @@ function WorkerDetail({ workerId, workerName }) {
               onClick={() => setSelectedPage("earn")}
               className={`px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 ${selectedPage === 'earn'
                 ? localIsSettled
-                  ? 'bg-gray-100 text-gray-700 shadow-sm'
+                  ? 'bg-gray-200 text-gray-800 shadow-sm'
                   : 'bg-white text-gray-900 shadow-sm'
                 : localIsSettled
-                  ? 'text-gray-500 hover:text-gray-600'
+                  ? 'text-gray-600 hover:text-gray-700'
                   : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
@@ -142,10 +142,10 @@ function WorkerDetail({ workerId, workerName }) {
               onClick={() => setSelectedPage("advance")}
               className={`px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 ${selectedPage === 'advance'
                 ? localIsSettled
-                  ? 'bg-gray-100 text-gray-700 shadow-sm'
+                  ? 'bg-gray-200 text-gray-800 shadow-sm'
                   : 'bg-white text-gray-900 shadow-sm'
                 : localIsSettled
-                  ? 'text-gray-500 hover:text-gray-600'
+                  ? 'text-gray-600 hover:text-gray-700'
                   : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
@@ -155,18 +155,18 @@ function WorkerDetail({ workerId, workerName }) {
           </div>
 
           {/* Total Payable Amount */}
-          <div className={`rounded-lg px-6 py-3 shadow-sm border ${localIsSettled ? 'bg-gray-50 border-gray-200' : 'bg-white'}`}>
+          <div className={`rounded-lg px-6 py-3 shadow-sm border ${localIsSettled ? 'bg-gray-100 border-gray-300' : 'bg-white'}`}>
             <div className="flex items-center space-x-4">
-              <div className={`text-sm font-medium ${localIsSettled ? 'text-gray-600' : 'text-gray-600'}`}>
+              <div className={`text-sm font-medium ${localIsSettled ? 'text-gray-700' : 'text-gray-600'}`}>
                 Total Payable Amount:
               </div>
               <div className="flex items-center space-x-2 text-sm">
-                <span className={`font-semibold ${localIsSettled ? 'text-gray-600' : 'text-blue-600'}`}>₹{totalEarn.toLocaleString()}</span>
+                <span className={`font-semibold ${localIsSettled ? 'text-gray-700' : 'text-blue-600'}`}>₹{totalEarn.toLocaleString()}</span>
                 <span className="text-gray-400">-</span>
-                <span className={`font-semibold ${localIsSettled ? 'text-gray-600' : 'text-red-600'}`}>₹{totalAdvances.toLocaleString()}</span>
+                <span className={`font-semibold ${localIsSettled ? 'text-gray-700' : 'text-red-600'}`}>₹{totalAdvances.toLocaleString()}</span>
                 <span className="text-gray-400">=</span>
                 <span className={`font-bold text-lg px-3 py-1 rounded-lg ${localIsSettled
-                  ? 'text-gray-700 bg-gray-100'
+                  ? 'text-gray-800 bg-gray-200'
                   : totalPayable >= 0
                     ? 'text-green-700 bg-green-100'
                     : 'text-red-700 bg-red-100'
@@ -180,20 +180,20 @@ function WorkerDetail({ workerId, workerName }) {
       </nav>
 
       {selectedPage === 'advance' ? (
-        <div className={`space-y-4 p-4 min-h-screen ${localIsSettled ? 'bg-gray-25' : 'bg-gray-50'}`}>
+        <div className={`space-y-4 p-4 min-h-screen ${localIsSettled ? 'bg-gray-50' : 'bg-gray-50'}`}>
           {/* Header Section */}
-          <div className={`flex items-center justify-between p-4 rounded-xl shadow-sm ${localIsSettled ? 'bg-gray-50' : 'bg-white'}`}>
+          <div className={`flex items-center justify-between p-4 rounded-xl shadow-sm ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-3">
-                <div className={`p-3 rounded-lg ${localIsSettled ? 'bg-gray-100' : 'bg-red-100'}`}>
-                  <TrendingDown className={`w-7 h-7 ${localIsSettled ? 'text-gray-600' : 'text-red-600'}`} />
+                <div className={`p-3 rounded-lg ${localIsSettled ? 'bg-gray-200' : 'bg-red-100'}`}>
+                  <TrendingDown className={`w-7 h-7 ${localIsSettled ? 'text-gray-700' : 'text-red-600'}`} />
                 </div>
                 <div>
-                  <h1 className={`text-2xl font-bold ${localIsSettled ? 'text-gray-700' : 'text-gray-900'}`}>{workerName}'s Advances</h1>
-                  <div className={`flex items-center space-x-4 text-sm ${localIsSettled ? 'text-gray-600' : 'text-gray-600'}`}>
+                  <h1 className={`text-2xl font-bold ${localIsSettled ? 'text-gray-800' : 'text-gray-900'}`}>{workerName}'s Advances</h1>
+                  <div className={`flex items-center space-x-4 text-sm ${localIsSettled ? 'text-gray-700' : 'text-gray-600'}`}>
                     <span>{allAdvance?.length || 0} advances</span>
                     <span>•</span>
-                    <span className={`font-medium ${localIsSettled ? 'text-gray-600' : 'text-red-600'}`}>
+                    <span className={`font-medium ${localIsSettled ? 'text-gray-700' : 'text-red-600'}`}>
                       Total: ₹{totalAdvances.toLocaleString()}
                     </span>
                   </div>
@@ -226,9 +226,9 @@ function WorkerDetail({ workerId, workerName }) {
 
           {/* Advances List */}
           {allAdvance && allAdvance.length > 0 ? (
-            <div className={`rounded-xl shadow-sm overflow-hidden ${localIsSettled ? 'bg-gray-50' : 'bg-white'}`}>
-              <div className={`p-4 ${localIsSettled ? 'border-b border-gray-200' : 'border-b border-gray-100'}`}>
-                <h3 className={`text-lg font-semibold ${localIsSettled ? 'text-gray-700' : 'text-gray-900'}`}>Advance History</h3>
+            <div className={`rounded-xl shadow-sm overflow-hidden ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
+              <div className={`p-4 ${localIsSettled ? 'border-b border-gray-300' : 'border-b border-gray-100'}`}>
+                <h3 className={`text-lg font-semibold ${localIsSettled ? 'text-gray-800' : 'text-gray-900'}`}>Advance History</h3>
               </div>
               <div className="space-y-0">
                 {allAdvance.map(advance => (
@@ -246,12 +246,12 @@ function WorkerDetail({ workerId, workerName }) {
             </div>
           ) : (
             /* Empty State */
-            <div className={`flex flex-col items-center justify-center py-12 rounded-xl shadow-sm ${localIsSettled ? 'bg-gray-50' : 'bg-white'}`}>
-              <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-4 ${localIsSettled ? 'bg-gray-100' : 'bg-gray-100'}`}>
-                <IndianRupee className={`w-12 h-12 ${localIsSettled ? 'text-gray-400' : 'text-gray-400'}`} />
+            <div className={`flex flex-col items-center justify-center py-12 rounded-xl shadow-sm ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
+              <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-4 ${localIsSettled ? 'bg-gray-200' : 'bg-gray-100'}`}>
+                <IndianRupee className={`w-12 h-12 ${localIsSettled ? 'text-gray-500' : 'text-gray-400'}`} />
               </div>
-              <h3 className={`text-xl font-medium mb-2 ${localIsSettled ? 'text-gray-700' : 'text-gray-900'}`}>No advances found</h3>
-              <p className={`text-center max-w-md mb-6 ${localIsSettled ? 'text-gray-600' : 'text-gray-500'}`}>
+              <h3 className={`text-xl font-medium mb-2 ${localIsSettled ? 'text-gray-800' : 'text-gray-900'}`}>No advances found</h3>
+              <p className={`text-center max-w-md mb-6 ${localIsSettled ? 'text-gray-700' : 'text-gray-500'}`}>
                 This worker hasn't received any advances yet. 
               </p>
 
@@ -274,20 +274,20 @@ function WorkerDetail({ workerId, workerName }) {
       ) : (<></>)}
 
       {selectedPage === 'earn' ? (
-        <div className={`space-y-4 p-4 min-h-screen ${localIsSettled ? 'bg-gray-25' : 'bg-gray-50'}`}>
+        <div className={`space-y-4 p-4 min-h-screen ${localIsSettled ? 'bg-gray-50' : 'bg-gray-50'}`}>
           {/* Header Section */}
-          <div className={`flex items-center justify-between p-4 rounded-xl shadow-sm ${localIsSettled ? 'bg-gray-50' : 'bg-white'}`}>
+          <div className={`flex items-center justify-between p-4 rounded-xl shadow-sm ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-3">
-                <div className={`p-3 rounded-lg ${localIsSettled ? 'bg-gray-100' : 'bg-green-100'}`}>
-                  <TrendingUp className={`w-7 h-7 ${localIsSettled ? 'text-gray-600' : 'text-green-600'}`} />
+                <div className={`p-3 rounded-lg ${localIsSettled ? 'bg-gray-200' : 'bg-green-100'}`}>
+                  <TrendingUp className={`w-7 h-7 ${localIsSettled ? 'text-gray-700' : 'text-green-600'}`} />
                 </div>
                 <div>
-                  <h1 className={`text-2xl font-bold ${localIsSettled ? 'text-gray-700' : 'text-gray-900'}`}>{workerName}'s Earnings</h1>
-                  <div className={`flex items-center space-x-4 text-sm ${localIsSettled ? 'text-gray-600' : 'text-gray-600'}`}>
+                  <h1 className={`text-2xl font-bold ${localIsSettled ? 'text-gray-800' : 'text-gray-900'}`}>{workerName}'s Earnings</h1>
+                  <div className={`flex items-center space-x-4 text-sm ${localIsSettled ? 'text-gray-700' : 'text-gray-600'}`}>
                     <span>{allEarn?.length || 0} earnings</span>
                     <span>•</span>
-                    <span className={`font-medium ${localIsSettled ? 'text-gray-600' : 'text-green-600'}`}>
+                    <span className={`font-medium ${localIsSettled ? 'text-gray-700' : 'text-green-600'}`}>
                       Total: ₹{totalEarn.toLocaleString()}
                     </span>
                   </div>
@@ -320,9 +320,9 @@ function WorkerDetail({ workerId, workerName }) {
 
           {/* Earning List */}
           {allEarn && allEarn.length > 0 ? (
-            <div className={`rounded-xl shadow-sm overflow-hidden ${localIsSettled ? 'bg-gray-50' : 'bg-white'}`}>
-              <div className={`p-4 ${localIsSettled ? 'border-b border-gray-200' : 'border-b border-gray-100'}`}>
-                <h3 className={`text-lg font-semibold ${localIsSettled ? 'text-gray-700' : 'text-gray-900'}`}>Earning History</h3>
+            <div className={`rounded-xl shadow-sm overflow-hidden ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
+              <div className={`p-4 ${localIsSettled ? 'border-b border-gray-300' : 'border-b border-gray-100'}`}>
+                <h3 className={`text-lg font-semibold ${localIsSettled ? 'text-gray-800' : 'text-gray-900'}`}>Earning History</h3>
               </div>
               <div className="space-y-0">
                 {allEarn.map(earn => (
@@ -340,12 +340,12 @@ function WorkerDetail({ workerId, workerName }) {
             </div>
           ) : (
             /* Empty State */
-            <div className={`flex flex-col items-center justify-center py-12 rounded-xl shadow-sm ${localIsSettled ? 'bg-gray-50' : 'bg-white'}`}>
-              <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-4 ${localIsSettled ? 'bg-gray-100' : 'bg-gray-100'}`}>
-                <IndianRupee className={`w-12 h-12 ${localIsSettled ? 'text-gray-400' : 'text-gray-400'}`} />
+            <div className={`flex flex-col items-center justify-center py-12 rounded-xl shadow-sm ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
+              <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-4 ${localIsSettled ? 'bg-gray-200' : 'bg-gray-100'}`}>
+                <IndianRupee className={`w-12 h-12 ${localIsSettled ? 'text-gray-500' : 'text-gray-400'}`} />
               </div>
-              <h3 className={`text-xl font-medium mb-2 ${localIsSettled ? 'text-gray-700' : 'text-gray-900'}`}>No Earning found</h3>
-              <p className={`text-center max-w-md mb-6 ${localIsSettled ? 'text-gray-600' : 'text-gray-500'}`}>
+              <h3 className={`text-xl font-medium mb-2 ${localIsSettled ? 'text-gray-800' : 'text-gray-900'}`}>No Earning found</h3>
+              <p className={`text-center max-w-md mb-6 ${localIsSettled ? 'text-gray-700' : 'text-gray-500'}`}>
                 This worker hasn't earned any amount yet. 
               </p>
               {user.role === 'manager' ? (<>
@@ -365,19 +365,19 @@ function WorkerDetail({ workerId, workerName }) {
       ) : (<></>)}
 
       {selectedPage === 'settlement' ? (
-        <div className={`space-y-6 p-4 min-h-screen ${localIsSettled ? 'bg-gray-25' : 'bg-gray-50'}`}>
+        <div className={`space-y-6 p-4 min-h-screen ${localIsSettled ? 'bg-gray-50' : 'bg-gray-50'}`}>
           {/* Header Section */}
-          <div className={`p-4 rounded-xl shadow-sm ${localIsSettled ? 'bg-gray-50' : 'bg-white'}`}>
+          <div className={`p-4 rounded-xl shadow-sm ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
             <div className="flex items-center space-x-3">
-              <div className={`p-3 rounded-lg ${localIsSettled ? 'bg-gray-100' : 'bg-blue-100'}`}>
-                <Calculator className={`w-7 h-7 ${localIsSettled ? 'text-gray-600' : 'text-blue-600'}`} />
+              <div className={`p-3 rounded-lg ${localIsSettled ? 'bg-gray-200' : 'bg-blue-100'}`}>
+                <Calculator className={`w-7 h-7 ${localIsSettled ? 'text-gray-700' : 'text-blue-600'}`} />
               </div>
               <div>
-                <h1 className={`text-2xl font-bold ${localIsSettled ? 'text-gray-700' : 'text-gray-900'}`}>{workerName}'s Final Settlement</h1>
-                <div className={`flex items-center space-x-4 text-sm ${localIsSettled ? 'text-gray-600' : 'text-gray-600'}`}>
+                <h1 className={`text-2xl font-bold ${localIsSettled ? 'text-gray-800' : 'text-gray-900'}`}>{workerName}'s Final Settlement</h1>
+                <div className={`flex items-center space-x-4 text-sm ${localIsSettled ? 'text-gray-700' : 'text-gray-600'}`}>
                   <span>Settlement Summary</span>
                   <span>•</span>
-                  <span className={`font-medium ${localIsSettled ? 'text-gray-600' : 'text-blue-600'}`}>
+                  <span className={`font-medium ${localIsSettled ? 'text-gray-700' : 'text-blue-600'}`}>
                     Status: {localIsSettled ? 'Completed' : 'Pending'}
                   </span>
                 </div>
@@ -387,14 +387,14 @@ function WorkerDetail({ workerId, workerName }) {
           {/* Three Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Earnings Section */}
-            <div className={`rounded-xl shadow-sm overflow-hidden ${localIsSettled ? 'bg-gray-50' : 'bg-white'}`}>
-              <div className={`p-3 ${localIsSettled ? 'bg-gray-100 text-gray-700' : 'bg-green-100 text-green-800'}`}>
+            <div className={`rounded-xl shadow-sm overflow-hidden ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
+              <div className={`p-3 ${localIsSettled ? 'bg-gray-200 text-gray-800' : 'bg-green-100 text-green-800'}`}>
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-semibold">All Earnings</h3>
-                    <p className={`text-sm ${localIsSettled ? 'text-gray-600' : 'text-green-600'}`}>{allEarn?.length || 0} transactions</p>
+                    <p className={`text-sm ${localIsSettled ? 'text-gray-700' : 'text-green-600'}`}>{allEarn?.length || 0} transactions</p>
                   </div>
-                  <div className={`p-2 rounded-lg ${localIsSettled ? 'bg-gray-200' : 'bg-green-200'}`}>
+                  <div className={`p-2 rounded-lg ${localIsSettled ? 'bg-gray-300' : 'bg-green-200'}`}>
                     <TrendingUp className="w-4 h-4" />
                   </div>
                 </div>
@@ -402,15 +402,15 @@ function WorkerDetail({ workerId, workerName }) {
 
               <div className="max-h-80 overflow-y-auto">
                 {allEarn && allEarn.length > 0 ? (
-                  <div className={`${localIsSettled ? 'divide-y divide-gray-200' : 'divide-y divide-gray-100'}`}>
+                  <div className={`${localIsSettled ? 'divide-y divide-gray-300' : 'divide-y divide-gray-100'}`}>
                     {allEarn.map((earn, index) => (
-                      <div key={earn._id || index} className={`p-3 transition-colors ${localIsSettled ? 'hover:bg-gray-100' : 'hover:bg-gray-50'}`}>
+                      <div key={earn._id || index} className={`p-3 transition-colors ${localIsSettled ? 'hover:bg-gray-200' : 'hover:bg-gray-50'}`}>
                         <div className="flex items-center justify-between mb-1">
-                          <div className={`flex items-center text-xs ${localIsSettled ? 'text-gray-600' : 'text-gray-500'}`}>
+                          <div className={`flex items-center text-xs ${localIsSettled ? 'text-gray-700' : 'text-gray-500'}`}>
                             <Calendar className="w-3 h-3 mr-1" />
                             {new Date(earn.date || earn.createdAt).toLocaleDateString()}
                           </div>
-                          <span className={`font-semibold ${localIsSettled ? 'text-gray-600' : 'text-green-600'}`}>₹{parseFloat(earn.amount).toLocaleString()}</span>
+                          <span className={`font-semibold ${localIsSettled ? 'text-gray-700' : 'text-green-600'}`}>₹{parseFloat(earn.amount).toLocaleString()}</span>
                         </div>
                         {earn.note && (
                           <div className="flex items-start space-x-2">
@@ -429,23 +429,23 @@ function WorkerDetail({ workerId, workerName }) {
                 )}
               </div>
 
-              <div className={`p-3 ${localIsSettled ? 'bg-gray-100 border-t border-gray-200' : 'bg-green-50 border-t border-green-100'}`}>
+              <div className={`p-3 ${localIsSettled ? 'bg-gray-200 border-t border-gray-300' : 'bg-green-50 border-t border-green-100'}`}>
                 <div className="flex items-center justify-between">
-                  <span className={`font-medium text-sm ${localIsSettled ? 'text-gray-700' : 'text-green-700'}`}>Total Earnings:</span>
-                  <span className={`font-bold ${localIsSettled ? 'text-gray-700' : 'text-green-800'}`}>₹{totalEarn.toLocaleString()}</span>
+                  <span className={`font-medium text-sm ${localIsSettled ? 'text-gray-800' : 'text-green-700'}`}>Total Earnings:</span>
+                  <span className={`font-bold ${localIsSettled ? 'text-gray-800' : 'text-green-800'}`}>₹{totalEarn.toLocaleString()}</span>
                 </div>
               </div>
             </div>
 
             {/* Advances Section */}
-            <div className={`rounded-xl shadow-sm overflow-hidden ${localIsSettled ? 'bg-gray-50' : 'bg-white'}`}>
-              <div className={`p-3 ${localIsSettled ? 'bg-gray-100 text-gray-700' : 'bg-red-100 text-red-800'}`}>
+            <div className={`rounded-xl shadow-sm overflow-hidden ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
+              <div className={`p-3 ${localIsSettled ? 'bg-gray-200 text-gray-800' : 'bg-red-100 text-red-800'}`}>
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-semibold">All Advances</h3>
-                    <p className={`text-sm ${localIsSettled ? 'text-gray-600' : 'text-red-600'}`}>{allAdvance?.length || 0} transactions</p>
+                    <p className={`text-sm ${localIsSettled ? 'text-gray-700' : 'text-red-600'}`}>{allAdvance?.length || 0} transactions</p>
                   </div>
-                  <div className={`p-2 rounded-lg ${localIsSettled ? 'bg-gray-200' : 'bg-red-200'}`}>
+                  <div className={`p-2 rounded-lg ${localIsSettled ? 'bg-gray-300' : 'bg-red-200'}`}>
                     <TrendingDown className="w-4 h-4" />
                   </div>
                 </div>
@@ -453,15 +453,15 @@ function WorkerDetail({ workerId, workerName }) {
 
               <div className="max-h-80 overflow-y-auto">
                 {allAdvance && allAdvance.length > 0 ? (
-                  <div className={`${localIsSettled ? 'divide-y divide-gray-200' : 'divide-y divide-gray-100'}`}>
+                  <div className={`${localIsSettled ? 'divide-y divide-gray-300' : 'divide-y divide-gray-100'}`}>
                     {allAdvance.map((advance, index) => (
-                      <div key={advance._id || index} className={`p-3 transition-colors ${localIsSettled ? 'hover:bg-gray-100' : 'hover:bg-gray-50'}`}>
+                      <div key={advance._id || index} className={`p-3 transition-colors ${localIsSettled ? 'hover:bg-gray-200' : 'hover:bg-gray-50'}`}>
                         <div className="flex items-center justify-between mb-1">
-                          <div className={`flex items-center text-xs ${localIsSettled ? 'text-gray-600' : 'text-gray-500'}`}>
+                          <div className={`flex items-center text-xs ${localIsSettled ? 'text-gray-700' : 'text-gray-500'}`}>
                             <Calendar className="w-3 h-3 mr-1" />
                             {new Date(advance.date || advance.createdAt).toLocaleDateString()}
                           </div>
-                          <span className={`font-semibold ${localIsSettled ? 'text-gray-600' : 'text-red-600'}`}>₹{parseFloat(advance.amount).toLocaleString()}</span>
+                          <span className={`font-semibold ${localIsSettled ? 'text-gray-700' : 'text-red-600'}`}>₹{parseFloat(advance.amount).toLocaleString()}</span>
                         </div>
                         {advance.note && (
                           <div className="flex items-start space-x-2">
@@ -480,18 +480,18 @@ function WorkerDetail({ workerId, workerName }) {
                 )}
               </div>
 
-              <div className={`p-3 ${localIsSettled ? 'bg-gray-100 border-t border-gray-200' : 'bg-red-50 border-t border-red-100'}`}>
+              <div className={`p-3 ${localIsSettled ? 'bg-gray-200 border-t border-gray-300' : 'bg-red-50 border-t border-red-100'}`}>
                 <div className="flex items-center justify-between">
-                  <span className={`font-medium text-sm ${localIsSettled ? 'text-gray-700' : 'text-red-700'}`}>Total Advances:</span>
-                  <span className={`font-bold ${localIsSettled ? 'text-gray-700' : 'text-red-800'}`}>₹{totalAdvances.toLocaleString()}</span>
+                  <span className={`font-medium text-sm ${localIsSettled ? 'text-gray-800' : 'text-red-700'}`}>Total Advances:</span>
+                  <span className={`font-bold ${localIsSettled ? 'text-gray-800' : 'text-red-800'}`}>₹{totalAdvances.toLocaleString()}</span>
                 </div>
               </div>
             </div>
 
             {/* Final Payment Section */}
-            <div className={`rounded-xl shadow-sm overflow-hidden ${localIsSettled ? 'bg-gray-50' : 'bg-white'}`}>
+            <div className={`rounded-xl shadow-sm overflow-hidden ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
               <div className={`p-3 ${localIsSettled
-                ? 'bg-gray-100 text-gray-700'
+                ? 'bg-gray-200 text-gray-800'
                 : totalPayable >= 0
                   ? 'bg-blue-100 text-blue-800'
                   : 'bg-orange-100 text-orange-800'
@@ -500,7 +500,7 @@ function WorkerDetail({ workerId, workerName }) {
                   <div>
                     <h3 className="text-lg font-semibold">Final Payment</h3>
                     <p className={`text-sm ${localIsSettled
-                      ? 'text-gray-600'
+                      ? 'text-gray-700'
                       : totalPayable >= 0
                         ? 'text-blue-600'
                         : 'text-orange-600'
@@ -509,7 +509,7 @@ function WorkerDetail({ workerId, workerName }) {
                     </p>
                   </div>
                   <div className={`p-2 rounded-lg ${localIsSettled
-                    ? 'bg-gray-200'
+                    ? 'bg-gray-300'
                     : totalPayable >= 0
                       ? 'bg-blue-200'
                       : 'bg-orange-200'
@@ -522,32 +522,32 @@ function WorkerDetail({ workerId, workerName }) {
               <div className="p-4">
                 <div className="text-center mb-4">
                   <div className={`text-3xl font-bold mb-1 ${localIsSettled
-                    ? 'text-gray-700'
+                    ? 'text-gray-800'
                     : totalPayable >= 0
                       ? 'text-blue-600'
                       : 'text-orange-600'
                     }`}>
                     ₹{Math.abs(totalPayable).toLocaleString()}
                   </div>
-                  <p className={`text-xs ${localIsSettled ? 'text-gray-600' : 'text-gray-500'}`}>
+                  <p className={`text-xs ${localIsSettled ? 'text-gray-700' : 'text-gray-500'}`}>
                     {totalPayable >= 0 ? 'To be paid to worker' : 'Worker owes company'}
                   </p>
                 </div>
 
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between items-center text-xs">
-                    <span className={`${localIsSettled ? 'text-gray-600' : 'text-gray-600'}`}>Total Earnings:</span>
-                    <span className={`font-medium ${localIsSettled ? 'text-gray-600' : 'text-green-600'}`}>₹{totalEarn.toLocaleString()}</span>
+                    <span className={`${localIsSettled ? 'text-gray-700' : 'text-gray-600'}`}>Total Earnings:</span>
+                    <span className={`font-medium ${localIsSettled ? 'text-gray-700' : 'text-green-600'}`}>₹{totalEarn.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
-                    <span className={`${localIsSettled ? 'text-gray-600' : 'text-gray-600'}`}>Total Advances:</span>
-                    <span className={`font-medium ${localIsSettled ? 'text-gray-600' : 'text-red-600'}`}>₹{totalAdvances.toLocaleString()}</span>
+                    <span className={`${localIsSettled ? 'text-gray-700' : 'text-gray-600'}`}>Total Advances:</span>
+                    <span className={`font-medium ${localIsSettled ? 'text-gray-700' : 'text-red-600'}`}>₹{totalAdvances.toLocaleString()}</span>
                   </div>
-                  <hr className={`${localIsSettled ? 'border-gray-200' : 'border-gray-200'}`} />
+                  <hr className={`${localIsSettled ? 'border-gray-300' : 'border-gray-200'}`} />
                   <div className="flex justify-between items-center">
-                    <span className={`font-medium text-sm ${localIsSettled ? 'text-gray-700' : 'text-gray-900'}`}>Final Amount:</span>
+                    <span className={`font-medium text-sm ${localIsSettled ? 'text-gray-800' : 'text-gray-900'}`}>Final Amount:</span>
                     <span className={`font-bold text-sm ${localIsSettled
-                      ? 'text-gray-700'
+                      ? 'text-gray-800'
                       : totalPayable >= 0
                         ? 'text-blue-600'
                         : 'text-orange-600'
@@ -561,20 +561,20 @@ function WorkerDetail({ workerId, workerName }) {
                 {user.role === 'manager' ? (
                   <>
                   {localIsSettled ? (
-                  <div className="bg-gray-100 p-4 rounded-lg border border-gray-200">
+                  <div className="bg-gray-200 p-4 rounded-lg border border-gray-300">
                     <div className="text-center">
                       <div className="flex items-center justify-center space-x-2 mb-3">
-                        <div className="p-2 bg-gray-200 rounded-lg">
-                          <Lock className="w-5 h-5 text-gray-600" />
+                        <div className="p-2 bg-gray-300 rounded-lg">
+                          <Lock className="w-5 h-5 text-gray-700" />
                         </div>
                       </div>
-                      <h4 className="font-semibold text-gray-700 text-sm mb-2">Settlement Completed</h4>
-                      <p className="text-xs text-gray-600 mb-3">
+                      <h4 className="font-semibold text-gray-800 text-sm mb-2">Settlement Completed</h4>
+                      <p className="text-xs text-gray-700 mb-3">
                         This worker's payment has been marked as settled and completed.
                       </p>
-                      <div className="bg-gray-200 p-3 rounded-lg">
-                        <div className="flex items-center justify-center space-x-2 text-xs text-gray-700">
-                          <div className="w-2 h-2 bg-gray-600 rounded-full"></div>
+                      <div className="bg-gray-300 p-3 rounded-lg">
+                        <div className="flex items-center justify-center space-x-2 text-xs text-gray-800">
+                          <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
                           <span>Account Status: Settled</span>
                         </div>
                       </div>

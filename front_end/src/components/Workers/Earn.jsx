@@ -62,13 +62,12 @@ function Earn({ id, amount, date, note, createdAt, isSettled }) {
   }
 
   return (
-    <div className={`px-4 py-3 border-b ${isSettled ? 'border-gray-200 bg-gray-50' : 'border-green-200 bg-green-100'} transition-all duration-200`}>
+    <div className={`px-4 py-3 border-b ${isSettled ? 'border-gray-300 bg-gray-100' : 'border-green-200 bg-green-100'} transition-all duration-200`}>
       <div className="flex items-center justify-between space-x-8">
-
         {/* Amount Section */}
         <div className="flex items-center space-x-3 flex-shrink-0">
-          <div className={`flex items-center justify-center w-9 h-9 rounded-lg ${isSettled ? 'bg-gray-200' : 'bg-green-200'}`}>
-            <IndianRupee className={`w-5 h-5 ${isSettled ? 'text-gray-500' : 'text-green-700'}`} />
+          <div className={`flex items-center justify-center w-9 h-9 rounded-lg ${isSettled ? 'bg-gray-300' : 'bg-green-200'}`}>
+            <IndianRupee className={`w-5 h-5 ${isSettled ? 'text-gray-600' : 'text-green-700'}`} />
           </div>
           <div>
             {isEditing ? (
@@ -80,7 +79,7 @@ function Earn({ id, amount, date, note, createdAt, isSettled }) {
                 className="text-lg font-semibold text-green-900 border border-green-300 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-300 px-3 py-1 rounded-lg w-28 h-9 bg-white"
               />
             ) : (
-              <div className={`text-lg font-semibold ${isSettled ? 'text-gray-600' : 'text-green-800'} px-3 py-1 h-9 flex items-center w-28 bg-white rounded-lg`}>
+              <div className={`text-lg font-semibold ${isSettled ? 'text-gray-700' : 'text-green-800'} px-3 py-1 h-9 flex items-center w-28 bg-white rounded-lg`}>
                 ₹{parseFloat(amount || 0).toLocaleString()}
               </div>
             )}
@@ -89,8 +88,8 @@ function Earn({ id, amount, date, note, createdAt, isSettled }) {
 
         {/* Earning Date Section */}
         <div className="flex items-center space-x-2 flex-shrink-0">
-          <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${isSettled ? 'bg-gray-200' : 'bg-green-200'}`}>
-            <CalendarCheck className={`w-4 h-4 ${isSettled ? 'text-gray-500' : 'text-green-700'}`} />
+          <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${isSettled ? 'bg-gray-300' : 'bg-green-200'}`}>
+            <CalendarCheck className={`w-4 h-4 ${isSettled ? 'text-gray-600' : 'text-green-700'}`} />
           </div>
           <div>
             {isEditing ? (
@@ -102,17 +101,17 @@ function Earn({ id, amount, date, note, createdAt, isSettled }) {
                 className="border border-green-300 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-300 px-2 py-1 rounded-lg text-sm h-8 w-32 bg-white"
               />
             ) : (
-              <div className={`font-medium ${isSettled ? 'text-gray-600' : 'text-green-800'} text-sm px-2 py-1 h-8 flex items-center w-32 bg-white rounded-lg`}>
+              <div className={`font-medium ${isSettled ? 'text-gray-700' : 'text-green-800'} text-sm px-2 py-1 h-8 flex items-center w-32 bg-white rounded-lg`}>
                 {formatDate(date)}
               </div>
             )}
-            <div className={`text-xs ${isSettled ? 'text-gray-500' : 'text-green-600'} font-medium mt-1`}>EARNING DATE</div>
+            <div className={`text-xs ${isSettled ? 'text-gray-600' : 'text-green-600'} font-medium mt-1`}>EARNING DATE</div>
           </div>
         </div>
 
         {/* Note Section */}
         <div className="flex items-center space-x-2 flex-1 min-w-0">
-          <FileText className={`w-4 h-4 ${isSettled ? 'text-gray-400' : 'text-green-600'} flex-shrink-0`} />
+          <FileText className={`w-4 h-4 ${isSettled ? 'text-gray-500' : 'text-green-600'} flex-shrink-0`} />
           <div className="min-w-0 flex-1">
             {isEditing ? (
               <input
@@ -124,8 +123,8 @@ function Earn({ id, amount, date, note, createdAt, isSettled }) {
                 placeholder="Add earning note..."
               />
             ) : (
-              <div className={`font-normal ${isSettled ? 'text-gray-700' : 'text-green-800'} truncate text-sm px-3 py-1 h-8 flex items-center w-full bg-white rounded-lg`} title={note || "No note"}>
-                {note || <span className={`${isSettled ? 'text-gray-400' : 'text-green-400'} italic`}>No earning note</span>}
+              <div className={`font-normal ${isSettled ? 'text-gray-800' : 'text-green-800'} truncate text-sm px-3 py-1 h-8 flex items-center w-full bg-white rounded-lg`} title={note || "No note"}>
+                {note || <span className={`${isSettled ? 'text-gray-500' : 'text-green-400'} italic`}>No earning note</span>}
               </div>
             )}
           </div>
@@ -133,10 +132,10 @@ function Earn({ id, amount, date, note, createdAt, isSettled }) {
 
         {/* Created At Section */}
         <div className="flex items-center space-x-2 flex-shrink-0">
-          <Clock className={`w-4 h-4 ${isSettled ? 'text-gray-600' : 'text-green-600'}`} />
+          <Clock className={`w-4 h-4 ${isSettled ? 'text-gray-700' : 'text-green-600'}`} />
           <div className="text-right">
-            <div className={`font-medium ${isSettled ? 'text-gray-600' : 'text-green-700'} text-sm bg-white px-2 py-1 rounded-lg`}>{formatDate(createdAt)}</div>
-            <div className={`text-xs ${isSettled ? 'text-gray-400' : 'text-green-600'} font-medium mt-1`}>Created {formatTime(createdAt)}</div>
+            <div className={`font-medium ${isSettled ? 'text-gray-700' : 'text-green-700'} text-sm bg-white px-2 py-1 rounded-lg`}>{formatDate(createdAt)}</div>
+            <div className={`text-xs ${isSettled ? 'text-gray-500' : 'text-green-600'} font-medium mt-1`}>Created {formatTime(createdAt)}</div>
           </div>
         </div>
         {user.role === 'manager' ? (

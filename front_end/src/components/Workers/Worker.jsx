@@ -65,7 +65,7 @@ function Worker({ id, name, image, mobile, isSettled }) {
           : 'opacity-100 scale-100 transform translate-y-0'
       } ${isDeleting ? 'pointer-events-none' : ''} ${
         isSettled
-          ? 'bg-gray-50 border-gray-200 opacity-80'
+          ? 'bg-gray-100 border-gray-300 opacity-85'
           : 'bg-white border-gray-200 shadow-sm hover:shadow-md'
       }`}
     >
@@ -82,7 +82,7 @@ function Worker({ id, name, image, mobile, isSettled }) {
               : 'hover:bg-gray-100 opacity-0 group-hover:opacity-100'
           }`}
         >
-          <MoreVertical className={`w-3 h-3 ${isSettled ? 'text-gray-400' : 'text-gray-500'}`} />
+          <MoreVertical className={`w-3 h-3 ${isSettled ? 'text-gray-500' : 'text-gray-500'}`} />
         </button>
 
         {showActions && !isDeleting && !isSettled && (
@@ -125,13 +125,13 @@ function Worker({ id, name, image, mobile, isSettled }) {
                 src={`${API_URL}/uploads/workers/${image}`}
                 alt={name || 'Worker'}
                 className={`w-16 h-16 rounded-full object-cover border-2 ${
-                  isSettled ? 'border-gray-200' : 'border-gray-100'
+                  isSettled ? 'border-gray-300' : 'border-gray-100'
                 }`}
                 onError={handleImageError}
               />
               <div className={`w-16 h-16 rounded-full flex items-center justify-center hidden ${
                 isSettled 
-                  ? 'bg-gradient-to-br from-gray-400 to-gray-500' 
+                  ? 'bg-gradient-to-br from-gray-500 to-gray-600' 
                   : 'bg-gradient-to-br from-blue-500 to-purple-600'
               }`}>
                 <User className="w-6 h-6 text-white" />
@@ -140,7 +140,7 @@ function Worker({ id, name, image, mobile, isSettled }) {
           ) : (
             <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
               isSettled 
-                ? 'bg-gradient-to-br from-gray-400 to-gray-500' 
+                ? 'bg-gradient-to-br from-gray-500 to-gray-600' 
                 : 'bg-gradient-to-br from-blue-500 to-purple-600'
             }`}>
               <User className="w-6 h-6 text-white" />
@@ -151,14 +151,14 @@ function Worker({ id, name, image, mobile, isSettled }) {
         {/* Worker Name */}
         <h3
           className={`text-sm font-semibold mb-2 truncate ${
-            isSettled ? 'text-gray-600' : 'text-gray-900'
+            isSettled ? 'text-gray-700' : 'text-gray-900'
           }`}
         >
           {name || 'Unnamed Worker'}
         </h3>
 
         {/* Mobile Number */}
-        <p className={`text-xs truncate ${isSettled ? 'text-gray-500' : 'text-gray-600'}`}>
+        <p className={`text-xs truncate ${isSettled ? 'text-gray-600' : 'text-gray-600'}`}>
           {formatMobile(mobile)}
         </p>
 
