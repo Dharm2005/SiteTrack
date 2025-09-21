@@ -12,25 +12,29 @@ const memoSchema = new mongoose.Schema({
   text: {
     type: String,
     required: true,
-    trim : true
+    trim: true
   },
   dueDate: {
     type: Date,
   },
   isDeleted: {
     type: Boolean,
-    default : false
+    default: false
+  },
+  deletedAt: {
+    type: Date,
+    default: null,
   },
   siteId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Site",
-    required : true
+    required: true
   },
   isCompleted: {
-    type : Boolean,
+    type: Boolean,
     default: false
   }
 }, { timestamps: true }
 )
 
-module.exports = mongoose.model("Memo",memoSchema);
+module.exports = mongoose.model("Memo", memoSchema);

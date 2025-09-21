@@ -13,6 +13,7 @@ const workerRouter = require('./routes/workerRouter');
 const expenseRouter = require('./routes/expenseRouter');
 const managerRouter = require('./routes/managerRouter');
 const memoRouter = require('./routes/memoRouter');
+const recycleRouter = require('./routes/recycleRouter');
 
 const errors = require('./controllers/errors');
 const { auth } = require('./middleware/auth');
@@ -34,6 +35,7 @@ app.use('/workers',auth, workerRouter);
 app.use('/expenses',auth, expenseRouter);
 app.use('/managers',auth, managerRouter);
 app.use('/memos',auth, memoRouter);
+app.use('/recycle',auth,recycleRouter);
 
 
 // Error Handling

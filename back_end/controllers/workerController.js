@@ -74,7 +74,10 @@ exports.deleteWorker = async (req, res, next) => {
 
     const updatedWorker = await Worker.findByIdAndUpdate(
       workerId,
-      { isDeleted: true },
+      {
+        isDeleted: true,
+        deletedAt : new Date()
+      },
       { new: true }
     )
 

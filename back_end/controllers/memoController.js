@@ -55,7 +55,10 @@ exports.deleteMemo = async (req , res , next) => {
 
     const updatedMemo = await Memo.findByIdAndUpdate(
       memoId,
-      {isDeleted: true},
+      {
+        isDeleted: true,
+        deletedAt : new Date()
+      },
       {new: true}
     )
 

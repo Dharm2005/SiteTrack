@@ -113,7 +113,10 @@ exports.deleteManager = async (req, res, next) => {
     const managerId = req.params.managerId;
     const updatedManager = await Manager.findByIdAndUpdate(
       managerId,
-      { isDeleted: true },
+      {
+        isDeleted: true,
+        deletedAt : new Date()
+      },
       { new: true }
     )
 

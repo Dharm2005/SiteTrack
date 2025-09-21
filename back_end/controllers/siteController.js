@@ -24,7 +24,6 @@ exports.getSites = async (req, res, next) => {
   }
 };
 
-
 exports.postAddSite = async (req, res, next) => {
   try {
 
@@ -85,7 +84,10 @@ exports.deleteSite = async (req, res, next) => {
     const siteId = req.params.siteId;
     const updatedSite = await Site.findByIdAndUpdate(
       siteId,
-      { isDeleted: true },
+      {
+        isDeleted: true,
+        deletedAt : new Date()
+      },
       { new: true }
     );
 

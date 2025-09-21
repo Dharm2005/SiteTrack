@@ -66,6 +66,10 @@ const expenseSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
+    deletedAt : {
+      type : Date,
+      default : null,
+    },
     siteId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Site", // link to your Site schema

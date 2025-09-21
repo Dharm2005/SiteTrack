@@ -120,7 +120,10 @@ exports.deleteExpense = async (req, res, next) => {
 
     const updatedExpense = await Expense.findByIdAndUpdate(
       expenseId,
-      { isDeleted: true },
+      {
+        isDeleted: true,
+        deletedAt : new Date()
+      },
       { new: true }
     )
 
