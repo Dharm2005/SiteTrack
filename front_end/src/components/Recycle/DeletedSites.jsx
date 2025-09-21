@@ -24,14 +24,27 @@ function DeletedSites() {
       <div className="max-w-6xl mx-auto">
         {deletedSites && deletedSites.length > 0 ? (
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div className="grid grid-cols-12 gap-4 p-4 bg-gray-100 font-semibold text-gray-700 text-sm">
-              <div className="col-span-1">Image</div>
-              <div className="col-span-3">Site Name</div>
-              <div className="col-span-3">Location</div>
-              <div className="col-span-3">Deleted At</div>
-              <div className="col-span-2 text-center">Actions</div>
+            {/* Updated Header with perfect alignment */}
+            <div className="grid grid-cols-12 gap-4 p-4 bg-gradient-to-r from-gray-100 to-gray-50 border-b border-gray-200">
+              <div className="col-span-1 flex items-center pl-5">
+                <span className="font-semibold text-gray-700 text-sm">Image</span>
+              </div>
+              <div className="col-span-3 flex items-center pl-6">
+                <span className="font-semibold text-gray-700 text-sm">Site Name</span>
+              </div>
+              <div className="col-span-3 flex items-center pl-13">
+                <span className="font-semibold text-gray-700 text-sm">Location</span>
+              </div>
+              <div className="col-span-3 flex items-center pl-20">
+                <span className="font-semibold text-gray-700 text-sm">Deleted At</span>
+              </div>
+              <div className="col-span-2 flex items-center justify-center pl-14">
+                <span className="font-semibold text-gray-700 text-sm">Actions</span>
+              </div>
             </div>
-            <div className="divide-y divide-gray-200">
+            
+            {/* Data rows */}
+            <div>
               {deletedSites.map(site => (
                 <DeletedSite
                   key={site._id}
