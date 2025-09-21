@@ -22,11 +22,6 @@ function DeletedSites() {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Recycle Bin</h1>
-          <p className="text-gray-600">Manage your deleted sites</p>
-        </div>
-        
         {deletedSites && deletedSites.length > 0 ? (
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="grid grid-cols-12 gap-4 p-4 bg-gray-100 font-semibold text-gray-700 text-sm">
