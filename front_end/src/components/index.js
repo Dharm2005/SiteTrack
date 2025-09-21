@@ -36,6 +36,10 @@ export {default as Memos} from "./Memos/Memos"
 export {default as Memo} from "./Memos/Memo"
 export {default as AddMemoForm} from "./Memos/AddMemoForm"
 
+export {default as RecycleData} from "./Recycle/RecycleData"
+export {default as DeletedSites} from "./Recycle/DeletedSites"
+export {default as DeletedSite} from "./Recycle/DeletedSite"
+
 export {default as Login} from "./Auth/Login"
 export {default as Signup} from "./Auth/Signup"
 

@@ -94,6 +94,20 @@ export default function NavBar() {
                         Add Manager
                       </NavLink>
                     </li>
+                    <li>
+                      <NavLink
+                        to="/recycle-bin"
+                        className={({ isActive }) =>
+                          `px-3 py-2 rounded-lg transition-all duration-200 ${
+                            isActive
+                              ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm'
+                              : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                          }`
+                        }
+                      >
+                        Recycle Bin
+                      </NavLink>
+                    </li>
                   </>
                 )}
               </ul>

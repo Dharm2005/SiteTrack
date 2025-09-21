@@ -17,7 +17,7 @@ function Home() {
       try {
         const [sites, managers] = await Promise.all([
           getAllSite(),
-          getAllManager()
+          getAllManager(),
         ]);
         console.log(sites);
         console.log(managers);

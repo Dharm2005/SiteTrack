@@ -17,6 +17,6 @@ export const store = configureStore({
     manager : managerReducer,
     memo : memoReducer,
     advance : workerAdvanceReducer,
-    earn : workerEarnReducer
+    earn : workerEarnReducer,
   }
 })
