@@ -17,3 +17,12 @@ export const getDeletedManagers = async () => {
     console.error("Error while fetching all managers", error)
   }
 }
+
+export const getDeletedWorkers = async (siteId) => {
+  try {
+    const response = await api.get(`http://localhost:3000/recycle/getDeletedWorkers/${siteId}`)
+    return response.data;
+  } catch (error) {
+    console.error("Error while fetching all managers", error)
+  }
+}

@@ -5,10 +5,12 @@ import { useSelector } from 'react-redux';
 import DeletedExpenses from './DeletedExpenses';
 import DeletedWorkers from './DeletedWorkers';
 import DeletedMemos from './DeletedMemos';
+import { useParams } from 'react-router-dom';
 
 function RecycleData() {
   const { user } = useSelector((state) => state.auth);
-
+  const { id } = useParams()
+  
   // Conditional default value based on user role
   const getDefaultPage = () => {
     if (user?.role === 'admin') {
@@ -22,16 +24,29 @@ function RecycleData() {
   const [selectedPage, setSelectedPage] = useState(getDefaultPage());
 
   return (
-    <>
+    <div className="px-6 pt-6">
       <nav className="mb-6">
         <div className="flex items-center justify-between">
-          {/* Navigation Tabs - Full Width */}
-          <div className="flex w-full bg-gray-100 rounded-xl p-1 shadow-inner">
+          {/* Left side - Heading */}
+          <div className="flex items-center">
+            <div className="mr-4">
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Recycle Bin</h1>
+              <p className="text-sm text-gray-500 mt-1">Manage deleted items</p>
+            </div>
+          </div>
+
+          {/* Right side - Navigation Tabs */}
+          <div className="bg-gray-100 rounded-xl p-1 shadow-inner">
             {user.role === 'admin' && (
-              <>
+              <div className="grid grid-cols-2 gap-1 w-64">
                 <button
                   onClick={() => setSelectedPage("sites")}
-                  className={`flex-1 px-6 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out ${selectedPage === 'sites'
+                  className={`px-6 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out ${selectedPage === 'sites'
                     ? 'bg-white text-blue-600 shadow-md transform scale-[0.98] border border-blue-100'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                     }`}
@@ -40,20 +55,20 @@ function RecycleData() {
                 </button>
                 <button
                   onClick={() => setSelectedPage("managers")}
-                  className={`flex-1 px-6 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out ${selectedPage === 'managers'
+                  className={`px-6 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out ${selectedPage === 'managers'
                     ? 'bg-white text-blue-600 shadow-md transform scale-[0.98] border border-blue-100'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                     }`}
                 >
                   Managers
                 </button>
-              </>
+              </div>
             )}
             {user.role === 'manager' && (
-              <>
+              <div className="grid grid-cols-3 gap-1 w-80">
                 <button
                   onClick={() => setSelectedPage("expenses")}
-                  className={`flex-1 px-6 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out ${selectedPage === 'expenses'
+                  className={`px-4 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out ${selectedPage === 'expenses'
                     ? 'bg-white text-blue-600 shadow-md transform scale-[0.98] border border-blue-100'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                     }`}
@@ -62,7 +77,7 @@ function RecycleData() {
                 </button>
                 <button
                   onClick={() => setSelectedPage("workers")}
-                  className={`flex-1 px-6 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out ${selectedPage === 'workers'
+                  className={`px-4 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out ${selectedPage === 'workers'
                     ? 'bg-white text-blue-600 shadow-md transform scale-[0.98] border border-blue-100'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                     }`}
@@ -71,14 +86,14 @@ function RecycleData() {
                 </button>
                 <button
                   onClick={() => setSelectedPage("memos")}
-                  className={`flex-1 px-6 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out ${selectedPage === 'memos'
+                  className={`px-4 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out ${selectedPage === 'memos'
                     ? 'bg-white text-blue-600 shadow-md transform scale-[0.98] border border-blue-100'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                     }`}
                 >
                   Memos
                 </button>
-              </>
+              </div>
             )}
           </div>
         </div>
@@ -92,16 +107,16 @@ function RecycleData() {
           <DeletedManagers />
         )}
         {selectedPage === 'expenses' && (
-          <DeletedExpenses />
+          <DeletedExpenses siteId = {id} />
         )}
         {selectedPage === 'workers' && (
-          <DeletedWorkers />
+          <DeletedWorkers siteId = {id} />
         )}
         {selectedPage === 'memos' && (
-          <DeletedMemos />
+          <DeletedMemos siteId = {id} />
         )}
       </div>
-    </>
+    </div>
   )
 }
 

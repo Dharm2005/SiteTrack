@@ -84,7 +84,13 @@ const router = createBrowserRouter(
       } />
 
       <Route path='recycle-bin' element={
-        <ProtectedRoute roles={['admin', 'manager']}>
+        <ProtectedRoute roles={['admin']}>
+          < RecycleData />
+        </ProtectedRoute>
+      } />
+
+      <Route path='site/:id/recycle-bin' element={
+        <ProtectedRoute roles={['manager']}>
           < RecycleData />
         </ProtectedRoute>
       } />
