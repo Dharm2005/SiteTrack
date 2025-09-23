@@ -11,4 +11,7 @@ recycleRouter.get('/getDeletedExpenses/:siteId',isManager,recycleController.getD
 recycleRouter.get('/getDeletedWorkers/:siteId',isManager,recycleController.getDeletedWorkers)
 recycleRouter.get('/getDeletedMemos/:siteId',isManager,recycleController.getDeletedMemos)
 
+
+recycleRouter.delete('/site/delete/:siteId',isAdmin,recycleController.deleteSite)
+
 module.exports = recycleRouter

@@ -1,4 +1,6 @@
 import React from 'react'
+import {deleteSitePer} from '../../services/recycleService'
+import { toast } from 'react-toastify';
 
 const API_URL = "http://localhost:3000";
 
@@ -24,9 +26,15 @@ function DeletedSite({id, name, location, image, deletedAt}) {
     console.log('Restore site with ID:', id);
   }
 
-  const handlePermanentDelete = () => {
-    // TODO: Implement permanent delete logic
-    console.log('Permanently delete site with ID:', id);
+  const handlePermanentDelete = async () => {
+    try {
+      const deletedSite = await deleteSitePer(id)
+      if(deletedSite)
+        toast.success("Site deleted permanently");
+    } catch (error) {
+      console.log("Error deleting site" , error);
+      
+    }
   }
 
   return (

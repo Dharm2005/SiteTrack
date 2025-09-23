@@ -75,3 +75,15 @@ exports.getDeletedExpenses = async (req, res, next) => {
     res.status(500).json({ message: "Error fetching deleted expenses", error: err.message });
   }
 }
+
+exports.deleteSite = async (req, res, next) => {
+  try {
+    const {siteId} = req.params;
+
+    const deletedSite = await Site.findByIdAndDelete(siteId)
+    res.json(deletedSite)
+    
+  } catch (err) {
+    res.status(500).json({ message: "Error deleting site permanently", error: err.message });
+  }
+}

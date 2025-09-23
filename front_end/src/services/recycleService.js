@@ -44,3 +44,12 @@ export const getDeletedExpenses = async (siteId) => {
     console.error("Error while fetching all expenses", error)
   }
 }
+
+export const deleteSitePer = async (siteId) => {
+  try {
+    const response = await api.delete(`http://localhost:3000/recycle/site/delete/${siteId}`)
+    return response.data;
+  } catch (error) {
+    console.error("Error while deleting site permanently", error)
+  }
+}
