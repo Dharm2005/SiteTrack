@@ -1,6 +1,8 @@
 const Site = require('../models/Site')
 const Manager = require('../models/Manager')
 const Worker = require('../models/Worker')
+const Memo = require('../models/Memo')
+const Expense = require('../models/Expense')
 
 exports.getDeletedSites = async (req, res, next) => {
   try{
@@ -41,7 +43,35 @@ exports.getDeletedWorkers = async (req, res, next) => {
 
     const deletedWorkers = await Worker.find(query)
     res.json(deletedWorkers)
-  } catch (error) {
+  } catch (err) {
     res.status(500).json({ message: "Error fetching deleted workers", error: err.message });
+  }
+}
+
+exports.getDeletedMemos = async (req, res, next) => {
+  try {
+    const {siteId} = req.params;
+
+    let query = {isDeleted : true};
+    query.siteId = siteId;
+
+    const deletedMemos = await Memo.find(query)
+    res.json(deletedMemos)
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching deleted memos", error: err.message });
+  }
+}
+
+exports.getDeletedExpenses = async (req, res, next) => {
+  try {
+    const {siteId} = req.params;
+
+    let query = {isDeleted : true};
+    query.siteId = siteId;
+
+    const deletedExpenses = await Expense.find(query)
+    res.json(deletedExpenses)
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching deleted expenses", error: err.message });
   }
 }
