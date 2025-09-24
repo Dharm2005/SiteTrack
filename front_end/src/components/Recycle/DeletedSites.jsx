@@ -1,23 +1,27 @@
 import React, { useState } from 'react'
 import { useEffect } from 'react'
-import {getDeletedSites} from '../../services/recycleService'
+import { getDeletedSites } from '../../services/recycleService'
 import DeletedSite from './DeletedSite'
 
 function DeletedSites() {
   const [deletedSites, setDeletedSites] = useState()
 
   useEffect(() => {
-      const fetchSites = async () => {
-        try {
-          const deletedSites = await getDeletedSites();
-          console.log(deletedSites);  
-          setDeletedSites(deletedSites)     
-        } catch (error) {
-          console.error("Error while fetching deleted sites" , error);
-        }
+    const fetchSites = async () => {
+      try {
+        const deletedSites = await getDeletedSites();
+        console.log(deletedSites);
+        setDeletedSites(deletedSites)
+      } catch (error) {
+        console.error("Error while fetching deleted sites", error);
       }
-      fetchSites()
-    } , [])
+    }
+    fetchSites()
+  }, [])
+
+  const handleStateChange = (id) => {
+    setDeletedSites(prev => prev.filter(site => site._id !== id))
+  }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -42,7 +46,7 @@ function DeletedSites() {
                 <span className="font-semibold text-gray-700 text-sm">Actions</span>
               </div>
             </div>
-            
+
             {/* Data rows */}
             <div>
               {deletedSites.map(site => (
@@ -53,6 +57,7 @@ function DeletedSites() {
                   location={site.location}
                   image={site.siteImage}
                   deletedAt={site.deletedAt}
+                  onStateChange={handleStateChange}
                 />
               ))}
             </div>

@@ -87,3 +87,23 @@ exports.deleteSite = async (req, res, next) => {
     res.status(500).json({ message: "Error deleting site permanently", error: err.message });
   }
 }
+
+exports.restoreSite = async (req, res, next) => {
+  try {
+    const {siteId} = req.params;
+
+    const restoredSite = await Site.findByIdAndUpdate(
+      siteId,
+      {
+        isDeleted : false,
+        deletedAt : null
+      },
+      {new : true}
+
+    )
+    res.json(restoredSite)
+    
+  } catch (err) {
+    res.status(500).json({ message: "Error restoring deleted site", error: err.message });
+  }
+}

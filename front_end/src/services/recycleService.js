@@ -53,3 +53,12 @@ export const deleteSitePer = async (siteId) => {
     console.error("Error while deleting site permanently", error)
   }
 }
+
+export const restoreSite = async (siteId) => {
+  try {
+    const response = await api.patch(`http://localhost:3000/recycle/site/restore/${siteId}`)
+    return response.data;
+  } catch (error) {
+    console.error("Error while restoring deleted site", error)
+  }
+}
