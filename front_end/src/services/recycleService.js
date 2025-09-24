@@ -62,3 +62,21 @@ export const restoreSite = async (siteId) => {
     console.error("Error while restoring deleted site", error)
   }
 }
+
+export const deleteManagerPer = async (managerId) => {
+  try {
+    const response = await api.delete(`http://localhost:3000/recycle/manager/delete/${managerId}`)
+    return response.data;
+  } catch (error) {
+    console.error("Error while deleting manager permanently", error)
+  }
+}
+
+export const restoreManager = async (managerId) => {
+  try {
+    const response = await api.patch(`http://localhost:3000/recycle/manager/restore/${managerId}`)
+    return response.data;
+  } catch (error) {
+    console.error("Error while restoring deleted manager", error)
+  }
+}

@@ -15,5 +15,8 @@ recycleRouter.get('/getDeletedMemos/:siteId',isManager,recycleController.getDele
 recycleRouter.delete('/site/delete/:siteId',isAdmin,recycleController.deleteSite)
 recycleRouter.patch('/site/restore/:siteId', isAdmin, recycleController.restoreSite);
 
+recycleRouter.delete('/manager/delete/:managerId',isAdmin,recycleController.deleteManager)
+recycleRouter.patch('/manager/restore/:managerId', isAdmin, recycleController.restoreManager);
+
 
 module.exports = recycleRouter

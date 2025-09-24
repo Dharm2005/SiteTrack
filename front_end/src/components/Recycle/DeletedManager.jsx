@@ -1,8 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { deleteManagerPer, restoreManager } from '../../services/recycleService';
+import { toast } from 'react-toastify';
 
 const API_URL = "http://localhost:3000";
 
-function DeletedManager({id, name, mobile, dob, gender, image, deletedAt}) {
+function DeletedManager({ id, name, mobile, dob, gender, image, deletedAt, onStateChange }) {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -33,30 +39,100 @@ function DeletedManager({id, name, mobile, dob, gender, image, deletedAt}) {
     }
   }
 
-  const handleRestore = () => {
-    // TODO: Implement restore logic
-    console.log('Restore manager with ID:', id);
+  const handleRestore = async () => {
+    try {
+      const confirm = window.confirm("Are you sure you want to restore this manager?");
+
+      if (confirm) {
+        setIsRestoring(true);
+
+        // Add a small delay for better UX
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        const restoredManager = await restoreManager(id)
+        if (restoredManager) {
+          setIsRemoving(true);
+          toast.success("Manager restored successfully");
+
+          // Wait for exit animation to complete before removing from DOM
+          setTimeout(() => {
+            onStateChange(id);
+          }, 500);
+        }
+      }
+    } catch (error) {
+      console.log("Error restoring manager", error);
+      toast.error("Failed to restore deleted manager");
+    } finally {
+      setIsRestoring(false);
+    }
   }
 
-  const handlePermanentDelete = () => {
-    // TODO: Implement permanent delete logic
-    console.log('Permanently delete manager with ID:', id);
+  const handlePermanentDelete = async () => {
+    try {
+      const confirm = window.confirm("Are you sure you want to delete this manager permanently? This action cannot be undone.");
+
+      if (confirm) {
+        setIsDeleting(true);
+
+        // Add a small delay for better UX
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        const deletedManager = await deleteManagerPer(id)
+        if (deletedManager) {
+          setIsRemoving(true);
+          toast.success("Manager deleted permanently");
+
+          // Wait for exit animation to complete before removing from DOM
+          setTimeout(() => {
+            onStateChange(id);
+          }, 500);
+        }
+      }
+    } catch (error) {
+      console.log("Error deleting manager", error);
+      toast.error("Failed to delete manager permanently");
+    } finally {
+      setIsDeleting(false);
+    }
   }
 
   return (
-    <div className="group relative bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-300 transition-all duration-300 mb-4 overflow-hidden">
+    <div className={`group relative bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-300 transition-all duration-500 mb-4 overflow-hidden transform ${isRemoving ? 'scale-95 opacity-0 -translate-y-4' : 'scale-100 opacity-100 translate-y-0'
+      } ${isDeleting ? 'scale-98 opacity-75' : ''} ${isRestoring ? 'scale-98 opacity-75' : ''}`}>
+
+      {/* Loading overlay for deletion */}
+      {isDeleting && (
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-20 flex items-center justify-center">
+          <div className="flex items-center space-x-3">
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-red-500 border-t-transparent"></div>
+            <span className="text-sm font-medium text-gray-700">Deleting permanently...</span>
+          </div>
+        </div>
+      )}
+
+      {/* Loading overlay for restore */}
+      {isRestoring && (
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-20 flex items-center justify-center">
+          <div className="flex items-center space-x-3">
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-500 border-t-transparent"></div>
+            <span className="text-sm font-medium text-gray-700">Restoring manager...</span>
+          </div>
+        </div>
+      )}
+
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 via-transparent to-purple-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-      
+
       <div className="relative grid grid-cols-12 gap-6 p-6 items-center">
         {/* Enhanced Image Section */}
         <div className="col-span-1">
           <div className="relative">
             <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 shadow-sm border-2 border-white ring-1 ring-gray-200 flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
               {image ? (
-                <img 
-                  src={`${API_URL}/uploads/managers/${image}`} 
-                  alt={name} 
+                <img
+                  src={`${API_URL}/uploads/managers/${image}`}
+                  alt={name}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     e.target.style.display = 'none';
@@ -64,7 +140,7 @@ function DeletedManager({id, name, mobile, dob, gender, image, deletedAt}) {
                   }}
                 />
               ) : null}
-              <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gradient-to-br from-blue-50 to-purple-50" style={{display: image ? 'none' : 'flex'}}>
+              <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gradient-to-br from-blue-50 to-purple-50" style={{ display: image ? 'none' : 'flex' }}>
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
@@ -152,23 +228,33 @@ function DeletedManager({id, name, mobile, dob, gender, image, deletedAt}) {
           {/* Restore Button */}
           <button
             onClick={handleRestore}
-            className="p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 transform hover:scale-110 focus:outline-none"
+            disabled={isDeleting || isRestoring}
+            className="p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 transform hover:scale-110 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             title="Restore manager"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
+            {isRestoring ? (
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-400 border-t-transparent"></div>
+            ) : (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            )}
           </button>
 
           {/* Permanent Delete Button */}
           <button
             onClick={handlePermanentDelete}
-            className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 transform hover:scale-110 focus:outline-none"
+            disabled={isDeleting || isRestoring}
+            className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 transform hover:scale-110 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             title="Delete permanently"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
+            {isDeleting ? (
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-red-400 border-t-transparent"></div>
+            ) : (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            )}
           </button>
         </div>
       </div>

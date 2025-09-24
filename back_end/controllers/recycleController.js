@@ -107,3 +107,35 @@ exports.restoreSite = async (req, res, next) => {
     res.status(500).json({ message: "Error restoring deleted site", error: err.message });
   }
 }
+
+exports.deleteManager = async (req, res, next) => {
+  try {
+    const {managerId} = req.params;
+
+    const deletedManager = await Manager.findByIdAndDelete(managerId)
+    res.json(deletedManager)
+    
+  } catch (err) {
+    res.status(500).json({ message: "Error deleting manager permanently", error: err.message });
+  }
+}
+
+exports.restoreManager = async (req, res, next) => {
+  try {
+    const {managerId} = req.params;
+
+    const restoredManager = await Manager.findByIdAndUpdate(
+      managerId,
+      {
+        isDeleted : false,
+        deletedAt : null
+      },
+      {new : true}
+
+    )
+    res.json(restoredManager)
+    
+  } catch (err) {
+    res.status(500).json({ message: "Error restoring deleted manager", error: err.message });
+  }
+}

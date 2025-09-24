@@ -19,6 +19,10 @@ function DeletedManagers() {
     fetchManagers()
   }, [])
 
+  const handleStateChange = (id) => {
+    setDeletedManagers(prev => prev.filter(manager => manager._id !== id))
+  }
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -61,6 +65,7 @@ function DeletedManagers() {
                   dob={manager.managerDob}
                   gender={manager.managerGender}
                   deletedAt={manager.deletedAt}
+                  onStateChange={handleStateChange}
                 />
               ))}
             </div>
