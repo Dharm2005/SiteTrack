@@ -21,4 +21,10 @@ recycleRouter.patch('/manager/restore/:managerId', isAdmin, recycleController.re
 recycleRouter.delete('/expense/delete/:expenseId',isManager,recycleController.deleteExpense)
 recycleRouter.patch('/expense/restore/:expenseId', isManager, recycleController.restoreExpense);
 
+recycleRouter.delete('/worker/delete/:workerId',isManager,recycleController.deleteWorker)
+recycleRouter.patch('/worker/restore/:workerId', isManager, recycleController.restoreWorker);
+
+recycleRouter.delete('/memo/delete/:memoId',isManager,recycleController.deleteMemo)
+recycleRouter.patch('/memo/restore/:memoId', isManager, recycleController.restoreMemo);
+
 module.exports = recycleRouter

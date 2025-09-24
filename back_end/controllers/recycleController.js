@@ -204,3 +204,77 @@ exports.restoreExpense = async (req, res, next) => {
     res.status(500).json({ message: "Error restoring deleted expense", error: err.message });
   }
 }
+
+exports.deleteWorker = async (req, res, next) => {
+  try {
+    const { workerId } = req.params;
+
+    const worker = await Worker.findById(workerId);
+    if (!worker) return res.status(404).json({ message: "Worker not found" });
+
+    if (worker && worker.workerImage) {
+      const Path = path.join(__dirname, "../uploads/workers", worker.workerImage)
+      if (fs.existsSync(Path)) {
+        fs.unlinkSync(Path)
+      }
+    }
+
+    const deletedWorker = await Worker.findByIdAndDelete(workerId)
+    res.json(deletedWorker)
+
+  } catch (err) {
+    res.status(500).json({ message: "Error deleting Worker permanently", error: err.message });
+  }
+}
+
+exports.restoreWorker = async (req, res, next) => {
+  try {
+    const { workerId } = req.params;
+
+    const restoredWorker = await Worker.findByIdAndUpdate(
+      workerId,
+      {
+        isDeleted: false,
+        deletedAt: null
+      },
+      { new: true }
+
+    )
+    res.json(restoredWorker)
+
+  } catch (err) {
+    res.status(500).json({ message: "Error restoring deleted worker", error: err.message });
+  }
+}
+
+exports.deleteMemo = async (req, res, next) => {
+  try {
+    const { memoId } = req.params;
+
+    const deletedMemo = await Memo.findByIdAndDelete(memoId)
+    res.json(deletedMemo)
+
+  } catch (err) {
+    res.status(500).json({ message: "Error deleting Memo permanently", error: err.message });
+  }
+}
+
+exports.restoreMemo = async (req, res, next) => {
+  try {
+    const { memoId } = req.params;
+
+    const restoredMemo = await Memo.findByIdAndUpdate(
+      memoId,
+      {
+        isDeleted: false,
+        deletedAt: null
+      },
+      { new: true }
+
+    )
+    res.json(memoId)
+
+  } catch (err) {
+    res.status(500).json({ message: "Error restoring deleted memo", error: err.message });
+  }
+}

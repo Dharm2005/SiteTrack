@@ -98,3 +98,39 @@ export const restoreExpense = async (expenseId) => {
     console.error("Error while restoring deleted manager", error)
   }
 }
+
+export const deleteWorkerPer = async (workerId) => {
+  try {
+    const response = await api.delete(`http://localhost:3000/recycle/worker/delete/${workerId}`)
+    return response.data;
+  } catch (error) {
+    console.error("Error while deleting worker permanently", error)
+  }
+}
+
+export const restoreWorker = async (workerId) => {
+  try {
+    const response = await api.patch(`http://localhost:3000/recycle/worker/restore/${workerId}`)
+    return response.data;
+  } catch (error) {
+    console.error("Error while restoring deleted worker", error)
+  }
+}
+
+export const deleteMemoPer = async (memoId) => {
+  try {
+    const response = await api.delete(`http://localhost:3000/recycle/memo/delete/${memoId}`)
+    return response.data;
+  } catch (error) {
+    console.error("Error while deleting memo permanently", error)
+  }
+}
+
+export const restoreMemo = async (memoId) => {
+  try {
+    const response = await api.patch(`http://localhost:3000/recycle/memo/restore/${memoId}`)
+    return response.data;
+  } catch (error) {
+    console.error("Error while restoring deleted memo", error)
+  }
+}

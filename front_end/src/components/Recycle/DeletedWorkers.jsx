@@ -4,7 +4,7 @@ import { getDeletedWorkers } from '../../services/recycleService'
 import { useState } from 'react'
 import DeletedWorker from './DeletedWorker'
 
-function DeletedWorkers({siteId}) {
+function DeletedWorkers({ siteId }) {
   const [deletedWorkers, setDeletedWorkers] = useState(null)
 
   useEffect(() => {
@@ -20,6 +20,10 @@ function DeletedWorkers({siteId}) {
     }
     fetchWorkers()
   }, [siteId])
+
+  const handleStateChange = (id) => {
+    setDeletedWorkers(prev => prev.filter(worker => worker._id !== id))
+  }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -44,7 +48,7 @@ function DeletedWorkers({siteId}) {
                 <span className="font-semibold text-gray-700 text-sm">Actions</span>
               </div>
             </div>
-            
+
             {/* Data rows */}
             <div>
               {deletedWorkers.map(worker => (
@@ -55,6 +59,7 @@ function DeletedWorkers({siteId}) {
                   image={worker.workerImage}
                   mobile={worker.workerMobile}
                   deletedAt={worker.deletedAt}
+                  onStateChange={handleStateChange}
                 />
               ))}
             </div>

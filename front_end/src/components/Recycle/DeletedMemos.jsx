@@ -19,20 +19,25 @@ function DeletedMemos({siteId}) {
     fetchMemos()
   }, [siteId])
 
+  const handleStateChange = (id) => {
+    setDeletedMemos(prev => prev.filter(memo => memo._id !== id))
+  }
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto">
         {deletedMemos && deletedMemos.length > 0 ? (
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            {/* Header with perfect alignment */}
+            {/* Header with perfect alignment - Updated for memo layout */}
             <div className="grid grid-cols-12 gap-4 p-4 bg-gradient-to-r from-gray-100 to-gray-50 border-b border-gray-200">
-              <div className="col-span-5 flex items-center pl-2">
-                <span className="font-semibold text-gray-700 text-sm">Memo Text</span>
+              <div className="col-span-5 flex items-center pl-3">
+                <span className="font-semibold text-gray-700 text-sm">Icon</span>
+                <span className="font-semibold text-gray-700 text-sm ml-12">Memo Text</span>
               </div>
               <div className="col-span-3 flex items-center pl-2">
                 <span className="font-semibold text-gray-700 text-sm">Memo Type</span>
               </div>
-              <div className="col-span-2 flex items-center pl-2">
+              <div className="col-span-2 flex items-center pl-12">
                 <span className="font-semibold text-gray-700 text-sm">Deleted At</span>
               </div>
               <div className="col-span-2 flex items-center justify-center">
@@ -49,6 +54,7 @@ function DeletedMemos({siteId}) {
                   text={memo.text}
                   type={memo.memoType}
                   deletedAt={memo.deletedAt}
+                  onStateChange={handleStateChange}
                 />
               ))}
             </div>
