@@ -18,5 +18,7 @@ recycleRouter.patch('/site/restore/:siteId', isAdmin, recycleController.restoreS
 recycleRouter.delete('/manager/delete/:managerId',isAdmin,recycleController.deleteManager)
 recycleRouter.patch('/manager/restore/:managerId', isAdmin, recycleController.restoreManager);
 
+recycleRouter.delete('/expense/delete/:expenseId',isManager,recycleController.deleteExpense)
+recycleRouter.patch('/expense/restore/:expenseId', isManager, recycleController.restoreExpense);
 
 module.exports = recycleRouter

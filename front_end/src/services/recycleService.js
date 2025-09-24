@@ -80,3 +80,21 @@ export const restoreManager = async (managerId) => {
     console.error("Error while restoring deleted manager", error)
   }
 }
+
+export const deleteExpensePer = async (expenseId) => {
+  try {
+    const response = await api.delete(`http://localhost:3000/recycle/expense/delete/${expenseId}`)
+    return response.data;
+  } catch (error) {
+    console.error("Error while deleting manager permanently", error)
+  }
+}
+
+export const restoreExpense = async (expenseId) => {
+  try {
+    const response = await api.patch(`http://localhost:3000/recycle/expense/restore/${expenseId}`)
+    return response.data;
+  } catch (error) {
+    console.error("Error while restoring deleted manager", error)
+  }
+}

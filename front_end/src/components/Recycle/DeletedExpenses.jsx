@@ -19,6 +19,10 @@ function DeletedExpenses({ siteId }) {
     fetchExpenses()
   }, [siteId])
 
+  const handleStateChange = (id) => {
+    setDeletedExpenses(prev => prev.filter(expense => expense._id !== id))
+  }
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -69,6 +73,7 @@ function DeletedExpenses({ siteId }) {
                   supplierName={expense.supplierName}
                   details={expense.details}
                   deletedAt={expense.deletedAt}
+                  onStateChange={handleStateChange}
                 />
               ))}
             </div>

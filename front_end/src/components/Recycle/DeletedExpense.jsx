@@ -3,27 +3,91 @@ import {
   Package, Calendar, IndianRupee, Truck, Hash,
   RotateCcw, Trash2, Tag, Clock, Image as ImageIcon, X, User, FileText, Gem
 } from 'lucide-react'
+import { deleteExpensePer, restoreExpense } from '../../services/recycleService';
+import { toast } from 'react-toastify';
 
 const API_URL = "http://localhost:3000";
 
-function DeletedExpense({ 
-  id, 
-  expenseType, 
-  stoneType, 
-  billImage, 
-  quantity, 
-  unit, 
-  totalCost, 
-  arrivalDate, 
-  vehicleNumber, 
-  supplierName, 
-  details, 
+function DeletedExpense({
+  id,
+  expenseType,
+  stoneType,
+  billImage,
+  quantity,
+  unit,
+  totalCost,
+  arrivalDate,
+  vehicleNumber,
+  supplierName,
+  details,
   deletedAt,
-  onRestore,
-  onPermanentDelete 
+  onStateChange
 }) {
-  
+
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+
+  const handleRestore = async () => {
+    try {
+      const confirm = window.confirm("Are you sure you want to restore this expense?");
+
+      if (confirm) {
+        setIsRestoring(true);
+
+        // Add a small delay for better UX
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        const restoredExpense = await restoreExpense(id)
+
+        if (restoredExpense) {
+          setIsRemoving(true);
+          toast.success("Expense restored successfully");
+
+          // Wait for exit animation to complete before removing from DOM
+          setTimeout(() => {
+            onStateChange(id);
+          }, 500);
+        }
+      }
+    } catch (error) {
+      console.log("Error restoring expense", error);
+      toast.error("Failed to restore deleted expense");
+    } finally {
+      setIsRestoring(false);
+    }
+  }
+
+  const handlePermanentDelete = async () => {
+    try {
+      const confirm = window.confirm("Are you sure you want to delete this expense permanently? This action cannot be undone.");
+
+      if (confirm) {
+        setIsDeleting(true);
+
+        // Add a small delay for better UX
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        const deletedExpense = await deleteExpensePer(id)
+
+        if (deletedExpense) {
+          setIsRemoving(true);
+          toast.success("Expense deleted permanently");
+
+          // Wait for exit animation to complete before removing from DOM
+          setTimeout(() => {
+            onStateChange(id);
+          }, 500);
+        }
+      }
+    } catch (error) {
+      console.log("Error deleting expense", error);
+      toast.error("Failed to delete expense permanently");
+    } finally {
+      setIsDeleting(false);
+    }
+  }
 
   // Format the date
   const formatDate = (dateString) => {
@@ -100,8 +164,29 @@ function DeletedExpense({
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 group relative">
-        
+      <div className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-500 border border-gray-100 group relative transform ${isRemoving ? 'scale-95 opacity-0 -translate-y-4' : 'scale-100 opacity-100 translate-y-0'
+        } ${isDeleting ? 'scale-98 opacity-75' : ''} ${isRestoring ? 'scale-98 opacity-75' : ''}`}>
+
+        {/* Loading overlay for deletion */}
+        {isDeleting && (
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-30 flex items-center justify-center rounded-lg">
+            <div className="flex items-center space-x-3">
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-red-500 border-t-transparent"></div>
+              <span className="text-sm font-medium text-gray-700">Deleting permanently...</span>
+            </div>
+          </div>
+        )}
+
+        {/* Loading overlay for restore */}
+        {isRestoring && (
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-30 flex items-center justify-center rounded-lg">
+            <div className="flex items-center space-x-3">
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-500 border-t-transparent"></div>
+              <span className="text-sm font-medium text-gray-700">Restoring expense...</span>
+            </div>
+          </div>
+        )}
+
         {/* Deleted Badge */}
         <div className="absolute -top-2 -right-2 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
           DELETED
@@ -157,7 +242,7 @@ function DeletedExpense({
 
             {/* Middle Section: Details Grid */}
             <div className="flex-1 grid grid-cols-5 gap-3 min-w-0">
-              
+
               {/* Stone Type */}
               <div className="text-center p-2 bg-amber-50 rounded-lg border border-amber-100">
                 <div className="flex items-center justify-center text-amber-600 mb-1">
@@ -211,7 +296,7 @@ function DeletedExpense({
                 <div className="text-xs font-semibold text-teal-700 cursor-help">
                   {truncateText(details, 12)}
                 </div>
-                
+
                 {/* Tooltip for full details */}
                 {details && details.length > 12 && (
                   <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-xl opacity-0 group-hover/details:opacity-100 transition-opacity duration-300 pointer-events-none z-50 max-w-sm whitespace-normal">
@@ -235,7 +320,7 @@ function DeletedExpense({
 
             {/* Right Section: Dates, Vehicle & Actions */}
             <div className="flex items-center space-x-3 flex-shrink-0">
-              
+
               {/* Dates */}
               <div className="space-y-1">
                 <div className="p-1.5 bg-blue-50 rounded text-center min-w-[80px]">
@@ -280,19 +365,29 @@ function DeletedExpense({
                 {/* Action Buttons */}
                 <div className="flex items-center justify-center space-x-1">
                   <button
-                    onClick={onRestore}
-                    className="p-1.5 rounded-md transition-all duration-200 border text-green-600 bg-green-50 hover:bg-green-100 hover:scale-105 border-green-200"
+                    onClick={handleRestore}
+                    disabled={isDeleting || isRestoring}
+                    className="p-1.5 rounded-md transition-all duration-200 border text-green-600 bg-green-50 hover:bg-green-100 hover:scale-105 border-green-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                     title="Restore expense"
                   >
-                    <RotateCcw className="w-3.5 h-3.5" />
+                    {isRestoring ? (
+                      <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-green-400 border-t-transparent"></div>
+                    ) : (
+                      <RotateCcw className="w-3.5 h-3.5" />
+                    )}
                   </button>
 
                   <button
-                    onClick={onPermanentDelete}
-                    className="p-1.5 rounded-md transition-all duration-200 border text-red-600 bg-red-50 hover:bg-red-100 hover:scale-105 border-red-200"
+                    onClick={handlePermanentDelete}
+                    disabled={isDeleting || isRestoring}
+                    className="p-1.5 rounded-md transition-all duration-200 border text-red-600 bg-red-50 hover:bg-red-100 hover:scale-105 border-red-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                     title="Delete permanently"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    {isDeleting ? (
+                      <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-red-400 border-t-transparent"></div>
+                    ) : (
+                      <Trash2 className="w-3.5 h-3.5" />
+                    )}
                   </button>
                 </div>
               </div>
