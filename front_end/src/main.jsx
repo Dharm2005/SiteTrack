@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import { Home, AddSite, NotFound, SiteDetail, AddManager, AllManager, Expenses, Workers, EditSite, EditManager, EditWorker, EditExpense, Login, Signup, RecycleData,} from "./components"
+import { Home, AddSite, NotFound, SiteDetail, AddManager, AllManager, Expenses, Workers, EditSite, EditManager, EditWorker, EditExpense, Login, Signup, RecycleData, ChangePass,} from "./components"
 import App from './App.jsx'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import { store } from './app/store.js'
@@ -16,6 +16,12 @@ const router = createBrowserRouter(
 
       <Route path='login' element={<Login />} />
       <Route path='signup' element={<Signup />} />
+
+      <Route path='auth/change-password' element={
+        <ProtectedRoute roles={['admin', 'manager']}>
+          < ChangePass />
+        </ProtectedRoute>
+      } />
 
       <Route path='' element={
         <ProtectedRoute roles={['admin', 'manager']}>

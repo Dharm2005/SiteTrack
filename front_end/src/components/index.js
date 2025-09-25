@@ -50,6 +50,7 @@ export {default as DeletedExpense} from "./Recycle/DeletedExpense"
 
 export {default as Login} from "./Auth/Login"
 export {default as Signup} from "./Auth/Signup"
+export {default as ChangePass} from "./Auth/ChangePass"
 
 export {default as NotFound} from "./Errors/NotFound"
 export {default as ScrollToTop} from "./Layout/ScrollToTop"

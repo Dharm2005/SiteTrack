@@ -35,6 +35,7 @@ function isManager(req, res, next) {
 }
 
 function isAdminOrManager(req, res, next) {
+  
   if (req.user.role === "admin" || req.user.role === "manager") {
     next();
   } else {

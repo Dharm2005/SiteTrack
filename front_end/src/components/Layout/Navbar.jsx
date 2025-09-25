@@ -40,10 +40,9 @@ export default function NavBar() {
                   <NavLink
                     to="/"
                     className={({ isActive }) =>
-                      `px-3 py-2 rounded-lg transition-all duration-200 ${
-                        isActive
-                          ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm'
-                          : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                      `px-3 py-2 rounded-lg transition-all duration-200 ${isActive
+                        ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm'
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                       }`
                     }
                   >
@@ -56,10 +55,9 @@ export default function NavBar() {
                       <NavLink
                         to="/all-manager"
                         className={({ isActive }) =>
-                          `px-3 py-2 rounded-lg transition-all duration-200 ${
-                            isActive
-                              ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm'
-                              : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                          `px-3 py-2 rounded-lg transition-all duration-200 ${isActive
+                            ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm'
+                            : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                           }`
                         }
                       >
@@ -70,10 +68,9 @@ export default function NavBar() {
                       <NavLink
                         to="/add-site"
                         className={({ isActive }) =>
-                          `px-3 py-2 rounded-lg transition-all duration-200 ${
-                            isActive
-                              ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm'
-                              : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                          `px-3 py-2 rounded-lg transition-all duration-200 ${isActive
+                            ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm'
+                            : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                           }`
                         }
                       >
@@ -84,10 +81,9 @@ export default function NavBar() {
                       <NavLink
                         to="/add-manager"
                         className={({ isActive }) =>
-                          `px-3 py-2 rounded-lg transition-all duration-200 ${
-                            isActive
-                              ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm'
-                              : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                          `px-3 py-2 rounded-lg transition-all duration-200 ${isActive
+                            ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm'
+                            : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                           }`
                         }
                       >
@@ -98,10 +94,9 @@ export default function NavBar() {
                       <NavLink
                         to="/recycle-bin"
                         className={({ isActive }) =>
-                          `px-3 py-2 rounded-lg transition-all duration-200 ${
-                            isActive
-                              ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm'
-                              : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                          `px-3 py-2 rounded-lg transition-all duration-200 ${isActive
+                            ? 'text-blue-600 bg-blue-50 font-semibold shadow-sm'
+                            : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                           }`
                         }
                       >
@@ -119,11 +114,10 @@ export default function NavBar() {
                   className="flex items-center space-x-3 bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-2 rounded-lg shadow-sm border border-gray-200 hover:shadow-md hover:from-gray-100 hover:to-gray-150 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
                   {/* Avatar with Role-based Icon */}
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white shadow-md ${
-                    user?.role === 'admin' 
-                      ? 'bg-gradient-to-br from-purple-500 to-purple-700' 
-                      : 'bg-gradient-to-br from-green-500 to-green-700'
-                  }`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white shadow-md ${user?.role === 'admin'
+                    ? 'bg-gradient-to-br from-purple-500 to-purple-700'
+                    : 'bg-gradient-to-br from-green-500 to-green-700'
+                    }`}>
                     {user?.role === 'admin' ? (
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd" />
@@ -135,24 +129,22 @@ export default function NavBar() {
                       </svg>
                     )}
                   </div>
-                  
+
                   {/* User Details */}
                   <div className="flex flex-col items-start">
                     <span className="text-sm font-semibold text-gray-800">{user?.username || 'User'}</span>
-                    <span className={`text-xs font-medium capitalize ${
-                      user?.role === 'admin' ? 'text-orange-600' : 'text-indigo-600'
-                    }`}>
+                    <span className={`text-xs font-medium capitalize ${user?.role === 'admin' ? 'text-orange-600' : 'text-indigo-600'
+                      }`}>
                       {user?.role || 'User'}
                     </span>
                   </div>
-                  
+
                   {/* Dropdown Arrow */}
-                  <svg 
-                    className={`w-4 h-4 text-gray-600 transition-transform duration-200 ${
-                      isProfileDropdownOpen ? 'rotate-180' : ''
-                    }`} 
-                    fill="none" 
-                    stroke="currentColor" 
+                  <svg
+                    className={`w-4 h-4 text-gray-600 transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''
+                      }`}
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -161,47 +153,47 @@ export default function NavBar() {
 
                 {/* Dropdown Menu */}
                 {isProfileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-10">
-                    <div className="px-4 py-3 border-b border-gray-100">
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-200 py-3 z-10">
+
+                    {/* Enhanced User Info Section */}
+                    <div className="px-4 py-4 border-b border-gray-100">
                       <div className="flex items-center space-x-3">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-md relative overflow-hidden ${
-                          user?.role === 'admin' 
-                            ? 'bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700' 
-                            : 'bg-gradient-to-br from-emerald-100 to-emerald-200 text-emerald-700'
-                        }`}>
-                          {/* User Initial as main display */}
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg relative overflow-hidden ${user?.role === 'admin'
+                            ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white'
+                            : 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white'
+                          }`}>
+                          {/* User Initial */}
                           <span className="text-xl font-bold">
                             {user?.username?.charAt(0)?.toUpperCase() || 'U'}
                           </span>
-                          
+
                           {/* Small role indicator badge */}
-                          <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-white shadow-md ${
-                            user?.role === 'admin' 
-                              ? 'bg-blue-600 border-2 border-white' 
-                              : 'bg-emerald-600 border-2 border-white'
-                          }`}>
+                          <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center text-white shadow-md border-2 border-white ${user?.role === 'admin' ? 'bg-purple-500' : 'bg-green-500'
+                            }`}>
                             {user?.role === 'admin' ? (
-                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                               </svg>
                             ) : (
-                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                               </svg>
                             )}
                           </div>
                         </div>
-                        <div className="flex flex-col">
-                          <p className="text-sm font-semibold text-gray-800">{user?.username || 'User'}</p>
-                          <div className="flex items-center space-x-1">
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                              user?.role === 'admin' 
-                                ? 'bg-purple-100 text-purple-800' 
-                                : 'bg-green-100 text-green-800'
-                            }`}>
+
+                        <div className="flex flex-col min-w-0 flex-1">
+                          <div className="flex items-center space-x-2">
+                            <p className="text-base font-bold text-gray-900 truncate">
+                              {user?.username || 'User'}
+                            </p>
+                            <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${user?.role === 'admin'
+                                ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                                : 'bg-green-100 text-green-700 border border-green-200'
+                              }`}>
                               {user?.role === 'admin' ? (
                                 <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                 </svg>
                               ) : (
                                 <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -209,21 +201,50 @@ export default function NavBar() {
                                 </svg>
                               )}
                               {user?.role?.charAt(0)?.toUpperCase() + user?.role?.slice(1) || 'User'}
-                            </span>
+                            </div>
                           </div>
+                          <p className="text-sm text-gray-500 mt-0.5">
+                            Manage your account settings
+                          </p>
                         </div>
                       </div>
                     </div>
-                    
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200 flex items-center space-x-3"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                      </svg>
-                      <span className="font-medium">Logout</span>
-                    </button>
+
+                    {/* Actions Section */}
+                    <div className="py-2">
+                      {/* Change Password */}
+                      <Link
+                        to="auth/change-password"
+                        onClick={() => setIsProfileDropdownOpen(false)}
+                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 transition-colors duration-200 flex items-center space-x-3 group"
+                      >
+                        <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                          <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m0 0a2 2 0 012 2 2 2 0 01-2 2m-2-4h.01M9 5a2 2 0 00-2 2v8a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2H9z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-900">Change Password</span>
+                          <p className="text-xs text-gray-500">Update your security</p>
+                        </div>
+                      </Link>
+
+                      {/* Logout */}
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200 flex items-center space-x-3 group"
+                      >
+                        <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center group-hover:bg-red-200 transition-colors">
+                          <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                          </svg>
+                        </div>
+                        <div>
+                          <span className="font-medium">Sign Out</span>
+                          <p className="text-xs text-red-400">End your session</p>
+                        </div>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -246,15 +267,14 @@ export default function NavBar() {
                 Construction Sites
               </span>
             </Link>
-            
+
             <div className="flex items-center space-x-4">
               <NavLink
                 to="/signup"
                 className={({ isActive }) =>
-                  `px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                    isActive
-                      ? 'text-blue-600 bg-blue-50 shadow-sm'
-                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                  `px-4 py-2 rounded-lg font-medium transition-all duration-200 ${isActive
+                    ? 'text-blue-600 bg-blue-50 shadow-sm'
+                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                   }`
                 }
               >
@@ -263,10 +283,9 @@ export default function NavBar() {
               <NavLink
                 to="/login"
                 className={({ isActive }) =>
-                  `px-4 py-2 rounded-lg font-medium text-white transition-all duration-200 transform hover:scale-105 ${
-                    isActive
-                      ? 'bg-blue-700 shadow-lg'
-                      : 'bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg'
+                  `px-4 py-2 rounded-lg font-medium text-white transition-all duration-200 transform hover:scale-105 ${isActive
+                    ? 'bg-blue-700 shadow-lg'
+                    : 'bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg'
                   }`
                 }
               >
