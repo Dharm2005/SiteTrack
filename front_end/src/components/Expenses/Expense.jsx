@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import {
-  Package, Calendar,IndianRupee, Truck, Hash, Scale,
+  Package, Calendar, IndianRupee, Truck, Hash, Scale,
   Edit3, Trash2, Tag, Clock, Image as ImageIcon, X, User, FileText, Gem, Loader2
 } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,9 +10,9 @@ import { Link } from 'react-router-dom';
 
 const API_URL = "http://localhost:3000";
 
-function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalCost, arrivalDate, vehicleNumber, supplierName, details, createdAt, searchTerm }) {
+function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalCost, arrivalDate, vehicleNumber, supplierName, details, createdAt, searchTerm, isSiteCompleted }) {
 
-  const {user} = useSelector(state => state.auth);
+  const { user } = useSelector(state => state.auth);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
@@ -121,15 +121,15 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
   const handleDelete = async () => {
     const confirmed = window.confirm("Are you really want to delete this expense?");
 
-    if(confirmed){
+    if (confirmed) {
       setIsDeleting(true);
       setIsAnimatingOut(true);
-      
+
       try {
         // Add a small delay to show the animation
         await new Promise(resolve => setTimeout(resolve, 300));
         await deleteExpenseFromDB(id);
-        
+
         // Wait for fade animation to complete before removing from store
         setTimeout(() => {
           dispatch(deleteExpense(id));
@@ -153,39 +153,38 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
   };
 
   // Truncate text for better display
-  
+
 
   // Create highlighted truncated text
   const getHighlightedTruncatedText = (text, maxLength, searchTerm) => {
     if (!text) return 'N/A';
-    
+
     // If there's a search term and it matches, don't truncate to show the match
     if (searchTerm && text.toLowerCase().includes(searchTerm.toLowerCase())) {
       return highlightText(text, searchTerm);
     }
-    
+
     const truncated = text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
     return highlightText(truncated, searchTerm);
   };
 
   return (
     <>
-      <div className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-500 border border-gray-100 group relative overflow-visible ${
-        isAnimatingOut 
-          ? 'opacity-0 scale-95 transform translate-y-4' 
-          : 'opacity-100 scale-100 transform translate-y-0'
-      } ${isDeleting ? 'pointer-events-none' : ''}`}
-           style={{ zIndex: isDeleting ? '10' : 'var(--hover-z-index, 1)' }}
-           onMouseEnter={(e) => {
-             if (!isDeleting) {
-               e.currentTarget.style.setProperty('--hover-z-index', '10');
-             }
-           }}
-           onMouseLeave={(e) => {
-             if (!isDeleting) {
-               e.currentTarget.style.setProperty('--hover-z-index', '1');
-             }
-           }}>
+      <div className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-500 border border-gray-100 group relative overflow-visible ${isAnimatingOut
+        ? 'opacity-0 scale-95 transform translate-y-4'
+        : 'opacity-100 scale-100 transform translate-y-0'
+        } ${isDeleting ? 'pointer-events-none' : ''}`}
+        style={{ zIndex: isDeleting ? '10' : 'var(--hover-z-index, 1)' }}
+        onMouseEnter={(e) => {
+          if (!isDeleting) {
+            e.currentTarget.style.setProperty('--hover-z-index', '10');
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isDeleting) {
+            e.currentTarget.style.setProperty('--hover-z-index', '1');
+          }
+        }}>
         <div className="px-4 py-3">
           <div className="flex items-center justify-between gap-4">
 
@@ -238,7 +237,7 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
 
             {/* Middle Section: Details Grid */}
             <div className="flex-1 grid grid-cols-5 gap-3 min-w-0">
-              
+
               {/* Stone Type */}
               <div className="text-center p-2 bg-amber-50 rounded-lg border border-amber-100">
                 <div className="flex items-center justify-center text-amber-600 mb-1">
@@ -292,7 +291,7 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
                 <div className="text-xs font-semibold text-teal-700 cursor-help">
                   {getHighlightedTruncatedText(details, 12, searchTerm)}
                 </div>
-                
+
                 {/* Tooltip for full details */}
                 {details && details.length > 12 && !isDeleting && (
                   <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-xl opacity-0 group-hover/details:opacity-100 transition-opacity duration-300 pointer-events-none z-50 max-w-sm whitespace-normal">
@@ -316,7 +315,7 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
 
             {/* Right Section: Dates, Vehicle & Actions */}
             <div className="flex items-center space-x-3 flex-shrink-0">
-              
+
               {/* Dates */}
               <div className="space-y-1">
                 <div className="p-1.5 bg-blue-50 rounded text-center min-w-[80px]">
@@ -357,41 +356,42 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
                     </div>
                   </div>
                 )}
-
-                {user.role === 'manager' ? (
+                {!isSiteCompleted ? (
                   <>
-                  {/* Action Buttons */}
-                <div className="flex items-center justify-center space-x-1">
-                  <Link
-                    to={`/edit-expense/${id}`}
-                    disabled={isDeleting}
-                    className={`p-1.5 rounded-md transition-all duration-200 border ${
-                      isDeleting 
-                        ? 'opacity-50 cursor-not-allowed text-blue-400 bg-blue-25 border-blue-100' 
-                        : 'text-blue-600 bg-blue-50 hover:bg-blue-100 hover:scale-105 border-blue-200'
-                    }`}
-                    title="Edit expense"
-                  >
-                    <Edit3 className="w-3.5 h-3.5" />
-                  </Link>
+                    {user.role === 'manager' ? (
+                      <>
+                        {/* Action Buttons */}
+                        <div className="flex items-center justify-center space-x-1">
+                          <Link
+                            to={`/edit-expense/${id}`}
+                            disabled={isDeleting}
+                            className={`p-1.5 rounded-md transition-all duration-200 border ${isDeleting
+                              ? 'opacity-50 cursor-not-allowed text-blue-400 bg-blue-25 border-blue-100'
+                              : 'text-blue-600 bg-blue-50 hover:bg-blue-100 hover:scale-105 border-blue-200'
+                              }`}
+                            title="Edit expense"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </Link>
 
-                  <button
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                    className={`p-1.5 rounded-md transition-all duration-200 border flex items-center justify-center ${
-                      isDeleting 
-                        ? 'bg-red-100 border-red-200 cursor-not-allowed' 
-                        : 'text-red-600 bg-red-50 hover:bg-red-100 hover:scale-105 border-red-200'
-                    }`}
-                    title="Delete expense"
-                  >
-                    {isDeleting ? (
-                      <Loader2 className="w-3.5 h-3.5 text-red-600 animate-spin" />
-                    ) : (
-                      <Trash2 className="w-3.5 h-3.5" />
-                    )}
-                  </button>
-                </div>
+                          <button
+                            onClick={handleDelete}
+                            disabled={isDeleting}
+                            className={`p-1.5 rounded-md transition-all duration-200 border flex items-center justify-center ${isDeleting
+                              ? 'bg-red-100 border-red-200 cursor-not-allowed'
+                              : 'text-red-600 bg-red-50 hover:bg-red-100 hover:scale-105 border-red-200'
+                              }`}
+                            title="Delete expense"
+                          >
+                            {isDeleting ? (
+                              <Loader2 className="w-3.5 h-3.5 text-red-600 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                        </div>
+                      </>
+                    ) : (<></>)}
                   </>
                 ) : (<></>)}
               </div>

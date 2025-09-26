@@ -9,7 +9,8 @@ import { useDispatch } from 'react-redux'
 import { getExpensesBySite, getFilteredExpenses } from '../../services/expenseService'
 import { setExpenses } from '../../features/expenseSlice'
 import { useEffect } from 'react'
-import {Loader} from '../index'
+import { Loader } from '../index'
+import { getSite } from '../../services/siteService'
 
 function Expenses() {
   const { user } = useSelector(state => state.auth);
@@ -24,15 +25,35 @@ function Expenses() {
   const [to, setTo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [refresh, setRefresh] = useState(0);
-
+  const [site, setSite] = useState();
 
   const allExpenses = useSelector((state) => state.expense.expenses);
 
   const dispatch = useDispatch()
 
+  const getCurrSite = useSelector(
+    (state) => state.site.sites.find(s => s._id === id)
+  );
   useEffect(() => {
+    if (getCurrSite) {
+      setSite(getCurrSite);
+    }
+  }, [getCurrSite]);
+
+
+  useEffect(() => {
+    if (!site) fetchSite();
     fetchExpenses();
   }, [id, from, to, dispatch]);
+
+  const fetchSite = async () => {
+    try {
+      const site = await getSite(id)
+      setSite(site);
+    } catch (error) {
+      console.error("Error fetching site", error);
+    }
+  }
 
   const fetchExpenses = async () => {
     try {
@@ -44,8 +65,6 @@ function Expenses() {
       else {
         expenseData = await getExpensesBySite(id)
       }
-      console.log(expenseData);
-
       dispatch(setExpenses(expenseData));
     } catch (error) {
       console.error("Error fetching expense:", error);
@@ -127,21 +146,25 @@ function Expenses() {
             </div>
 
             {/* Right section */}
-            {user.role === 'manager' ? (
+            {!site?.isCompleted ? (
               <>
-                <div className="flex items-center space-x-3">
-                  {!showAddForm && (
-                    <button
-                      onClick={handleShowForm}
-                      className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-all"
-                    >
-                      <Plus className="w-4 h-4" />
-                      <span className="hidden sm:inline">Add Expense</span>
-                    </button>
-                  )}
-                </div>
+                {user.role === 'manager' ? (
+                  <>
+                    <div className="flex items-center space-x-3">
+                      {!showAddForm && (
+                        <button
+                          onClick={handleShowForm}
+                          className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-all"
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span className="hidden sm:inline">Add Expense</span>
+                        </button>
+                      )}
+                    </div>
+                  </>
+                ) : <></>}
               </>
-            ) : <></>}
+            ) : (<></>)}
           </div>
         </div>
       </div>
@@ -314,7 +337,7 @@ function Expenses() {
         {/* Expenses List */}
         <div className="bg-white rounded-lg shadow-sm border">
           {isLoading ? (
-              <Loader message={"Loading expenses..."} />
+            <Loader message={"Loading expenses..."} />
           ) : filteredExpenses && filteredExpenses.length > 0 ? (
             <div className="divide-y divide-gray-100">
               {filteredExpenses.map(expense => (
@@ -334,6 +357,7 @@ function Expenses() {
                     details={expense.details}
                     createdAt={expense.createdAt}
                     searchTerm={searchTerm}
+                    isSiteCompleted={site?.isCompleted}
                   />
                 </div>
               ))}
@@ -355,18 +379,22 @@ function Expenses() {
                     : ''
                 }
               </p>
-              {user.role === 'manager' ? (
-                <>
-                  {!showAddForm && (!searchTerm && filterType === 'all' && !from && !to) && (
-                    <button
-                      onClick={handleShowForm}
-                      className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-all"
-                    >
-                      <Plus className="w-5 h-5" />
-                      <span>Add First Expense</span>
-                    </button>
-                  )}
-                </>
+              {!site?.isCompleted ? (
+              <>
+                {user.role === 'manager' ? (
+                  <>
+                    {!showAddForm && (!searchTerm && filterType === 'all' && !from && !to) && (
+                      <button
+                        onClick={handleShowForm}
+                        className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-all"
+                      >
+                        <Plus className="w-5 h-5" />
+                        <span>Add First Expense</span>
+                      </button>
+                    )}
+                  </>
+                ) : (<></>)}
+              </>
               ) : (<></>)}
             </div>
           )}

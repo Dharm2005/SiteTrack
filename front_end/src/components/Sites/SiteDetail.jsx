@@ -126,6 +126,8 @@ function SiteDetail() {
   const handleCloseReportForm = () => {
     setShowReportForm(false);
   };
+  console.log(site);
+  
 
   if (loading) {
     return (
@@ -157,39 +159,57 @@ function SiteDetail() {
       <div className="min-h-screen bg-gray-50">
         {/* Back Button */}
         <div className="p-6 flex items-center justify-between">
-    {/* Back Button */}
-    <button
-      onClick={handleBack}
-      className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors group"
-    >
-      <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-      <span className="font-medium">Back</span>
-    </button>
+          {/* Back Button */}
+          <button
+            onClick={handleBack}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors group"
+          >
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+            <span className="font-medium">Back</span>
+          </button>
 
-    {/* Recycle Bin Button - Only show for managers */}
-    {user.role === 'manager' && (
-      <Link
-        to={`/site/${id}/recycle-bin`}
-        className="flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-slate-100 to-gray-100 hover:from-slate-200 hover:to-gray-200 text-slate-700 hover:text-slate-800 rounded-xl border border-slate-200 hover:border-slate-300 shadow-sm hover:shadow-md transition-all duration-300 ease-in-out transform hover:scale-[1.02] group"
-      >
-        {/* Recycle Icon */}
-        <svg 
-          className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" 
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24"
-        >
-          <path 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            strokeWidth={2} 
-            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" 
-          />
-        </svg>
-        <span className="text-sm font-medium">Recycle Bin</span>
-      </Link>
-    )}
-  </div>
+          {/* Right side container for Recycle Button and Status */}
+          <div className="flex items-center space-x-4">
+            {/* Recycle Bin Button - Only show for managers */}
+            {user.role === 'manager' && (
+              <Link
+                to={`/site/${id}/recycle-bin`}
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-700 rounded-lg border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow transition-all duration-200 ease-in-out group"
+              >
+                {/* Recycle Icon */}
+                <svg
+                  className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                <span className="text-sm font-medium">Recycle Bin</span>
+              </Link>
+            )}
+
+            {/* Site Status */}
+            <div className="flex items-center">
+              {site.isCompleted ? (
+                <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-100 border border-green-300 rounded-full">
+                  <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium text-green-800">Completed</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2 px-3 py-1.5 bg-blue-100 border border-blue-300 rounded-full">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium text-blue-800">Active</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
 
 
         {/* Main Content */}
@@ -396,7 +416,7 @@ function SiteDetail() {
               </div>
             </div>
             <div className="p-6">
-              <Memos siteId={id} />
+              <Memos siteId={id} isCompleted={site.isCompleted} />
             </div>
           </div>
 

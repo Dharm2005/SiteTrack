@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setMemos } from '../../features/memoSlice';
 import { Plus, StickyNote, Filter, AlertCircle, Calendar, Edit3, Trash2 } from 'lucide-react'
 
-function Memos({ siteId }) {
+function Memos({ siteId, isCompleted }) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [filterType, setFilterType] = useState('all'); // all, note, reminder
   const [sortBy, setSortBy] = useState('newest'); // newest, oldest, dueDate
@@ -131,20 +131,24 @@ function Memos({ siteId }) {
             </p>
           </div>
         </div>
-
-        {user.role === 'manager' ? (
+        {!isCompleted && (
           <>
-            {!showAddForm && (
-              <button
-                onClick={handleShowForm}
-                className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
-              >
-                <Plus className="w-5 h-5" />
-                <span>Add Memo</span>
-              </button>
-            )}
+            {user.role === 'manager' ? (
+              <>
+                {!showAddForm && (
+                  <button
+                    onClick={handleShowForm}
+                    className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                  >
+                    <Plus className="w-5 h-5" />
+                    <span>Add Memo</span>
+                  </button>
+                )}
+              </>
+            ) : (<></>)
+            }
           </>
-        ) : (<></>)}
+        )}
 
       </div>
 
@@ -257,6 +261,7 @@ function Memos({ siteId }) {
               text={memo.text}
               dueDate={memo.dueDate}
               createdAt={memo.createdAt}
+              isSiteCompleted={isCompleted}
             />
           ))}
         </div>
@@ -289,15 +294,20 @@ function Memos({ siteId }) {
               <p className="text-gray-500 text-center max-w-md mb-6">
                 Keep track of important information and set reminders for this site. Add your first memo to get started.
               </p>
-              {!showAddForm && (
-                <button
-                  onClick={handleShowForm}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
-                >
-                  <Plus className="w-5 h-5" />
-                  <span>Add Memo</span>
-                </button>
-              )}
+              {!isCompleted ? (
+                <>
+                  {!showAddForm && (
+                    <button
+                      onClick={handleShowForm}
+                      className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                    >
+                      <Plus className="w-5 h-5" />
+                      <span>Add Memo</span>
+                    </button>
+                  )}
+                </>
+              ) : (<></>)}
+
             </>
           ) : (<></>)}
         </div>

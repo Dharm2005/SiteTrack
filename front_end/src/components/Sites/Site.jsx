@@ -143,7 +143,7 @@ function Site({ id, name, location, image, managerId, createdAt, isCompleted }) 
               {/* Location */}
               <div>
                 <div className="flex items-center space-x-2 mb-1">
-                  <MapPin className="w-4 h-4 text-blue-600" />
+                  <MapPin className="w-4 h-4 text-cyan-600" />
                   <span className="text-sm font-medium text-gray-500">Location</span>
                 </div>
                 <p className="text-gray-900 font-medium truncate">
@@ -154,7 +154,7 @@ function Site({ id, name, location, image, managerId, createdAt, isCompleted }) 
               {/* Manager Name */}
               <div>
                 <div className="flex items-center space-x-2 mb-1">
-                  <User className="w-4 h-4 text-green-600" />
+                  <User className="w-4 h-4 text-purple-600" />
                   <span className="text-sm font-medium text-gray-500">Manager</span>
                 </div>
                 <p className="text-gray-900 font-medium truncate">
@@ -182,7 +182,7 @@ function Site({ id, name, location, image, managerId, createdAt, isCompleted }) 
                   {isCompleted ? (
                     <CheckCircle className="w-4 h-4 text-emerald-600" />
                   ) : (
-                    <Clock className="w-4 h-4 text-amber-600" />
+                    <Clock className="w-4 h-4 text-blue-600" />
                   )}
                   <span className="text-sm font-medium text-gray-500">Status</span>
                 </div>
@@ -193,8 +193,8 @@ function Site({ id, name, location, image, managerId, createdAt, isCompleted }) 
                       Completed
                     </span>
                   ) : (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
-                      <div className="w-2 h-2 bg-amber-500 rounded-full mr-2 animate-pulse"></div>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></div>
                       Active
                     </span>
                   )}

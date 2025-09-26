@@ -5,7 +5,7 @@ import { updateEarn } from '../../features/workerEarnSlice';
 import { FileText, Clock, IndianRupee, Edit, Save, X, CalendarCheck } from "lucide-react";
 import { toast } from 'react-toastify';
 
-function Earn({ id, amount, date, note, createdAt, isSettled }) {
+function Earn({ id, amount, date, note, createdAt, isSettled, isSiteCompleted }) {
   const dispatch = useDispatch();
   const { user } = useSelector(state => state.auth)
   const [isEditing, setIsEditing] = useState(false);
@@ -140,7 +140,7 @@ function Earn({ id, amount, date, note, createdAt, isSettled }) {
         </div>
         {user.role === 'manager' ? (
           <>
-            {!isSettled ? (
+            {!isSettled && !isSiteCompleted ? (
               <div className="flex items-center space-x-1 flex-shrink-0">
                 {isEditing ? (
                   <>

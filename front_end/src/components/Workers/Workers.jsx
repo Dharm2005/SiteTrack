@@ -6,10 +6,12 @@ import { Plus, Users } from 'lucide-react'
 import { getWorkersBySite } from '../../services/workerService'
 import { setWorkers } from '../../features/workerSlice'
 import { useParams } from 'react-router-dom'
-import {Loader} from '../index'
+import { Loader } from '../index'
+import { getSite } from '../../services/siteService'
 
 function Workers() {
-  const {user} = useSelector(state => state.auth)
+  const { user } = useSelector(state => state.auth)
+  const [site, setSite] = useState();
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedWorkerId, setSelectedWorkerId] = useState(null);
   const [selectedWorkerName, setSelectedWorkerName] = useState(null);
@@ -17,25 +19,47 @@ function Workers() {
   const allWorkers = useSelector((state) => state.worker.workers);
   const dispatch = useDispatch()
   const { id } = useParams()
-  
- useEffect(() => {
-  const fetchWorkers = async () => {
-    if (allWorkers && allWorkers.length > 0) {
-      setLoading(false);
-      return; // Skip fetch
+
+  const getCurrSite = useSelector(
+    (state) => state.site.sites.find(s => s._id === id)
+  );
+
+  useEffect(() => {
+    if (getCurrSite) {
+      setSite(getCurrSite);
     }
-    try {
-      setLoading(true);
-      const workerData = await getWorkersBySite(id);
-      dispatch(setWorkers(workerData));
-    } catch (error) {
-      console.error("Error fetching workers:", error);
-    } finally {
-      setLoading(false);
+  }, [getCurrSite]);
+
+  useEffect(() => {
+    const fetchSite = async () => {
+      try {
+        const site = await getSite(id)
+        setSite(site);
+      } catch (error) {
+        console.error("Error fetching site", error);
+      }
     }
-  };
-  fetchWorkers();
-}, [id, dispatch]); // <-- no allWorkers here
+
+    const fetchWorkers = async () => {
+      if (allWorkers && allWorkers.length > 0) {
+        setLoading(false);
+        return; // Skip fetch
+      }
+      try {
+        setLoading(true);
+        const workerData = await getWorkersBySite(id);
+        dispatch(setWorkers(workerData));
+      } catch (error) {
+        console.error("Error fetching workers:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (!site) {
+      fetchSite()
+    }
+    fetchWorkers();
+  }, [id, dispatch]); // <-- no allWorkers here
 
 
   const handleCloseForm = () => {
@@ -83,18 +107,22 @@ function Workers() {
               </p>
             </div>
           </div>
-          
-          {user.role === 'manager' ? (<>
-            {!showAddForm && (
-            <button
-              onClick={handleShowForm}
-              className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-md text-sm"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add Worker</span>
-            </button>
-          )}
-          </>) : (<></>)}
+          {!site?.isCompleted ? (
+            <>
+              {user.role === 'manager' ? (<>
+                {!showAddForm && (
+                  <button
+                    onClick={handleShowForm}
+                    className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-md text-sm"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add Worker</span>
+                  </button>
+                )}
+              </>) : (<></>)}
+            </>
+          ) : (<></>)}
+
         </div>
 
         {/* Add Worker Form - Only show when needed */}
@@ -116,8 +144,8 @@ function Workers() {
             <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 px-1 py-1">
               <div className="flex space-x-4 min-w-max">
                 {allWorkers.map(worker => (
-                  <div 
-                    key={worker._id} 
+                  <div
+                    key={worker._id}
                     className={`flex-shrink-0 w-32 cursor-pointer transition-all duration-200 transform hover:scale-105 ${selectedWorkerId === worker._id ? 'ring-2 ring-blue-500 ring-offset-1 rounded-lg' : ''}`}
                     onClick={() => handleWorkerSelect(
                       worker._id,
@@ -132,7 +160,8 @@ function Workers() {
                       mobile={worker.workerMobile}
                       createdAt={worker.createdAt}
                       isSettled={worker.isSettled}
-                      loading = {loading}
+                      loading={loading}
+                      isSiteCompleted={site?.isCompleted}
                     />
                   </div>
                 ))}
@@ -156,19 +185,24 @@ function Workers() {
             <p className="text-sm text-gray-500 text-center max-w-md mb-3">
               There are no workers assigned to this site yet.
             </p>
-            {user.role === 'manager' ? (
+            {!site?.isCompleted ? (
               <>
-              {!showAddForm && (
-              <button
-                onClick={handleShowForm}
-                className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 text-sm"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add First Worker</span>
-              </button>
-            )}
+                {user.role === 'manager' ? (
+                  <>
+                    {!showAddForm && (
+                      <button
+                        onClick={handleShowForm}
+                        className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 text-sm"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>Add First Worker</span>
+                      </button>
+                    )}
+                  </>
+                ) : (<></>)}
               </>
             ) : (<></>)}
+
           </div>
         )}
       </div>
@@ -179,6 +213,7 @@ function Workers() {
           <WorkerDetail
             workerId={selectedWorkerId}
             workerName={selectedWorkerName}
+            isSiteCompleted={site?.isCompleted}
           />
         ) : (
           <div className="flex flex-col items-center justify-center h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
@@ -187,7 +222,7 @@ function Workers() {
             </div>
             <h3 className="text-base font-medium text-gray-700 mb-2">No Worker Selected</h3>
             <p className="text-sm text-gray-500 text-center">
-              {allWorkers?.length > 0 
+              {allWorkers?.length > 0
                 ? "Click on a worker above to view their details and advances"
                 : "Add workers to get started"
               }

@@ -11,8 +11,8 @@ import { setEarn } from '../../features/workerEarnSlice';
 import AddEarnForm from './AddEarnForm';
 import { updateWorker } from '../../features/workerSlice';
 
-function WorkerDetail({ workerId, workerName }) {
-  const {user} = useSelector(state => state.auth)
+function WorkerDetail({ workerId, workerName, isSiteCompleted }) {
+  const { user } = useSelector(state => state.auth)
   const worker = useSelector(state =>
     state.worker.workers.find(w =>
       w._id === workerId
@@ -200,18 +200,22 @@ function WorkerDetail({ workerId, workerName }) {
                 </div>
               </div>
             </div>
+            {!isSiteCompleted ? (
+              <>
+                {user.role === 'manager' ? (<>
+                  {!showAddForm && !localIsSettled && (
+                    <button
+                      onClick={handleShowForm}
+                      className="flex items-center space-x-2 bg-gradient-to-r from-red-400 to-rose-400 text-white px-6 py-3 rounded-xl font-semibold hover:from-red-500 hover:to-rose-500 transition-all duration-200 transform hover:scale-105 shadow-md"
+                    >
+                      <Plus className="w-5 h-5" />
+                      <span>Add Advance</span>
+                    </button>
+                  )}
+                </>) : (<></>)}
+              </>
+            ) : (<></>)}
 
-            {user.role === 'manager' ? (<>
-            {!showAddForm && !localIsSettled && (
-              <button
-                onClick={handleShowForm}
-                className="flex items-center space-x-2 bg-gradient-to-r from-red-400 to-rose-400 text-white px-6 py-3 rounded-xl font-semibold hover:from-red-500 hover:to-rose-500 transition-all duration-200 transform hover:scale-105 shadow-md"
-              >
-                <Plus className="w-5 h-5" />
-                <span>Add Advance</span>
-              </button>
-            )}
-            </>) : (<></>)}
           </div>
 
           {/* Add Advance Form - Only show when needed */}
@@ -240,6 +244,7 @@ function WorkerDetail({ workerId, workerName }) {
                     note={advance.note}
                     createdAt={advance.createdAt}
                     isSettled={isSettled}
+                    isSiteCompleted={isSiteCompleted}
                   />
                 ))}
               </div>
@@ -252,22 +257,26 @@ function WorkerDetail({ workerId, workerName }) {
               </div>
               <h3 className={`text-xl font-medium mb-2 ${localIsSettled ? 'text-gray-800' : 'text-gray-900'}`}>No advances found</h3>
               <p className={`text-center max-w-md mb-6 ${localIsSettled ? 'text-gray-700' : 'text-gray-500'}`}>
-                This worker hasn't received any advances yet. 
+                This worker hasn't received any advances yet.
               </p>
-
-              {user.role === 'manager' ? (
+              {!isSiteCompleted ? (
                 <>
-                {!showAddForm && !localIsSettled && (
-                <button
-                  onClick={handleShowForm}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-red-400 to-rose-400 text-white px-6 py-3 rounded-xl font-semibold hover:from-red-500 hover:to-rose-500 transition-all duration-200 transform hover:scale-105 shadow-md"
-                >
-                  <Plus className="w-5 h-5" />
-                  <span>Add First Advance</span>
-                </button>
-              )}
+                  {user.role === 'manager' ? (
+                    <>
+                      {!showAddForm && !localIsSettled && (
+                        <button
+                          onClick={handleShowForm}
+                          className="flex items-center space-x-2 bg-gradient-to-r from-red-400 to-rose-400 text-white px-6 py-3 rounded-xl font-semibold hover:from-red-500 hover:to-rose-500 transition-all duration-200 transform hover:scale-105 shadow-md"
+                        >
+                          <Plus className="w-5 h-5" />
+                          <span>Add First Advance</span>
+                        </button>
+                      )}
+                    </>
+                  ) : (<></>)}
                 </>
               ) : (<></>)}
+
             </div>
           )}
         </div>
@@ -294,18 +303,22 @@ function WorkerDetail({ workerId, workerName }) {
                 </div>
               </div>
             </div>
+            {!isSiteCompleted ? (
+              <>
+                {user.role === 'manager' ? (<>
+                  {!showAddForm && !localIsSettled && (
+                    <button
+                      onClick={handleShowForm}
+                      className="flex items-center space-x-2 bg-gradient-to-r from-green-400 to-emerald-400 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-500 hover:to-emerald-500 transition-all duration-200 transform hover:scale-105 shadow-md"
+                    >
+                      <Plus className="w-5 h-5" />
+                      <span>Add Earning</span>
+                    </button>
+                  )}
+                </>) : <></>}
+              </>
+            ) : (<></>)}
 
-            {user.role === 'manager' ? (<>
-              {!showAddForm && !localIsSettled && (
-              <button
-                onClick={handleShowForm}
-                className="flex items-center space-x-2 bg-gradient-to-r from-green-400 to-emerald-400 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-500 hover:to-emerald-500 transition-all duration-200 transform hover:scale-105 shadow-md"
-              >
-                <Plus className="w-5 h-5" />
-                <span>Add Earning</span>
-              </button>
-            )}
-            </>) : <></>}
           </div>
 
           {/* Add Earning Form - Only show when needed */}
@@ -334,6 +347,7 @@ function WorkerDetail({ workerId, workerName }) {
                     note={earn.note}
                     createdAt={earn.createdAt}
                     isSettled={isSettled}
+                    isSiteCompleted={isSiteCompleted}
                   />
                 ))}
               </div>
@@ -346,19 +360,23 @@ function WorkerDetail({ workerId, workerName }) {
               </div>
               <h3 className={`text-xl font-medium mb-2 ${localIsSettled ? 'text-gray-800' : 'text-gray-900'}`}>No Earning found</h3>
               <p className={`text-center max-w-md mb-6 ${localIsSettled ? 'text-gray-700' : 'text-gray-500'}`}>
-                This worker hasn't earned any amount yet. 
+                This worker hasn't earned any amount yet.
               </p>
-              {user.role === 'manager' ? (<>
-              {!showAddForm && !localIsSettled && (
-              <button
-                onClick={handleShowForm}
-                className="flex items-center space-x-2 bg-gradient-to-r from-green-400 to-emerald-400 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-500 hover:to-emerald-500 transition-all duration-200 transform hover:scale-105 shadow-md"
-              >
-                <Plus className="w-5 h-5" />
-                <span>Add Earning</span>
-              </button>
-            )}
-            </>) : <></>}
+              {!isSiteCompleted ? (
+                <>
+                  {user.role === 'manager' ? (<>
+                    {!showAddForm && !localIsSettled && (
+                      <button
+                        onClick={handleShowForm}
+                        className="flex items-center space-x-2 bg-gradient-to-r from-green-400 to-emerald-400 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-500 hover:to-emerald-500 transition-all duration-200 transform hover:scale-105 shadow-md"
+                      >
+                        <Plus className="w-5 h-5" />
+                        <span>Add Earning</span>
+                      </button>
+                    )}
+                  </>) : <></>}
+                </>
+              ) : (<></>)}
             </div>
           )}
         </div>
@@ -560,112 +578,112 @@ function WorkerDetail({ workerId, workerName }) {
                 {/* Settlement form or completed message */}
                 {user.role === 'manager' ? (
                   <>
-                  {localIsSettled ? (
-                  <div className="bg-gray-200 p-4 rounded-lg border border-gray-300">
-                    <div className="text-center">
-                      <div className="flex items-center justify-center space-x-2 mb-3">
-                        <div className="p-2 bg-gray-300 rounded-lg">
-                          <Lock className="w-5 h-5 text-gray-700" />
+                    {localIsSettled ? (
+                      <div className="bg-gray-200 p-4 rounded-lg border border-gray-300">
+                        <div className="text-center">
+                          <div className="flex items-center justify-center space-x-2 mb-3">
+                            <div className="p-2 bg-gray-300 rounded-lg">
+                              <Lock className="w-5 h-5 text-gray-700" />
+                            </div>
+                          </div>
+                          <h4 className="font-semibold text-gray-800 text-sm mb-2">Settlement Completed</h4>
+                          <p className="text-xs text-gray-700 mb-3">
+                            This worker's payment has been marked as settled and completed.
+                          </p>
+                          <div className="bg-gray-300 p-3 rounded-lg">
+                            <div className="flex items-center justify-center space-x-2 text-xs text-gray-800">
+                              <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
+                              <span>Account Status: Settled</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <h4 className="font-semibold text-gray-800 text-sm mb-2">Settlement Completed</h4>
-                      <p className="text-xs text-gray-700 mb-3">
-                        This worker's payment has been marked as settled and completed.
-                      </p>
-                      <div className="bg-gray-300 p-3 rounded-lg">
-                        <div className="flex items-center justify-center space-x-2 text-xs text-gray-800">
-                          <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
-                          <span>Account Status: Settled</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <form onSubmit={handleSettlement} className="space-y-4">
-                      {/* Header */}
-                      <div className="text-center mb-4">
-                        <h4 className="font-semibold text-gray-900 text-sm mb-1">Settlement Action</h4>
-                        <p className="text-xs text-gray-600">Mark this worker's payment as complete</p>
-                      </div>
+                    ) : (
+                      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <form onSubmit={handleSettlement} className="space-y-4">
+                          {/* Header */}
+                          <div className="text-center mb-4">
+                            <h4 className="font-semibold text-gray-900 text-sm mb-1">Settlement Action</h4>
+                            <p className="text-xs text-gray-600">Mark this worker's payment as complete</p>
+                          </div>
 
-                      {/* Checkbox Section */}
-                      <div className="flex items-center justify-center space-x-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
-                        <div className="relative">
-                          <input
-                            id="isSettled"
-                            name="isSettled"
-                            type="checkbox"
-                            checked={settledCheck}
-                            onChange={(e) => setSettledCheck(e.target.checked)}
-                            className="h-5 w-5 text-blue-600 border-2 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all duration-200"
-                          />
+                          {/* Checkbox Section */}
+                          <div className="flex items-center justify-center space-x-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+                            <div className="relative">
+                              <input
+                                id="isSettled"
+                                name="isSettled"
+                                type="checkbox"
+                                checked={settledCheck}
+                                onChange={(e) => setSettledCheck(e.target.checked)}
+                                className="h-5 w-5 text-blue-600 border-2 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all duration-200"
+                              />
+                              {settledCheck && (
+                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                  </svg>
+                                </div>
+                              )}
+                            </div>
+                            <label
+                              htmlFor="isSettled"
+                              className="text-sm font-medium text-gray-700 cursor-pointer select-none"
+                            >
+                              Mark as Settled & Paid
+                            </label>
+                          </div>
+
+                          {/* Warning Message */}
                           {settledCheck && (
-                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                              </svg>
+                            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                              <div className="flex items-start space-x-2">
+                                <div className="flex-shrink-0">
+                                  <svg className="w-4 h-4 text-amber-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                  </svg>
+                                </div>
+                                <div>
+                                  <h5 className="text-xs font-medium text-amber-800">Important Notice</h5>
+                                  <p className="text-xs text-amber-700 mt-1">
+                                    This action cannot be undone. Ensure payment has been completed before marking as settled.
+                                  </p>
+                                </div>
+                              </div>
                             </div>
                           )}
-                        </div>
-                        <label
-                          htmlFor="isSettled"
-                          className="text-sm font-medium text-gray-700 cursor-pointer select-none"
-                        >
-                          Mark as Settled & Paid
-                        </label>
+
+                          {/* Action Button */}
+                          <button
+                            type="submit"
+                            disabled={!settledCheck}
+                            className={`w-full py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 transform ${settledCheck
+                              ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 hover:scale-105 shadow-lg hover:shadow-xl'
+                              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                              }`}
+                          >
+                            {settledCheck ? (
+                              <div className="flex items-center justify-center space-x-2">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span>Complete Settlement</span>
+                              </div>
+                            ) : (
+                              'Select checkbox to enable'
+                            )}
+                          </button>
+
+                          {/* Status Indicator */}
+                          {settledCheck && (
+                            <div className="flex items-center justify-center space-x-2 text-xs text-green-600">
+                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                              <span>Ready to complete settlement</span>
+                            </div>
+                          )}
+                        </form>
                       </div>
-
-                      {/* Warning Message */}
-                      {settledCheck && (
-                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                          <div className="flex items-start space-x-2">
-                            <div className="flex-shrink-0">
-                              <svg className="w-4 h-4 text-amber-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                              </svg>
-                            </div>
-                            <div>
-                              <h5 className="text-xs font-medium text-amber-800">Important Notice</h5>
-                              <p className="text-xs text-amber-700 mt-1">
-                                This action cannot be undone. Ensure payment has been completed before marking as settled.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Action Button */}
-                      <button
-                        type="submit"
-                        disabled={!settledCheck}
-                        className={`w-full py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 transform ${settledCheck
-                          ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 hover:scale-105 shadow-lg hover:shadow-xl'
-                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          }`}
-                      >
-                        {settledCheck ? (
-                          <div className="flex items-center justify-center space-x-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>Complete Settlement</span>
-                          </div>
-                        ) : (
-                          'Select checkbox to enable'
-                        )}
-                      </button>
-
-                      {/* Status Indicator */}
-                      {settledCheck && (
-                        <div className="flex items-center justify-center space-x-2 text-xs text-green-600">
-                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                          <span>Ready to complete settlement</span>
-                        </div>
-                      )}
-                    </form>
-                  </div>
-                )}
+                    )}
                   </>
                 ) : (<></>)}
               </div>

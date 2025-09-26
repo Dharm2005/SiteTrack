@@ -5,7 +5,7 @@ import { updateAdvanceToDB } from "../../services/workerService";
 import { updateAdvance } from "../../features/workerAdvanceSlice";
 import { toast } from "react-toastify";
 
-function Advance({ id, amount, date, note, createdAt, isSettled }) {
+function Advance({ id, amount, date, note, createdAt, isSettled, isSiteCompleted }) {
   const dispatch = useDispatch();
   const { user } = useSelector(state => state.auth);
   const [isEditing, setIsEditing] = useState(false);
@@ -141,7 +141,7 @@ function Advance({ id, amount, date, note, createdAt, isSettled }) {
         </div>
 
         {user.role === 'manager' ? (<>
-          {!isSettled ? (
+          {!isSettled && !isSiteCompleted ? (
             <div className="flex items-center space-x-1 flex-shrink-0">
               {isEditing ? (
                 <>
