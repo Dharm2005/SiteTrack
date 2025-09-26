@@ -22,6 +22,10 @@ const siteSchema = mongoose.Schema({
     ref: "User",
     required: true
   },
+  isCompleted: {
+    type: Boolean,
+    default: false
+  },
   isDeleted: {
     type: Boolean,
     default: false,

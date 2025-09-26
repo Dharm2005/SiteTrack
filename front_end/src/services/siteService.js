@@ -42,6 +42,15 @@ export const getSite = async (id) => {
   }
 };
 
+export const markSiteCompleted = async (id) => {
+  try {
+    const response = await api.patch(`http://localhost:3000/sites/site/${id}`);
+    return response.data;
+  } catch (err) {
+    throw new Error(err.response?.data?.message || "Failed to complete site");
+  }
+}
+
 export const deleteSiteFromDB = async (id) => {
   try {
     const response = await api.delete(`http://localhost:3000/sites/site/${id}`);

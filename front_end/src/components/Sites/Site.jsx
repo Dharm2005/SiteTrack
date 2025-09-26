@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
-import { MapPin, User, Phone, Calendar, ImageIcon, Loader2, Edit, Trash2, X, Search } from 'lucide-react';
+import { MapPin, User, Phone, Calendar, ImageIcon, Loader2, Edit, Trash2, X, Search, CheckCircle, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteSiteFromDB } from '../../services/siteService';
-import { deleteSite } from '../../features/siteSlice'
+import { deleteSiteFromDB, markSiteCompleted } from '../../services/siteService';
+import { deleteSite, updateSite } from '../../features/siteSlice'
 
 const API_URL = "http://localhost:3000";
 
-function Site({ id, name, location, image, managerId, createdAt }) {
+function Site({ id, name, location, image, managerId, createdAt, isCompleted }) {
   const { user } = useSelector(state => state.auth);
   const managers = useSelector(state => state.manager.managers)
   const manager = managers.find((m) => m._id === managerId)
   const dispatch = useDispatch()
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null)
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
 
@@ -53,6 +54,26 @@ function Site({ id, name, location, image, managerId, createdAt }) {
         setIsDeleting(false);
         setIsAnimatingOut(false);
       }
+    }
+  }
+
+  const handleComplete = async () => {
+    try {
+      const confirm = window.confirm("Are you sure you want to complete this site?");
+
+      if(confirm){
+        setIsCompleting(true);
+        const site = await markSiteCompleted(id);
+
+        if(site){
+          dispatch(updateSite(site))
+        }
+        setIsCompleting(false);
+      }
+
+    } catch (error) {
+      console.log("error while completing site", error);
+      setIsCompleting(false);
     }
   }
 
@@ -154,6 +175,31 @@ function Site({ id, name, location, image, managerId, createdAt }) {
                   {formatDate(createdAt)}
                 </p>
               </div>
+
+              {/* Site Status */}
+              <div>
+                <div className="flex items-center space-x-2 mb-1">
+                  {isCompleted ? (
+                    <CheckCircle className="w-4 h-4 text-emerald-600" />
+                  ) : (
+                    <Clock className="w-4 h-4 text-amber-600" />
+                  )}
+                  <span className="text-sm font-medium text-gray-500">Status</span>
+                </div>
+                <div className="flex items-center">
+                  {isCompleted ? (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></div>
+                      Completed
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                      <div className="w-2 h-2 bg-amber-500 rounded-full mr-2 animate-pulse"></div>
+                      Active
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -195,6 +241,25 @@ function Site({ id, name, location, image, managerId, createdAt }) {
                     <Trash2 className="w-5 h-5" />
                   )}
                 </button>
+
+                {/* Complete Button Icon - Only show if site is not completed */}
+                {!isCompleted && (
+                  <button
+                    onClick={handleComplete}
+                    disabled={isCompleting || isDeleting}
+                    className={`p-3 transition-all duration-200 transform hover:scale-105 shadow-md rounded-xl ${isCompleting || isDeleting
+                      ? 'bg-emerald-300 text-emerald-600 cursor-not-allowed'
+                      : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-700'
+                      }`}
+                    title="Mark as Completed"
+                  >
+                    {isCompleting ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <CheckCircle className="w-5 h-5" />
+                    )}
+                  </button>
+                )}
               </>
             ) : (<></>)}
 

@@ -12,7 +12,7 @@ exports.getSites = async (req, res, next) => {
       query.createdBy = req.user.userId; // sites created by this admin
     }
     else if (req.user.role === "manager") {
-      const manager = await Manager.findOne({userId : req.user.userId})
+      const manager = await Manager.findOne({ userId: req.user.userId })
       query.manager = manager?._id;
     }
 
@@ -79,6 +79,22 @@ exports.getSiteDetails = async (req, res, next) => {
   }
 };
 
+exports.markCompleted = async (req, res, next) => {
+  try {
+    const { siteId } = req.params
+
+    const completedSite = await Site.findByIdAndUpdate(
+      siteId,
+      { isCompleted: true },
+      { new: true }
+    )
+
+    res.status(200).json(completedSite);
+  } catch (error) {
+    console.error("Error while compliting site" , error);
+  }
+}
+
 exports.deleteSite = async (req, res, next) => {
   try {
     const siteId = req.params.siteId;
@@ -86,7 +102,7 @@ exports.deleteSite = async (req, res, next) => {
       siteId,
       {
         isDeleted: true,
-        deletedAt : new Date()
+        deletedAt: new Date()
       },
       { new: true }
     );

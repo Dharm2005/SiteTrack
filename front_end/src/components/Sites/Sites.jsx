@@ -31,6 +31,7 @@ function Sites() {
                   image={site.siteImage}
                   managerId={site.manager}
                   createdAt={site.createdAt}
+                  isCompleted={site.isCompleted}
                 />
               </div>
             ))}

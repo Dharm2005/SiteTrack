@@ -27,6 +27,8 @@ siteRouter.post('/add-site',
 
 siteRouter.get('/site/:siteId',siteController.getSiteDetails)
 
+siteRouter.patch('/site/:siteId',isAdmin,siteController.markCompleted)
+
 siteRouter.delete('/site/:siteId',isAdmin,siteController.deleteSite)
 
 siteRouter.put('/site/:siteId',

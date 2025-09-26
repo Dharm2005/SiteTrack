@@ -284,7 +284,11 @@ function AddSite({ initialValues }) {
             >
               <option value="">-- Select a Manager --</option>
               {managers.map((m) => (
+                
+                
                 <option key={m._id} value={m._id.toString()}>
+                  {console.log(m)}
+                  
                   {m.managerName} ({m.userId.username})
                 </option>
               ))}
