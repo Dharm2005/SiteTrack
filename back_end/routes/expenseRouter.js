@@ -90,7 +90,7 @@ expenseRouter.post('/add-expense',
 
 expenseRouter.get('/expense/:siteId/filter', expenseController.getFilteredExpenses)
 
-expenseRouter.delete('/expense/:expenseId',isManager, expenseController.deleteExpense)
+expenseRouter.delete('/:siteId/expense/:expenseId',isManager, expenseController.deleteExpense)
 
 expenseRouter.put('/expense/:expenseId',
   isManager,

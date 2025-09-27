@@ -1,4 +1,5 @@
 const Expense = require('../models/Expense');
+const Site = require('../models/Site');
 const path = require('path');
 const fs = require('fs');
 const { validationResult } = require('express-validator');
@@ -80,6 +81,29 @@ exports.postAddExpense = async (req, res, next) => {
     let { expenseType, quantity, unit, totalCost, arrivalDate, vehicleNumber, supplierName, details, siteId, stoneType } = req.body;
     const billImage = req.file ? req.file.filename : null;
 
+    const site = await Site.findById(siteId);
+    if (!site) {
+      // delete uploaded image if site is not found
+      if (billImage) {
+        const filePath = path.join(__dirname, "../uploads/bills", billImage);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+      return res.status(404).json({ message: "Site not found" });
+    }
+
+    if (site.isCompleted) {
+      // delete uploaded image if site is completed
+      if (billImage) {
+        const filePath = path.join(__dirname, "../uploads/bills", billImage);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+      return res.status(400).json({ message: "Cannot add expenses to a completed site" });
+    }
+
     // Parse sites correctly
     if (stoneType && typeof stoneType === "string") {
       try {
@@ -105,8 +129,8 @@ exports.postAddExpense = async (req, res, next) => {
 
     const savedExpense = await expense.save();
     res.status(201).json({
-      message : "Expense added successfully",
-      expense : savedExpense
+      message: "Expense added successfully",
+      expense: savedExpense
     });
   } catch (error) {
     console.error("Error adding expense:", error);
@@ -116,34 +140,48 @@ exports.postAddExpense = async (req, res, next) => {
 
 exports.deleteExpense = async (req, res, next) => {
   try {
-    const { expenseId } = req.params;
+    const { siteId, expenseId } = req.params;
 
+    // ✅ Step 1: Check if site exists
+    const site = await Site.findById(siteId);
+    if (!site) {
+      return res.status(404).json({ message: "Site not found" });
+    }
+
+    // ✅ Step 2: Block deletion if site is completed
+    if (site.isCompleted) {
+      return res.status(400).json({ message: "Cannot delete expenses for a completed site" });
+    }
+
+    // ✅ Step 3: Soft delete the expense
     const updatedExpense = await Expense.findByIdAndUpdate(
       expenseId,
       {
         isDeleted: true,
-        deletedAt : new Date()
+        deletedAt: new Date()
       },
       { new: true }
-    )
+    );
 
     if (!updatedExpense) {
       return res.status(404).json({ message: "No expense found" });
     }
 
-    return res.json(updatedExpense);
+    return res.json({
+      message: "Expense deleted successfully",
+      expense: updatedExpense
+    });
 
   } catch (error) {
-    console.log("Error while deleting expenses");
+    console.error("Error while deleting expense:", error);
+    res.status(500).json({ message: "Error while deleting expense", error: error.message });
   }
-}
+};
 
 exports.updateExpense = async (req, res, next) => {
   try {
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-
       if (req.file) {
         const filePath = path.join(__dirname, "../uploads/bills", req.file.filename);
         if (fs.existsSync(filePath)) {
@@ -163,45 +201,69 @@ exports.updateExpense = async (req, res, next) => {
     const { expenseId } = req.params;
     const updates = { ...req.body };
 
+    // ✅ Step 1: Check site first
+    const siteId = req.body.siteId;
+    if (!siteId) {
+      return res.status(400).json({ message: "SiteId is required" });
+    }
+
+    const site = await Site.findById(siteId);
+    if (!site) {
+      return res.status(404).json({ message: "Site not found" });
+    }
+
+    if (site.isCompleted) {
+      if (req.file) {
+        const filePath = path.join(__dirname, "../uploads/bills", req.file.filename);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+      return res.status(400).json({ message: "Cannot update expenses for a completed site" });
+    }
+
+    // ✅ Step 2: Prevent siteId update
+    delete updates.siteId;
+
+    // ✅ Step 3: Handle stoneType
     if (updates.stoneType) {
       try {
         const parsedStoneType = JSON.parse(updates.stoneType);
         updates.stoneType = Array.isArray(parsedStoneType) ? parsedStoneType : [];
-
       } catch (error) {
         updates.stoneType = [];
       }
     }
 
+    // ✅ Step 4: Handle billImage
     if (req.file) {
-      const oldExpanse = await Expense.findById(expenseId);
-
-      if (oldExpanse && oldExpanse.billImage) {
-        const oldPath = path.join(__dirname, "../uploads/bills", oldExpanse.billImage)
+      const oldExpense = await Expense.findById(expenseId);
+      if (oldExpense && oldExpense.billImage) {
+        const oldPath = path.join(__dirname, "../uploads/bills", oldExpense.billImage);
         if (fs.existsSync(oldPath)) {
-          fs.unlinkSync(oldPath)
+          fs.unlinkSync(oldPath);
         }
       }
-
-      updates.billImage = req.file.filename
+      updates.billImage = req.file.filename;
     }
 
+    // ✅ Step 5: Update expense
     const updatedExpense = await Expense.findByIdAndUpdate(
       expenseId,
       updates,
       { new: true }
-    )
+    );
 
     if (!updatedExpense) {
-      return res.status(404).json({ message: "No expense found for update" })
+      return res.status(404).json({ message: "No expense found for update" });
     }
 
     return res.json({
-      message : "Expense updated successfully",
-      expense : updatedExpense
-    })
+      message: "Expense updated successfully",
+      expense: updatedExpense
+    });
   } catch (error) {
     console.error("Error while updating expense in DB", error);
-
+    res.status(500).json({ message: "Error updating expense", error: error.message });
   }
-}
+};

@@ -345,6 +345,7 @@ function Expenses() {
                   <Expense
                     key={expense._id}
                     id={expense._id}
+                    siteId={id}
                     expenseType={expense.expenseType}
                     stoneType={expense.stoneType}
                     billImage={expense.billImage}

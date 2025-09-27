@@ -51,12 +51,26 @@ export const addExpens = async (materialData) => {
   }
 }
 
-export const deleteExpenseFromDB = async (expenseId) => {
+export const deleteExpenseFromDB = async (expenseId, siteId) => {
   try {
-    const response = await api.delete(`http://localhost:3000/expenses/expense/${expenseId}`)
+    const response = await api.delete(`http://localhost:3000/expenses/${siteId}/expense/${expenseId}`)
     return response.data
   } catch (error) {
     console.error("Error while deleting expense", error);
+    if (error.response) {
+      return {
+        success: false,
+        status: error.response.status,
+        errors: error.response.data.errors || [],
+        message: error.response.data.message || "Validation failed"
+      }
+    }
+    return {
+      success: false,
+      status: null,
+      errors: [],
+      message: "Network error"
+    }
   }
 }
 

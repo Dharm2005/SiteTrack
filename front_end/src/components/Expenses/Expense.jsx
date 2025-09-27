@@ -7,10 +7,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { deleteExpenseFromDB } from '../../services/expenseService';
 import { deleteExpense } from '../../features/expenseSlice';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const API_URL = "http://localhost:3000";
 
-function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalCost, arrivalDate, vehicleNumber, supplierName, details, createdAt, searchTerm, isSiteCompleted }) {
+function Expense({ id, siteId, expenseType, stoneType, billImage, quantity, unit, totalCost, arrivalDate, vehicleNumber, supplierName, details, createdAt, searchTerm, isSiteCompleted }) {
 
   const { user } = useSelector(state => state.auth);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -121,27 +122,39 @@ function Expense({ id, expenseType, stoneType, billImage, quantity, unit, totalC
   const handleDelete = async () => {
     const confirmed = window.confirm("Are you really want to delete this expense?");
 
-    if (confirmed) {
+    if (!confirmed) return;
+
+    try {
       setIsDeleting(true);
+
+      // Call backend first (without animation yet)
+      const res = await deleteExpenseFromDB(id, siteId);
+
+      if (res.success === false) {
+        toast.error(res.message || "❌ Something went wrong");
+        setIsDeleting(false); // reset deleting state
+        return;
+      }
+
+      // ✅ Backend confirmed deletion → now start animation
       setIsAnimatingOut(true);
 
-      try {
-        // Add a small delay to show the animation
-        await new Promise(resolve => setTimeout(resolve, 300));
-        await deleteExpenseFromDB(id);
+      // Small delay for fade-out animation
+      await new Promise(resolve => setTimeout(resolve, 300));
 
-        // Wait for fade animation to complete before removing from store
-        setTimeout(() => {
-          dispatch(deleteExpense(id));
-        }, 400);
-      } catch (error) {
-        console.error("Error while deleting expense", error);
-        // Reset states on error
-        setIsDeleting(false);
-        setIsAnimatingOut(false);
-      }
+      // Remove from Redux store after fade-out
+      setTimeout(() => {
+        dispatch(deleteExpense(id));
+      }, 400);
+
+    } catch (error) {
+      console.error("Error while deleting expense", error);
+      toast.error("❌ Failed to delete expense. Please try again.");
+      setIsDeleting(false);
+      setIsAnimatingOut(false);
     }
   };
+
 
   // Check if quantity/unit should be displayed
   const shouldShowQuantity = !['vehicleBorrow', 'other'].includes(expenseType);

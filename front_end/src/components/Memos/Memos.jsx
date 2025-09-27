@@ -257,6 +257,7 @@ function Memos({ siteId, isCompleted }) {
             <Memo
               key={memo._id}
               id={memo._id}
+              siteId={siteId}
               memoType={memo.memoType}
               text={memo.text}
               dueDate={memo.dueDate}

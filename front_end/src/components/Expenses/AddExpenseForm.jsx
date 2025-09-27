@@ -219,12 +219,14 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
       formData.append("vehicleNumber", form.vehicleNumber.trim());
       formData.append("supplierName", form.supplierName.trim());
       formData.append("details", form.details)
+
       if (!initialValues && siteId) {
+        // For adding new expense
+        formData.append("siteId", siteId);
+      } else if (initialValues && siteId) {
+        // For updating existing expense
         formData.append("siteId", siteId);
       }
-
-      console.log(formData);
-      
 
       let res;
 

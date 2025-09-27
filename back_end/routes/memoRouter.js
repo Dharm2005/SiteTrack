@@ -33,8 +33,8 @@ memoRouter.post("/add-memo",
   ],
   memoController.postAddMemo);
 
-memoRouter.delete("/memo/:memoId",isManager, memoController.deleteMemo);
+memoRouter.delete("/:siteId/memo/:memoId",isManager, memoController.deleteMemo);
 
-memoRouter.put("/memo/:memoId",isManager, memoController.completeMemo);
+memoRouter.put("/:siteId/memo/:memoId",isManager, memoController.completeMemo);
 
 module.exports = memoRouter;

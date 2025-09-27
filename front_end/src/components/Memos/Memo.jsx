@@ -3,8 +3,9 @@ import { StickyNote, AlertCircle, Calendar, Clock, ChevronDown, ChevronUp, Edit3
 import { completeMemoInDB, deleteMemoFromDB } from '../../services/memoService';
 import { useDispatch, useSelector } from "react-redux"
 import { deleteMemo, updateMemo } from '../../features/memoSlice';
+import { toast } from 'react-toastify';
 
-function Memo({ id, memoType, text, dueDate, createdAt, isSiteCompleted }) {
+function Memo({ id, siteId, memoType, text, dueDate, createdAt, isSiteCompleted }) {
 
   const { user } = useSelector(state => state.auth);
 
@@ -109,7 +110,13 @@ function Memo({ id, memoType, text, dueDate, createdAt, isSiteCompleted }) {
 
     if (confirmed) {
       try {
-        const res = await completeMemoInDB(id, { isCompleted: true })
+        const res = await completeMemoInDB(id, siteId, { isCompleted: true })
+
+        if (res.success === false) {
+        toast.error(res.message || "❌ Something went wrong");
+        return;
+      }
+
         dispatch(updateMemo(res))
         setLocalIsCompleted(res.isCompleted);
       } catch (error) {
@@ -125,27 +132,38 @@ function Memo({ id, memoType, text, dueDate, createdAt, isSiteCompleted }) {
   const handleDelete = async () => {
     const confirmed = window.confirm("Are you really want to delete this memo?");
 
-    if (confirmed) {
+    if (!confirmed) return;
+
+    try {
       setIsDeleting(true);
+
+      const res = await deleteMemoFromDB(id, siteId);
+
+      if (res.success === false) {
+        toast.error(res.message || "❌ Something went wrong");
+        setIsDeleting(false); // reset state so button works again
+        return;
+      }
+
       setIsAnimatingOut(true);
 
-      try {
-        // Add a small delay to show the animation
-        await new Promise(resolve => setTimeout(resolve, 300));
-        await deleteMemoFromDB(id);
+      // Small delay for fade-out animation
+      await new Promise(resolve => setTimeout(resolve, 300));
 
-        // Wait for fade animation to complete before removing from store
-        setTimeout(() => {
-          dispatch(deleteMemo(id));
-        }, 400);
-      } catch (error) {
-        console.error("Error while deleting memo", error);
-        // Reset states on error
-        setIsDeleting(false);
-        setIsAnimatingOut(false);
-      }
+      // Remove from Redux store after fade-out
+      setTimeout(() => {
+        dispatch(deleteMemo(id));
+      }, 400);
+
+    } catch (error) {
+      console.error("Error while deleting memo", error);
+      toast.error("❌ Failed to delete memo. Please try again.");
+      // Reset states on error
+      setIsDeleting(false);
+      setIsAnimatingOut(false);
     }
   };
+
 
   const toggleExpanded = () => {
     if (!isDeleting) {
@@ -240,7 +258,6 @@ function Memo({ id, memoType, text, dueDate, createdAt, isSiteCompleted }) {
 
             {!isSiteCompleted ? (
               <>
-
                 {user.role === 'manager' ? (
                   <>
                     {/* Delete Button */}
@@ -276,7 +293,8 @@ function Memo({ id, memoType, text, dueDate, createdAt, isSiteCompleted }) {
                     )}
                   </>
                 ) : (<></>)}
-              </>) : (<></>)}
+              </>
+            ) : (<></>)}
 
 
             {/* Expand/Collapse Button */}
