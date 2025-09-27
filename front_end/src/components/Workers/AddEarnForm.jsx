@@ -38,12 +38,15 @@ function AddEarnForm({ workerId, onClose }) {
 
       const res = await addEarnOfWorker(formData);
 
-      if (res.errors) {
+      if (res.success === false) {
         console.log("Validation errors:", res.errors);
-
-        res.errors.forEach(err => {
-          toast.error(`${err.field}: ${err.msg}`); // use "path" from backend
-        });
+        if (res.errors && res.errors.length > 0) {
+          res.errors.forEach(err => {
+            toast.error(`${err.field}: ${err.msg}`); // use "path" from backend
+          });
+        } else if (res.message) {
+          toast.error(res.message || "Something went wrong");
+        }
         return; // stop execution if validation failed
       }
 

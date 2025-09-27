@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteSiteFromDB, markSiteCompleted } from '../../services/siteService';
 import { deleteSite, updateSite } from '../../features/siteSlice'
+import { toast } from 'react-toastify';
 
 const API_URL = "http://localhost:3000";
 
@@ -35,37 +36,49 @@ function Site({ id, name, location, image, managerId, createdAt, isCompleted }) 
   const handleDelete = async () => {
     const confirmed = window.confirm(`Are you sure you want to delete "${name || 'this site'}"?`);
 
-    if (confirmed) {
+    if (!confirmed) return;
+
+    try {
       setIsDeleting(true);
+
+      // ✅ Call backend first (no animation yet)
+      const res = await deleteSiteFromDB(id);
+
+      if (res.success === false) {
+        toast.error(res.message || " Something went wrong");
+        setIsDeleting(false);
+        return;
+      }
+
+      // ✅ Backend confirmed → now start fade animation
       setIsAnimatingOut(true);
 
-      try {
-        // Add a small delay to show the animation
-        await new Promise(resolve => setTimeout(resolve, 300));
-        await deleteSiteFromDB(id);
+      // Small delay for fade-out animation
+      await new Promise(resolve => setTimeout(resolve, 300));
 
-        // Wait for fade animation to complete before removing from store
-        setTimeout(() => {
-          dispatch(deleteSite(id));
-        }, 400);
-      } catch (error) {
-        console.log("error while deleting site", error);
-        // Reset states on error
-        setIsDeleting(false);
-        setIsAnimatingOut(false);
-      }
+      // Remove from Redux store after fade-out
+      setTimeout(() => {
+        dispatch(deleteSite(id));
+      }, 400);
+
+    } catch (error) {
+      console.error("Error while deleting site", error);
+      toast.error("❌ Failed to delete site. Please try again.");
+      // Reset states on error
+      setIsDeleting(false);
+      setIsAnimatingOut(false);
     }
-  }
+  };
 
   const handleComplete = async () => {
     try {
       const confirm = window.confirm("Are you sure you want to complete this site?");
 
-      if(confirm){
+      if (confirm) {
         setIsCompleting(true);
         const site = await markSiteCompleted(id);
 
-        if(site){
+        if (site) {
           dispatch(updateSite(site))
         }
         setIsCompleting(false);
@@ -213,37 +226,37 @@ function Site({ id, name, location, image, managerId, createdAt, isCompleted }) 
               View Details
             </Link>
 
-            {user.role === 'admin' ? (
-              <>
-                {/* Edit Button Icon */}
-                <Link
-                  to={`/edit-site/${id}`}
-                  className={`p-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-md ${isDeleting ? 'opacity-50 pointer-events-none' : ''
-                    }`}
-                  title="Edit Site"
-                >
-                  <Edit className="w-5 h-5" />
-                </Link>
+            {!isCompleted ? (
+            <>
+              {user.role === 'admin' ? (
+                <>
+                  {/* Edit Button Icon */}
+                  <Link
+                    to={`/edit-site/${id}`}
+                    className={`p-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-md ${isDeleting ? 'opacity-50 pointer-events-none' : ''
+                      }`}
+                    title="Edit Site"
+                  >
+                    <Edit className="w-5 h-5" />
+                  </Link>
 
-                {/* Delete Button Icon */}
-                <button
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className={`p-3 transition-all duration-200 transform hover:scale-105 shadow-md rounded-xl ${isDeleting
-                    ? 'bg-red-300 text-red-600 cursor-not-allowed'
-                    : 'bg-red-100 hover:bg-red-200 text-red-700'
-                    }`}
-                  title="Delete Site"
-                >
-                  {isDeleting ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Trash2 className="w-5 h-5" />
-                  )}
-                </button>
+                  {/* Delete Button Icon */}
+                  <button
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className={`p-3 transition-all duration-200 transform hover:scale-105 shadow-md rounded-xl ${isDeleting
+                      ? 'bg-red-300 text-red-600 cursor-not-allowed'
+                      : 'bg-red-100 hover:bg-red-200 text-red-700'
+                      }`}
+                    title="Delete Site"
+                  >
+                    {isDeleting ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-5 h-5" />
+                    )}
+                  </button>
 
-                {/* Complete Button Icon - Only show if site is not completed */}
-                {!isCompleted && (
                   <button
                     onClick={handleComplete}
                     disabled={isCompleting || isDeleting}
@@ -259,8 +272,9 @@ function Site({ id, name, location, image, managerId, createdAt, isCompleted }) 
                       <CheckCircle className="w-5 h-5" />
                     )}
                   </button>
-                )}
-              </>
+                </>
+              ) : (<></>)}
+            </>
             ) : (<></>)}
 
           </div>

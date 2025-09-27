@@ -91,38 +91,41 @@ exports.markCompleted = async (req, res, next) => {
 
     res.status(200).json(completedSite);
   } catch (error) {
-    console.error("Error while compliting site" , error);
+    console.error("Error while compliting site", error);
   }
 }
 
 exports.deleteSite = async (req, res, next) => {
   try {
-    const siteId = req.params.siteId;
-    const updatedSite = await Site.findByIdAndUpdate(
-      siteId,
-      {
-        isDeleted: true,
-        deletedAt: new Date()
-      },
-      { new: true }
-    );
+    const { siteId } = req.params;
 
-    if (!updatedSite) {
-      return res.status(404).json({ message: "No site found" });
+    // First, check if site exists
+    const site = await Site.findById(siteId);
+    if (!site) {
+      return res.status(404).json({ success: false, message: "No site found" });
     }
 
-    res.json(updatedSite);
+    // Block delete if site is already completed
+    if (site.isCompleted) {
+      return res.status(400).json({ success: false, message: "Cannot delete a completed site" });
+    }
+
+    // Soft delete (mark as deleted)
+    site.isDeleted = true;
+    site.deletedAt = new Date();
+    await site.save();
+
+    return res.status(200).json({ success: true, data: site });
   } catch (error) {
-    console.log("Error while deleting site", error);
+    console.error("Error while deleting site:", error);
+    return res.status(500).json({ success: false, message: "Server error while deleting site" });
   }
-}
+};
 
 exports.updateSite = async (req, res, next) => {
   try {
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-
       if (req.file) {
         const filePath = path.join(__dirname, "../uploads/sites", req.file.filename);
         if (fs.existsSync(filePath)) {
@@ -140,42 +143,58 @@ exports.updateSite = async (req, res, next) => {
     }
 
     const { siteId } = req.params;
+
+    // ✅ Step 1: Find site
+    const site = await Site.findById(siteId);
+    if (!site) {
+      
+      if (req.file) {
+        const filePath = path.join(__dirname, "../uploads/sites", req.file.filename);
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      }
+      return res.status(404).json({ success: false, message: "Site not found" });
+    }
+
+    
+    if (site.isCompleted) {
+      
+      if (req.file) {
+        const filePath = path.join(__dirname, "../uploads/sites", req.file.filename);
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      }
+      return res.status(400).json({ success: false, message: "Cannot update a completed site" });
+    }
+
     const updates = { ...req.body };
 
+    // Map managerId to manager
     if (updates.managerId) {
       updates.manager = updates.managerId;
       delete updates.managerId;
     }
 
+    // Handle site image update
     if (req.file) {
-      const oldSite = await Site.findById(siteId)
-
-      if (oldSite && oldSite.siteImage) {
-        const oldPath = path.join(__dirname, "../uploads/sites", oldSite.siteImage)
+      if (site.siteImage) {
+        const oldPath = path.join(__dirname, "../uploads/sites", site.siteImage);
         if (fs.existsSync(oldPath)) {
-          fs.unlinkSync(oldPath)
+          fs.unlinkSync(oldPath);
         }
       }
-
       updates.siteImage = req.file.filename;
     }
 
-    const updatedSite = await Site.findByIdAndUpdate(
-      siteId,
-      updates,
-      { new: true }
-    )
-
-    if (!updatedSite) {
-      return res.status(404).json({ message: "site not found for update" });
-    }
+    // ✅ Step 3: Update site
+    const updatedSite = await Site.findByIdAndUpdate(siteId, updates, { new: true });
 
     return res.status(200).json({
+      success: true,
       message: "Site updated successfully",
       site: updatedSite
     });
 
   } catch (error) {
-    res.status(500).json({ message: "Error updating sites", error: err.message });
+    console.error("Error updating site:", error);
+    return res.status(500).json({ success: false, message: "Error updating site", error: error.message });
   }
-}
+};

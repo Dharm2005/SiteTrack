@@ -43,12 +43,27 @@ export const getWorkerById = async (id) => {
   }
 }
 
-export const deleteWorkerFromDB = async (workerId) => {
+export const deleteWorkerFromDB = async (workerId, siteId) => {
   try {
-    const response = await api.delete(`http://localhost:3000/workers/worker/${workerId}`)
+    const response = await api.delete(`http://localhost:3000/workers/${siteId}/worker/${workerId}`)
     return response.data;
-  } catch (err) {
-    throw new Error(err.response?.data?.message || "Failed to delete worker");
+  } catch (error) {
+    console.error("Error while deleting worker" , error);
+    
+    if (error.response) {
+      return {
+        success: false,
+        status: error.response.status,
+        errors: error.response.data.errors || [],
+        message: error.response.data.message || "Validation failed",
+      };
+    }
+    return {
+      success: false,
+      status: null,
+      errors: [],
+      message: "Network error",
+    };
   }
 }
 
@@ -88,9 +103,10 @@ export const getAdvancesByWorker = async (workerId) => {
 
 export const addAdvanceOfWorker = async (advanceData) => {
   try {
-    const response = await api.post("http://localhost:3000/workers/worker/add-advance", advanceData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    })
+    const response = await api.post(`http://localhost:3000/workers/worker/add-advance`, 
+      advanceData, 
+      {headers: { "Content-Type": "multipart/form-data" },}
+    )
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -110,9 +126,9 @@ export const addAdvanceOfWorker = async (advanceData) => {
   }
 }
 
-export const updateAdvanceToDB = async (advanceId, advanceData) => {
+export const updateAdvanceToDB = async (advanceId, siteId, advanceData) => {
   try {
-    const response = await api.put(`http://localhost:3000/workers/worker/advance/${advanceId}`,
+    const response = await api.put(`http://localhost:3000/workers/${siteId}/worker/advance/${advanceId}`,
       advanceData,
       { headers: { "Content-Type": "multipart/form-data" } }
     )
@@ -169,9 +185,9 @@ export const addEarnOfWorker = async (earnData) => {
   }
 }
 
-export const updateEarnToDB = async (earnId, earnData) => {
+export const updateEarnToDB = async (earnId, siteId, earnData) => {
   try {
-    const response = await api.put(`http://localhost:3000/workers/worker/earn/${earnId}`,
+    const response = await api.put(`http://localhost:3000/workers/${siteId}/worker/earn/${earnId}`,
       earnData,
       { headers: { "Content-Type": "multipart/form-data" } }
     )

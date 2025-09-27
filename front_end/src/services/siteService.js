@@ -55,8 +55,22 @@ export const deleteSiteFromDB = async (id) => {
   try {
     const response = await api.delete(`http://localhost:3000/sites/site/${id}`);
     return response.data;
-  } catch (err) {
-    throw new Error(err.response?.data?.message || "Failed to delete site");
+  } catch (error) {
+    console.error("Error while delete site" , error);
+    if (error.response) {
+      return {
+        success: false,
+        status: error.response.status,
+        errors: error.response.data.errors || [],
+        message: error.response.data.message || "Validation failed",
+      };
+    }
+    return {
+      success: false,
+      status: null,
+      errors: [],
+      message: "Network error",
+    }
   }
 }
 
@@ -72,15 +86,15 @@ export const updateSiteToDB = async (siteId, siteData) => {
       return {
         success: false,
         status: error.response.status,
-        errors: error.response.data.errors || [],
-        message: error.response.data.message || "Validation failed",
+        errors: error.response.data.errors,
+        message: error.response.data.message,
       };
     }
     return {
       success: false,
       status: null,
-      errors: [],
-      message: "Network error",
+      errors: error.response.data.errors || [],
+      message: error.response.data.message || "Network error",
     }
   }
 }

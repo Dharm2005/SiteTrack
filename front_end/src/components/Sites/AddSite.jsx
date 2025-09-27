@@ -114,56 +114,61 @@ function AddSite({ initialValues }) {
   }, [initialValues]);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const formData = new FormData();
-    formData.append("type", "site");
-    formData.append("siteName", form.siteName);
-    formData.append("location", form.location);
-    formData.append("managerId", form.managerId);
+    try {
+      const formData = new FormData();
+      formData.append("type", "site");
+      formData.append("siteName", form.siteName);
+      formData.append("location", form.location);
+      formData.append("managerId", form.managerId);
 
-    if (form.siteImage instanceof File) {
-      formData.append("siteImage", form.siteImage);
+      if (form.siteImage instanceof File) {
+        formData.append("siteImage", form.siteImage);
+      }
+
+      let res;
+      if (initialValues) {
+        // update
+        formData.append("_id", initialValues._id);
+        res = await updateSiteToDB(initialValues._id, formData);
+      } else {
+        // add new
+        res = await addSite(formData);
+      }
+
+      // 🟢 Handle validation errors
+      if (res.success === false) {
+        if (res.errors && (res.errors.length > 0)) {
+          console.log("Validation errors:", res.errors);
+          res.errors.forEach(err => {
+            toast.error(`${err.msg}`);
+          });
+        } else if (res.message) {
+          toast.error(res.message || " Something went wrong");
+          navigate('/')
+        }
+        return;
+      }
+
+      // 🟢 Success case
+      const siteData = res.site; // backend sends { message, site }
+      if (initialValues) {
+        console.log(siteData);
+
+        dispatch(updateSite(siteData));
+        toast.success("✅ Site updated successfully!");
+      } else {
+        dispatch(addNewSite(siteData));
+        toast.success("✅ New site added successfully!");
+      }
+
+      navigate("/");
+    } catch (error) {
+      console.error("Unexpected error while submitting site", error);
+      toast.error("❌ Something went wrong!");
     }
-
-    let res;
-    if (initialValues) {
-      // update
-      formData.append("_id", initialValues._id);
-      res = await updateSiteToDB(initialValues._id, formData);
-    } else {
-      // add new
-      res = await addSite(formData);
-    }
-
-    // 🟢 Handle validation errors
-    if (res.errors) {
-      console.log("Validation errors:", res.errors);
-      res.errors.forEach(err => {
-        toast.error(`${err.field}: ${err.msg}`);
-      });
-      return;
-    }
-
-    // 🟢 Success case
-    const siteData = res.site; // backend sends { message, site }
-    if (initialValues) {
-      console.log(siteData);
-      
-      dispatch(updateSite(siteData));
-      toast.success("✅ Site updated successfully!");
-    } else {
-      dispatch(addNewSite(siteData));
-      toast.success("✅ New site added successfully!");
-    }
-
-    navigate("/");
-  } catch (error) {
-    console.error("Unexpected error while submitting site", error);
-    toast.error("❌ Something went wrong!");
-  }
-};
+  };
 
 
 
@@ -284,11 +289,11 @@ function AddSite({ initialValues }) {
             >
               <option value="">-- Select a Manager --</option>
               {managers.map((m) => (
-                
-                
+
+
                 <option key={m._id} value={m._id.toString()}>
                   {console.log(m)}
-                  
+
                   {m.managerName} ({m.userId.username})
                 </option>
               ))}

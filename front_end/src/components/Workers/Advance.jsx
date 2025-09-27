@@ -5,7 +5,7 @@ import { updateAdvanceToDB } from "../../services/workerService";
 import { updateAdvance } from "../../features/workerAdvanceSlice";
 import { toast } from "react-toastify";
 
-function Advance({ id, amount, date, note, createdAt, isSettled, isSiteCompleted }) {
+function Advance({ id, siteId, amount, date, note, createdAt, isSettled, isSiteCompleted }) {
   const dispatch = useDispatch();
   const { user } = useSelector(state => state.auth);
   const [isEditing, setIsEditing] = useState(false);
@@ -42,14 +42,18 @@ function Advance({ id, amount, date, note, createdAt, isSettled, isSiteCompleted
   const handleSave = async () => {
     try {
       setLoading(true);
-      const res = await updateAdvanceToDB(id, form);
+      const res = await updateAdvanceToDB(id, siteId, form);
 
-      if (res.errors) {
+      if (res.success === false) {
         console.log("Validation errors:", res.errors);
-        res.errors.forEach((err) => {
-          toast.error(`${err.field}: ${err.msg}`);
-        });
-        return;
+        if (res.errors && res.errors.length > 0) {
+          res.errors.forEach(err => {
+            toast.error(`${err.field}: ${err.msg}`); // use "path" from backend
+          });
+        } else if (res.message) {
+          toast.error(res.message || "Something went wrong");
+        }
+        return; // stop execution if validation failed
       }
 
       const advanceData = res.advance;

@@ -11,7 +11,7 @@ import { setEarn } from '../../features/workerEarnSlice';
 import AddEarnForm from './AddEarnForm';
 import { updateWorker } from '../../features/workerSlice';
 
-function WorkerDetail({ workerId, workerName, isSiteCompleted }) {
+function WorkerDetail({ workerId, siteId,  workerName, isSiteCompleted }) {
   const { user } = useSelector(state => state.auth)
   const worker = useSelector(state =>
     state.worker.workers.find(w =>
@@ -239,6 +239,7 @@ function WorkerDetail({ workerId, workerName, isSiteCompleted }) {
                   <Advance
                     key={advance._id}
                     id={advance._id}
+                    siteId={siteId}
                     amount={advance.amount}
                     date={advance.date}
                     note={advance.note}
@@ -342,6 +343,7 @@ function WorkerDetail({ workerId, workerName, isSiteCompleted }) {
                   <Earn
                     key={earn._id}
                     id={earn._id}
+                    siteId={siteId}
                     amount={earn.amount}
                     date={earn.date}
                     note={earn.note}

@@ -83,39 +83,45 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
       const formData = new FormData();
       formData.append("type", "worker");
       formData.append("workerName", form.workerName.trim());
+      formData.append("workerMobile", form.workerMobile);
+
       if (form.workerImage instanceof File) {
         formData.append("workerImage", form.workerImage);
       }
-      formData.append("workerMobile", form.workerMobile);
-      if (!initialValues && siteId) {
+
+      // ✅ Always send siteId, for create or edit
+      if (siteId) {
         formData.append("site", siteId);
       }
 
       let res;
-
       if (initialValues) {
-        formData.append("_id", initialValues._id)
-        res = await updateWorkerToDB(initialValues._id, formData)
+        formData.append("_id", initialValues._id);
+        res = await updateWorkerToDB(initialValues._id, formData);
       } else {
         res = await addWorker(formData);
       }
-      if (res.errors) {
-        console.log("Validation errors:", res.errors);
-        res.errors.forEach(err => {
-          toast.error(`${err.field}: ${err.msg}`); 
-        });
-        return; 
+
+      // Handle errors (array or single message)
+      if (res.success === false) {
+        if (res.errors && res.errors.length > 0) {
+          res.errors.forEach(err => toast.error(`${err.field}: ${err.msg}`));
+        } else if (res.message) {
+          toast.error(res.message);
+        }
+        return;
       }
 
       const workerData = res.worker;
       if (initialValues) {
-        dispatch(updateWorker(workerData))
+        dispatch(updateWorker(workerData));
         toast.success("✅ Worker edited successfully!");
-        navigate(`/site/${siteId}/workers`)
+        navigate(`/site/${siteId}/workers`);
       } else {
         dispatch(addNewWorker(workerData));
         toast.success("✅ New worker added successfully!");
       }
+
       // Reset form
       setForm({
         type: 'worker',
@@ -127,13 +133,15 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
       setImagePreview(null);
 
       if (onClose) onClose();
+
     } catch (error) {
-      console.error("error while adding new worker", error);
-      toast.error("❌ Failed to add worker. Please try again.");
+      console.error("Error while submitting worker", error);
+      toast.error("❌ Failed to submit worker. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   const removeImage = () => {
     setForm({ ...form, workerImage: null });

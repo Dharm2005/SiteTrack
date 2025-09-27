@@ -5,7 +5,7 @@ import { updateEarn } from '../../features/workerEarnSlice';
 import { FileText, Clock, IndianRupee, Edit, Save, X, CalendarCheck } from "lucide-react";
 import { toast } from 'react-toastify';
 
-function Earn({ id, amount, date, note, createdAt, isSettled, isSiteCompleted }) {
+function Earn({ id, siteId, amount, date, note, createdAt, isSettled, isSiteCompleted }) {
   const dispatch = useDispatch();
   const { user } = useSelector(state => state.auth)
   const [isEditing, setIsEditing] = useState(false);
@@ -42,13 +42,18 @@ function Earn({ id, amount, date, note, createdAt, isSettled, isSiteCompleted })
   const handleSave = async () => {
     try {
       setLoading(true);
-      const res = await updateEarnToDB(id, form);
+      const res = await updateEarnToDB(id, siteId, form);
 
-      if (res.errors) {
-        res.errors.forEach(err => {
-          toast.error(`${err.field}: ${err.msg}`);
-        });
-        return;
+      if (res.success === false) {
+        console.log("Validation errors:", res.errors);
+        if (res.errors && res.errors.length > 0) {
+          res.errors.forEach(err => {
+            toast.error(`${err.field}: ${err.msg}`); // use "path" from backend
+          });
+        } else if (res.message) {
+          toast.error(res.message || "Something went wrong");
+        }
+        return; // stop execution if validation failed
       }
 
       const earnData = res.earning;

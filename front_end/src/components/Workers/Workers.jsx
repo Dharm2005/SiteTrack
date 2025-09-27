@@ -155,6 +155,7 @@ function Workers() {
                     <Worker
                       key={worker._id}
                       id={worker._id}
+                      siteId={id}
                       name={worker.workerName}
                       image={worker.workerImage}
                       mobile={worker.workerMobile}
@@ -212,6 +213,7 @@ function Workers() {
         {selectedWorkerId ? (
           <WorkerDetail
             workerId={selectedWorkerId}
+            siteId={id}
             workerName={selectedWorkerName}
             isSiteCompleted={site?.isCompleted}
           />

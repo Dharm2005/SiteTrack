@@ -42,7 +42,7 @@ workerRouter.post('/worker/add-advance',
   ],
   workerController.addWorkerAdvance)
 
-workerRouter.put('/worker/advance/:advanceId',
+workerRouter.put('/:siteId/worker/advance/:advanceId',
   isManager,
   upload.none(),
   [
@@ -85,7 +85,7 @@ workerRouter.post('/worker/add-earn',
   ],
   workerController.addWorkerEarn)
 
-workerRouter.put('/worker/earn/:earnId',
+workerRouter.put('/:siteId/worker/earn/:earnId',
   isManager,
   upload.none(),
   [
@@ -106,7 +106,7 @@ workerRouter.put('/worker/earn/:earnId',
   ],
   workerController.updateEarn)
 
-workerRouter.delete('/worker/:workerId', isManager, workerController.deleteWorker)
+workerRouter.delete('/:siteId/worker/:workerId', isManager, workerController.deleteWorker)
 workerRouter.put('/worker/:workerId',
   isManager,
   upload.single("workerImage"),
