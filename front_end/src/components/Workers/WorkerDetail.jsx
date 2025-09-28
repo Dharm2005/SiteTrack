@@ -6,12 +6,12 @@ import { setAdvances } from '../../features/workerAdvanceSlice';
 import Advance from './Advance';
 import Earn from './Earn';
 import AddAdvanceForm from './AddAdvanceForm';
-import { Plus, DollarSign, ArrowLeft, Calculator, TrendingUp, TrendingDown, Calendar, FileText, Lock, IndianRupee } from 'lucide-react';
+import { Plus, Calculator, TrendingUp, TrendingDown, Calendar, FileText, Lock, IndianRupee, CreditCard, Minus, Equal } from 'lucide-react';
 import { setEarn } from '../../features/workerEarnSlice';
 import AddEarnForm from './AddEarnForm';
 import { updateWorker } from '../../features/workerSlice';
 
-function WorkerDetail({ workerId, siteId,  workerName, isSiteCompleted }) {
+function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
   const { user } = useSelector(state => state.auth)
   const worker = useSelector(state =>
     state.worker.workers.find(w =>
@@ -108,72 +108,85 @@ function WorkerDetail({ workerId, siteId,  workerName, isSiteCompleted }) {
         </div>
       )}
 
-      <nav className="mb-6">
-        <div className="flex items-center justify-between">
+      <nav className={`rounded-lg shadow-md border transition-all duration-200 ${localIsSettled
+        ? 'bg-gray-100 border-gray-300'
+        : 'bg-white border-gray-200'
+        }`}>
+        <div className="flex items-center justify-between px-5 py-3.5">
+
           {/* Navigation Tabs */}
-          <div className={`flex p-1 rounded-lg w-fit ${localIsSettled ? 'bg-gray-100' : 'bg-gray-100'}`}>
+          <div className={`flex p-1.5 rounded-lg ${localIsSettled ? 'bg-gray-200' : 'bg-gray-100'
+            }`}>
             <button
               onClick={() => setSelectedPage("settlement")}
-              className={`px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 ${selectedPage === 'settlement'
+              className={`flex items-center gap-2.5 px-5 py-2.5 text-sm font-medium rounded-md transition-all duration-200 ${selectedPage === 'settlement'
                 ? localIsSettled
-                  ? 'bg-gray-200 text-gray-800 shadow-sm'
-                  : 'bg-white text-gray-900 shadow-sm'
-                : localIsSettled
-                  ? 'text-gray-600 hover:text-gray-700'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white text-gray-800 shadow-sm'
+                  : 'bg-blue-400 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
                 }`}
             >
-              Final Settlement
-            </button>
-            <button
-              onClick={() => setSelectedPage("earn")}
-              className={`px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 ${selectedPage === 'earn'
-                ? localIsSettled
-                  ? 'bg-gray-200 text-gray-800 shadow-sm'
-                  : 'bg-white text-gray-900 shadow-sm'
-                : localIsSettled
-                  ? 'text-gray-600 hover:text-gray-700'
-                  : 'text-gray-500 hover:text-gray-700'
-                }`}
-            >
-              Earnings
-            </button>
-            <button
-              onClick={() => setSelectedPage("advance")}
-              className={`px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 ${selectedPage === 'advance'
-                ? localIsSettled
-                  ? 'bg-gray-200 text-gray-800 shadow-sm'
-                  : 'bg-white text-gray-900 shadow-sm'
-                : localIsSettled
-                  ? 'text-gray-600 hover:text-gray-700'
-                  : 'text-gray-500 hover:text-gray-700'
-                }`}
-            >
-              Advances
+              <Calculator size={16} />
+              <span>Settlement</span>
             </button>
 
+            <button
+              onClick={() => setSelectedPage("earn")}
+              className={`flex items-center gap-2.5 px-5 py-2.5 text-sm font-medium rounded-md transition-all duration-200 ${selectedPage === 'earn'
+                ? localIsSettled
+                  ? 'bg-white text-gray-800 shadow-sm'
+                  : 'bg-green-400 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
+                }`}
+            >
+              <TrendingUp size={16} />
+              <span>Earnings</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedPage("advance")}
+              className={`flex items-center gap-2.5 px-5 py-2.5 text-sm font-medium rounded-md transition-all duration-200 ${selectedPage === 'advance'
+                ? localIsSettled
+                  ? 'bg-white text-gray-800 shadow-sm'
+                  : 'bg-red-400 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
+                }`}
+            >
+              <CreditCard size={16} />
+              <span>Advances</span>
+            </button>
           </div>
 
           {/* Total Payable Amount */}
-          <div className={`rounded-lg px-6 py-3 shadow-sm border ${localIsSettled ? 'bg-gray-100 border-gray-300' : 'bg-white'}`}>
-            <div className="flex items-center space-x-4">
-              <div className={`text-sm font-medium ${localIsSettled ? 'text-gray-700' : 'text-gray-600'}`}>
-                Total Payable Amount:
-              </div>
-              <div className="flex items-center space-x-2 text-sm">
-                <span className={`font-semibold ${localIsSettled ? 'text-gray-700' : 'text-blue-600'}`}>₹{totalEarn.toLocaleString()}</span>
-                <span className="text-gray-400">-</span>
-                <span className={`font-semibold ${localIsSettled ? 'text-gray-700' : 'text-red-600'}`}>₹{totalAdvances.toLocaleString()}</span>
-                <span className="text-gray-400">=</span>
-                <span className={`font-bold text-lg px-3 py-1 rounded-lg ${localIsSettled
-                  ? 'text-gray-800 bg-gray-200'
-                  : totalPayable >= 0
-                    ? 'text-green-700 bg-green-100'
-                    : 'text-red-700 bg-red-100'
-                  }`}>
-                  ₹{totalPayable.toLocaleString()}
-                </span>
-              </div>
+          <div className="flex items-center space-x-4">
+            <span className={`text-sm font-semibold ${localIsSettled ? 'text-gray-600' : 'text-gray-700'
+              }`}>
+              Total Payable Amount:
+            </span>
+
+            <div className="flex items-center space-x-3">
+              <span className={`font-semibold px-3 py-1.5 rounded text-sm ${localIsSettled ? 'bg-gray-200 text-gray-700' : 'bg-blue-100 text-blue-700'
+                }`}>
+                ₹{totalEarn.toLocaleString()}
+              </span>
+
+              <Minus size={14} className="text-gray-400" />
+
+              <span className={`font-semibold px-3 py-1.5 rounded text-sm ${localIsSettled ? 'bg-gray-200 text-gray-700' : 'bg-red-100 text-red-700'
+                }`}>
+                ₹{totalAdvances.toLocaleString()}
+              </span>
+
+              <Equal size={14} className="text-gray-400" />
+
+              <span className={`font-bold px-4 py-1.5 rounded-lg text-base ${localIsSettled
+                ? 'text-gray-800 bg-gray-200'
+                : totalPayable >= 0
+                  ? 'text-green-700 bg-green-100'
+                  : 'text-red-700 bg-red-100'
+                }`}>
+                ₹{totalPayable.toLocaleString()}
+              </span>
             </div>
           </div>
         </div>
