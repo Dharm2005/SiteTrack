@@ -12,6 +12,168 @@ import { useEffect } from 'react'
 import { Loader } from '../index'
 import { getSite } from '../../services/siteService'
 
+// Skeleton Components
+const SkeletonBox = ({ className = "", animate = true }) => (
+  <div className={`bg-gray-200 rounded ${animate ? 'animate-pulse' : ''} ${className}`}></div>
+)
+
+const SkeletonText = ({ lines = 1, className = "" }) => (
+  <div className={`space-y-2 ${className}`}>
+    {[...Array(lines)].map((_, i) => (
+      <SkeletonBox 
+        key={i} 
+        className={`h-4 ${i === lines - 1 ? 'w-3/4' : 'w-full'}`} 
+      />
+    ))}
+  </div>
+)
+
+const SkeletonCard = ({ children, className = "" }) => (
+  <div className={`bg-white rounded-lg shadow-sm border overflow-hidden ${className}`}>
+    {children}
+  </div>
+)
+
+// Expenses List Item Skeleton
+const ExpenseItemSkeleton = () => (
+  <div className="p-4">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center space-x-3 flex-1">
+        <SkeletonBox className="w-12 h-12 rounded-lg" />
+        <div className="flex-1">
+          <div className="flex items-center space-x-2 mb-2">
+            <SkeletonBox className="w-24 h-5 rounded" />
+            <SkeletonBox className="w-16 h-4 rounded-full" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <SkeletonText lines={2} />
+            <SkeletonText lines={2} />
+          </div>
+        </div>
+      </div>
+      <div className="text-right">
+        <SkeletonBox className="w-20 h-6 rounded mb-1" />
+        <SkeletonBox className="w-16 h-4 rounded" />
+      </div>
+    </div>
+  </div>
+)
+
+// Main Expenses Skeleton
+const ExpensesSkeleton = () => (
+  <div className="min-h-screen bg-gray-50">
+    {/* Header Skeleton */}
+    <div className="bg-white shadow-sm border-b sticky top-0 z-10">
+      <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="flex items-center justify-between">
+          {/* Left section skeleton */}
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <SkeletonBox className="w-5 h-5 rounded" />
+              <SkeletonBox className="w-12 h-5 rounded" />
+            </div>
+            <div className="h-6 w-px bg-gray-300"></div>
+            <div className="flex items-center space-x-3">
+              <SkeletonBox className="w-9 h-9 rounded-lg" />
+              <div>
+                <SkeletonBox className="w-32 h-6 rounded mb-1" />
+                <SkeletonBox className="w-40 h-4 rounded" />
+              </div>
+            </div>
+          </div>
+          {/* Right section skeleton */}
+          <SkeletonBox className="w-28 h-10 rounded-lg" />
+        </div>
+      </div>
+    </div>
+
+    <div className="max-w-7xl mx-auto px-4 py-6">
+      {/* Stats and Chart Grid Skeleton */}
+      <div className="grid grid-cols-12 gap-4 mb-6">
+        {/* Left: Stats Card Skeleton */}
+        <div className="col-span-3">
+          <SkeletonCard className="p-6 h-full">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <SkeletonBox className="w-20 h-4 rounded mb-2" />
+                  <SkeletonBox className="w-24 h-8 rounded" />
+                </div>
+                <SkeletonBox className="w-12 h-12 rounded-lg" />
+              </div>
+              <div className="border-t pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <SkeletonBox className="w-24 h-4 rounded mb-2" />
+                    <SkeletonBox className="w-16 h-8 rounded" />
+                  </div>
+                  <SkeletonBox className="w-12 h-12 rounded-lg" />
+                </div>
+              </div>
+            </div>
+          </SkeletonCard>
+        </div>
+
+        {/* Center: Chart Skeleton */}
+        <div className="col-span-6">
+          <SkeletonCard className="p-4 h-full">
+            <div className="flex items-center justify-between mb-4">
+              <SkeletonBox className="w-32 h-6 rounded" />
+              <SkeletonBox className="w-24 h-4 rounded" />
+            </div>
+            <SkeletonBox className="w-full h-64 rounded-lg" />
+          </SkeletonCard>
+        </div>
+
+        {/* Right: Filters Skeleton */}
+        <div className="col-span-3">
+          <SkeletonCard className="p-4 h-full">
+            <div className="flex items-center justify-between mb-3">
+              <SkeletonBox className="w-16 h-5 rounded" />
+              <SkeletonBox className="w-12 h-4 rounded" />
+            </div>
+            <div className="space-y-3">
+              {/* Date Range */}
+              <div>
+                <SkeletonBox className="w-20 h-4 rounded mb-1" />
+                <div className="grid grid-cols-2 gap-2">
+                  <SkeletonBox className="w-full h-8 rounded" />
+                  <SkeletonBox className="w-full h-8 rounded" />
+                </div>
+              </div>
+              {/* Search */}
+              <div>
+                <SkeletonBox className="w-16 h-4 rounded mb-1" />
+                <SkeletonBox className="w-full h-8 rounded" />
+              </div>
+              {/* Filter */}
+              <div>
+                <SkeletonBox className="w-24 h-4 rounded mb-1" />
+                <SkeletonBox className="w-full h-8 rounded" />
+              </div>
+            </div>
+          </SkeletonCard>
+        </div>
+      </div>
+
+      {/* Results Info Skeleton */}
+      <div className="flex items-center justify-between mb-4">
+        <SkeletonBox className="w-40 h-6 rounded" />
+        <SkeletonBox className="w-32 h-5 rounded" />
+      </div>
+
+      {/* Expenses List Skeleton */}
+      <SkeletonCard>
+        <div className="divide-y divide-gray-100">
+          {[...Array(5)].map((_, i) => (
+            <ExpenseItemSkeleton key={i} />
+          ))}
+        </div>
+      </SkeletonCard>
+    </div>
+  </div>
+)
+
 function Expenses() {
   const { user } = useSelector(state => state.auth);
 
@@ -23,9 +185,10 @@ function Expenses() {
   const [filterType, setFilterType] = useState('all');
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Start with true for initial load
   const [refresh, setRefresh] = useState(0);
   const [site, setSite] = useState();
+  const [fadeIn, setFadeIn] = useState(false);
 
   const allExpenses = useSelector((state) => state.expense.expenses);
 
@@ -42,8 +205,11 @@ function Expenses() {
 
 
   useEffect(() => {
-    if (!site) fetchSite();
-    fetchExpenses();
+    const loadData = async () => {
+      if (!site) await fetchSite();
+      await fetchExpenses();
+    };
+    loadData();
   }, [id, from, to, dispatch]);
 
   const fetchSite = async () => {
@@ -70,6 +236,8 @@ function Expenses() {
       console.error("Error fetching expense:", error);
     } finally {
       setIsLoading(false);
+      // Trigger fade-in animation after loading
+      setTimeout(() => setFadeIn(true), 50);
     }
   };
 
@@ -118,8 +286,13 @@ function Expenses() {
     }).format(amount);
   };
 
+  // Show skeleton while loading
+  if (isLoading && !allExpenses?.length) {
+    return <ExpensesSkeleton />;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen bg-gray-50 transition-all duration-700 ${fadeIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
       {/* Compact Header */}
       <div className="bg-white shadow-sm border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-3">
@@ -176,7 +349,7 @@ function Expenses() {
 
           {/* Left: Combined Stats Card */}
           <div className="col-span-3">
-            <div className="bg-white rounded-lg shadow-sm border p-6 h-full flex flex-col justify-center">
+            <div className={`bg-white rounded-lg shadow-sm border p-6 h-full flex flex-col justify-center transform transition-all duration-500 ${fadeIn ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -208,7 +381,7 @@ function Expenses() {
           </div>
 
           {/* Center: Chart Section */}
-          <div className="col-span-6">
+          <div className={`col-span-6 transition-all duration-500 delay-100 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
             <ExpenseChart
               siteId={id}
               refresh={refresh}
@@ -217,7 +390,7 @@ function Expenses() {
 
           {/* Right: Filters */}
           <div className="col-span-3">
-            <div className="bg-white rounded-lg shadow-sm border p-4 h-full">
+            <div className={`bg-white rounded-lg shadow-sm border p-4 h-full transition-all duration-500 delay-200 ${fadeIn ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'}`}>
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-base font-semibold text-gray-700">Filters</h3>
@@ -306,7 +479,7 @@ function Expenses() {
 
         {/* Add Expense Form */}
         {showAddForm && (
-          <div className="mb-6">
+          <div className={`mb-6 transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`} style={{ transitionDelay: '300ms' }}>
             <AddExpenseForm
               siteId={id}
               onClose={handleCloseForm}
@@ -315,7 +488,7 @@ function Expenses() {
         )}
 
         {/* Results Info */}
-        <div className="flex items-center justify-between mb-4">
+        <div className={`flex items-center justify-between mb-4 transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`} style={{ transitionDelay: '400ms' }}>
           <h2 className="text-lg font-semibold text-gray-900">
             Expense Records
             {(from && to) && (
@@ -335,13 +508,17 @@ function Expenses() {
         </div>
 
         {/* Expenses List */}
-        <div className="bg-white rounded-lg shadow-sm border">
-          {isLoading ? (
+        <div className={`bg-white rounded-lg shadow-sm border transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`} style={{ transitionDelay: '500ms' }}>
+          {isLoading && from && to ? (
             <Loader message={"Loading expenses..."} />
           ) : filteredExpenses && filteredExpenses.length > 0 ? (
             <div className="divide-y divide-gray-100">
-              {filteredExpenses.map(expense => (
-                <div key={expense._id} className="hover:bg-gray-50 transition-colors">
+              {filteredExpenses.map((expense, index) => (
+                <div 
+                  key={expense._id} 
+                  className={`hover:bg-gray-50 transition-all duration-300 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'}`}
+                  style={{ transitionDelay: `${600 + index * 50}ms` }}
+                >
                   <Expense
                     key={expense._id}
                     id={expense._id}

@@ -27,26 +27,33 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
   const [selectedPage, setSelectedPage] = useState('settlement');
   const [settledCheck, setSettledCheck] = useState(isSettled);
   const [localIsSettled, setLocalIsSettled] = useState(isSettled)
+  const [loading, setLoading] = useState(true);
+  const [fadeIn, setFadeIn] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
-    const fetchEarn = async () => {
+    const fetchData = async () => {
       try {
-        const earn = await getEarnByWorker(workerId);
-        dispatch(setEarn(earn))
+        setLoading(true);
+        const [earnData, advanceData] = await Promise.all([
+          getEarnByWorker(workerId),
+          getAdvancesByWorker(workerId)
+        ]);
+        
+        dispatch(setEarn(earnData));
+        dispatch(setAdvances(advanceData));
+        setDataLoaded(true);
       } catch (error) {
-        console.error("Error while fetching earn", error);
+        console.error("Error while fetching data", error);
+        setDataLoaded(true);
+      } finally {
+        setLoading(false);
+        // Trigger fade-in animation after loading
+        setTimeout(() => setFadeIn(true), 50);
       }
-    }
-    const fetchAdvance = async () => {
-      try {
-        const advance = await getAdvancesByWorker(workerId);
-        dispatch(setAdvances(advance))
-      } catch (error) {
-        console.error("Error while fetching advance", error);
-      }
-    }
-    fetchEarn()
-    fetchAdvance()
+    };
+    
+    fetchData();
   }, [dispatch, workerId])
 
   const handleSettlement = async (e) => {
@@ -91,11 +98,23 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
 
   const totalPayable = totalEarn - totalAdvances;
 
+  // Show loading state
+  if (loading || !dataLoaded) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center space-y-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <p className="text-gray-600 text-sm">Loading worker details...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <>
+    <div className={`transition-all duration-700 ${fadeIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
       {/* Settled Banner */}
       {localIsSettled && (
-        <div className="mb-4 bg-gray-100 border border-gray-300 rounded-lg p-4">
+        <div className={`mb-4 bg-gray-100 border border-gray-300 rounded-lg p-4 transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'}`}>
           <div className="flex items-center justify-center space-x-3">
             <div className="p-2 bg-gray-200 rounded-lg">
               <Lock className="w-5 h-5 text-gray-700" />
@@ -108,7 +127,7 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
         </div>
       )}
 
-      <nav className={`rounded-lg shadow-md border transition-all duration-200 ${localIsSettled
+      <nav className={`rounded-lg shadow-md border transition-all duration-500 delay-100 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'} ${localIsSettled
         ? 'bg-gray-100 border-gray-300'
         : 'bg-white border-gray-200'
         }`}>
@@ -193,7 +212,7 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
       </nav>
 
       {selectedPage === 'advance' ? (
-        <div className={`space-y-4 p-4 min-h-screen ${localIsSettled ? 'bg-gray-50' : 'bg-gray-50'}`}>
+        <div className={`space-y-4 p-4 min-h-screen transition-all duration-500 delay-200 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'} ${localIsSettled ? 'bg-gray-50' : 'bg-gray-50'}`}>
           {/* Header Section */}
           <div className={`flex items-center justify-between p-4 rounded-xl shadow-sm ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
             <div className="flex items-center space-x-4">
@@ -233,7 +252,7 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
 
           {/* Add Advance Form - Only show when needed */}
           {showAddForm && !localIsSettled && (
-            <div className="bg-white rounded-xl shadow-sm">
+            <div className={`bg-white rounded-xl shadow-sm transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'}`} style={{ transitionDelay: '300ms' }}>
               <AddAdvanceForm
                 workerId={workerId}
                 onClose={handleCloseForm}
@@ -243,29 +262,34 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
 
           {/* Advances List */}
           {allAdvance && allAdvance.length > 0 ? (
-            <div className={`rounded-xl shadow-sm overflow-hidden ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
+            <div className={`rounded-xl shadow-sm overflow-hidden transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'} ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`} style={{ transitionDelay: '400ms' }}>
               <div className={`p-4 ${localIsSettled ? 'border-b border-gray-300' : 'border-b border-gray-100'}`}>
                 <h3 className={`text-lg font-semibold ${localIsSettled ? 'text-gray-800' : 'text-gray-900'}`}>Advance History</h3>
               </div>
               <div className="space-y-0">
-                {allAdvance.map(advance => (
-                  <Advance
-                    key={advance._id}
-                    id={advance._id}
-                    siteId={siteId}
-                    amount={advance.amount}
-                    date={advance.date}
-                    note={advance.note}
-                    createdAt={advance.createdAt}
-                    isSettled={isSettled}
-                    isSiteCompleted={isSiteCompleted}
-                  />
+                {allAdvance.map((advance, index) => (
+                  <div 
+                    key={advance._id} 
+                    className={`transition-all duration-300 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-1 opacity-0'}`}
+                    style={{ transitionDelay: `${500 + index * 50}ms` }}
+                  >
+                    <Advance
+                      id={advance._id}
+                      siteId={siteId}
+                      amount={advance.amount}
+                      date={advance.date}
+                      note={advance.note}
+                      createdAt={advance.createdAt}
+                      isSettled={isSettled}
+                      isSiteCompleted={isSiteCompleted}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
           ) : (
             /* Empty State */
-            <div className={`flex flex-col items-center justify-center py-12 rounded-xl shadow-sm ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
+            <div className={`flex flex-col items-center justify-center py-12 rounded-xl shadow-sm transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'} ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`} style={{ transitionDelay: '400ms' }}>
               <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-4 ${localIsSettled ? 'bg-gray-200' : 'bg-gray-100'}`}>
                 <IndianRupee className={`w-12 h-12 ${localIsSettled ? 'text-gray-500' : 'text-gray-400'}`} />
               </div>
@@ -297,7 +321,7 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
       ) : (<></>)}
 
       {selectedPage === 'earn' ? (
-        <div className={`space-y-4 p-4 min-h-screen ${localIsSettled ? 'bg-gray-50' : 'bg-gray-50'}`}>
+        <div className={`space-y-4 p-4 min-h-screen transition-all duration-500 delay-200 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'} ${localIsSettled ? 'bg-gray-50' : 'bg-gray-50'}`}>
           {/* Header Section */}
           <div className={`flex items-center justify-between p-4 rounded-xl shadow-sm ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
             <div className="flex items-center space-x-4">
@@ -337,7 +361,7 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
 
           {/* Add Earning Form - Only show when needed */}
           {showAddForm && !localIsSettled && (
-            <div className="bg-white rounded-xl shadow-sm">
+            <div className={`bg-white rounded-xl shadow-sm transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'}`} style={{ transitionDelay: '300ms' }}>
               <AddEarnForm
                 workerId={workerId}
                 onClose={handleCloseForm}
@@ -347,29 +371,34 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
 
           {/* Earning List */}
           {allEarn && allEarn.length > 0 ? (
-            <div className={`rounded-xl shadow-sm overflow-hidden ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
+            <div className={`rounded-xl shadow-sm overflow-hidden transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'} ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`} style={{ transitionDelay: '400ms' }}>
               <div className={`p-4 ${localIsSettled ? 'border-b border-gray-300' : 'border-b border-gray-100'}`}>
                 <h3 className={`text-lg font-semibold ${localIsSettled ? 'text-gray-800' : 'text-gray-900'}`}>Earning History</h3>
               </div>
               <div className="space-y-0">
-                {allEarn.map(earn => (
-                  <Earn
-                    key={earn._id}
-                    id={earn._id}
-                    siteId={siteId}
-                    amount={earn.amount}
-                    date={earn.date}
-                    note={earn.note}
-                    createdAt={earn.createdAt}
-                    isSettled={isSettled}
-                    isSiteCompleted={isSiteCompleted}
-                  />
+                {allEarn.map((earn, index) => (
+                  <div 
+                    key={earn._id} 
+                    className={`transition-all duration-300 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-1 opacity-0'}`}
+                    style={{ transitionDelay: `${500 + index * 50}ms` }}
+                  >
+                    <Earn
+                      id={earn._id}
+                      siteId={siteId}
+                      amount={earn.amount}
+                      date={earn.date}
+                      note={earn.note}
+                      createdAt={earn.createdAt}
+                      isSettled={isSettled}
+                      isSiteCompleted={isSiteCompleted}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
           ) : (
             /* Empty State */
-            <div className={`flex flex-col items-center justify-center py-12 rounded-xl shadow-sm ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
+            <div className={`flex flex-col items-center justify-center py-12 rounded-xl shadow-sm transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'} ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`} style={{ transitionDelay: '400ms' }}>
               <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-4 ${localIsSettled ? 'bg-gray-200' : 'bg-gray-100'}`}>
                 <IndianRupee className={`w-12 h-12 ${localIsSettled ? 'text-gray-500' : 'text-gray-400'}`} />
               </div>
@@ -398,7 +427,7 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
       ) : (<></>)}
 
       {selectedPage === 'settlement' ? (
-        <div className={`space-y-6 p-4 min-h-screen ${localIsSettled ? 'bg-gray-50' : 'bg-gray-50'}`}>
+        <div className={`space-y-6 p-4 min-h-screen transition-all duration-500 delay-200 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'} ${localIsSettled ? 'bg-gray-50' : 'bg-gray-50'}`}>
           {/* Header Section */}
           <div className={`p-4 rounded-xl shadow-sm ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
             <div className="flex items-center space-x-3">
@@ -420,7 +449,7 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
           {/* Three Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Earnings Section */}
-            <div className={`rounded-xl shadow-sm overflow-hidden ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
+            <div className={`rounded-xl shadow-sm overflow-hidden transition-all duration-500 ${fadeIn ? 'scale-100 opacity-100' : 'scale-95 opacity-0'} ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`} style={{ transitionDelay: '300ms' }}>
               <div className={`p-3 ${localIsSettled ? 'bg-gray-200 text-gray-800' : 'bg-green-100 text-green-800'}`}>
                 <div className="flex items-center justify-between">
                   <div>
@@ -437,7 +466,7 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
                 {allEarn && allEarn.length > 0 ? (
                   <div className={`${localIsSettled ? 'divide-y divide-gray-300' : 'divide-y divide-gray-100'}`}>
                     {allEarn.map((earn, index) => (
-                      <div key={earn._id || index} className={`p-3 transition-colors ${localIsSettled ? 'hover:bg-gray-200' : 'hover:bg-gray-50'}`}>
+                      <div key={earn._id || index} className={`p-3 transition-all duration-300 ${fadeIn ? 'translate-x-0 opacity-100' : 'translate-x-2 opacity-0'} ${localIsSettled ? 'hover:bg-gray-200' : 'hover:bg-gray-50'}`} style={{ transitionDelay: `${400 + index * 30}ms` }}>
                         <div className="flex items-center justify-between mb-1">
                           <div className={`flex items-center text-xs ${localIsSettled ? 'text-gray-700' : 'text-gray-500'}`}>
                             <Calendar className="w-3 h-3 mr-1" />
@@ -471,7 +500,7 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
             </div>
 
             {/* Advances Section */}
-            <div className={`rounded-xl shadow-sm overflow-hidden ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
+            <div className={`rounded-xl shadow-sm overflow-hidden transition-all duration-500 ${fadeIn ? 'scale-100 opacity-100' : 'scale-95 opacity-0'} ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`} style={{ transitionDelay: '400ms' }}>
               <div className={`p-3 ${localIsSettled ? 'bg-gray-200 text-gray-800' : 'bg-red-100 text-red-800'}`}>
                 <div className="flex items-center justify-between">
                   <div>
@@ -488,7 +517,7 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
                 {allAdvance && allAdvance.length > 0 ? (
                   <div className={`${localIsSettled ? 'divide-y divide-gray-300' : 'divide-y divide-gray-100'}`}>
                     {allAdvance.map((advance, index) => (
-                      <div key={advance._id || index} className={`p-3 transition-colors ${localIsSettled ? 'hover:bg-gray-200' : 'hover:bg-gray-50'}`}>
+                      <div key={advance._id || index} className={`p-3 transition-all duration-300 ${fadeIn ? 'translate-x-0 opacity-100' : 'translate-x-2 opacity-0'} ${localIsSettled ? 'hover:bg-gray-200' : 'hover:bg-gray-50'}`} style={{ transitionDelay: `${400 + index * 30}ms` }}>
                         <div className="flex items-center justify-between mb-1">
                           <div className={`flex items-center text-xs ${localIsSettled ? 'text-gray-700' : 'text-gray-500'}`}>
                             <Calendar className="w-3 h-3 mr-1" />
@@ -522,7 +551,7 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
             </div>
 
             {/* Final Payment Section */}
-            <div className={`rounded-xl shadow-sm overflow-hidden ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`}>
+            <div className={`rounded-xl shadow-sm overflow-hidden transition-all duration-500 ${fadeIn ? 'scale-100 opacity-100' : 'scale-95 opacity-0'} ${localIsSettled ? 'bg-gray-100' : 'bg-white'}`} style={{ transitionDelay: '500ms' }}>
               <div className={`p-3 ${localIsSettled
                 ? 'bg-gray-200 text-gray-800'
                 : totalPayable >= 0
@@ -594,7 +623,7 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
                 {user.role === 'manager' ? (
                   <>
                     {localIsSettled ? (
-                      <div className="bg-gray-200 p-4 rounded-lg border border-gray-300">
+                      <div className={`bg-gray-200 p-4 rounded-lg border border-gray-300 transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'}`} style={{ transitionDelay: '600ms' }}>
                         <div className="text-center">
                           <div className="flex items-center justify-center space-x-2 mb-3">
                             <div className="p-2 bg-gray-300 rounded-lg">
@@ -614,7 +643,7 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
                         </div>
                       </div>
                     ) : (
-                      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                      <div className={`bg-gray-50 p-4 rounded-lg border border-gray-200 transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'}`} style={{ transitionDelay: '600ms' }}>
                         <form onSubmit={handleSettlement} className="space-y-4">
                           {/* Header */}
                           <div className="text-center mb-4">
@@ -706,7 +735,7 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
           </div>
         </div>
       ) : (<></>)}
-    </>
+    </div>
   )
 }
 

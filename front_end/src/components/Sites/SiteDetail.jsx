@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, MapPin, User, Phone, Calendar, ImageIcon, UserCheck, Users, IndianRupee, FileText, Edit, Trash2, X, Download } from 'lucide-react'
+import { ArrowLeft, MapPin, User, Phone, Calendar, Image, UserCheck, Users, IndianRupee, FileText, Edit, Trash2, X, Download } from 'lucide-react'
 import { getSite } from '../../services/siteService';
 import { Memos } from '../index';
 import { getWorkersBySite } from '../../services/workerService'
@@ -14,6 +14,144 @@ import { Link } from 'react-router-dom';
 import { Loader } from '../index';
 const API_URL = "http://localhost:3000";
 
+// Skeleton Components
+const SkeletonBox = ({ className = "", animate = true }) => (
+  <div className={`bg-gray-200 rounded ${animate ? 'animate-pulse' : ''} ${className}`}></div>
+)
+
+const SkeletonText = ({ lines = 1, className = "" }) => (
+  <div className={`space-y-2 ${className}`}>
+    {[...Array(lines)].map((_, i) => (
+      <SkeletonBox 
+        key={i} 
+        className={`h-4 ${i === lines - 1 ? 'w-3/4' : 'w-full'}`} 
+      />
+    ))}
+  </div>
+)
+
+const SkeletonCard = ({ children, className = "" }) => (
+  <div className={`bg-white rounded-2xl shadow-lg overflow-hidden ${className}`}>
+    {children}
+  </div>
+)
+
+// Site Detail Skeleton
+const SiteDetailSkeleton = () => (
+  <div className="min-h-screen bg-gray-50">
+    {/* Back Button Skeleton */}
+    <div className="p-6 flex items-center justify-between">
+      <div className="flex items-center space-x-2">
+        <SkeletonBox className="w-5 h-5 rounded" />
+        <SkeletonBox className="w-12 h-5 rounded" />
+      </div>
+      <div className="flex items-center space-x-4">
+        <SkeletonBox className="w-24 h-8 rounded-lg" />
+        <SkeletonBox className="w-20 h-6 rounded-full" />
+      </div>
+    </div>
+
+    <div className="px-6 pb-6 max-w-7xl mx-auto">
+      {/* Top Section Skeleton */}
+      <div className="grid lg:grid-cols-5 gap-6 mb-6">
+        {/* Left Side - Site and Manager Details Skeleton */}
+        <div className="lg:col-span-3">
+          <SkeletonCard className="h-full">
+            {/* Site Header Skeleton */}
+            <div className="relative h-40">
+              <SkeletonBox className="w-full h-full" />
+              {/* Manager Image Skeleton */}
+              <div className="absolute top-3 right-3 w-12 h-12 rounded-full">
+                <SkeletonBox className="w-full h-full rounded-full" />
+              </div>
+              {/* Site Name Skeleton */}
+              <div className="absolute bottom-4 left-4">
+                <SkeletonBox className="w-48 h-8 rounded" />
+              </div>
+            </div>
+
+            {/* Details Skeleton */}
+            <div className="p-5">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Site Information Skeleton */}
+                <div>
+                  <div className="flex items-center mb-4">
+                    <SkeletonBox className="w-4 h-4 rounded mr-2" />
+                    <SkeletonBox className="w-32 h-5 rounded" />
+                  </div>
+                  <div className="space-y-3">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="flex justify-between items-center py-1">
+                        <SkeletonBox className="w-16 h-4 rounded" />
+                        <SkeletonBox className="w-24 h-4 rounded" />
+                      </div>
+                    ))}
+                    <div className="pt-3 border-t border-gray-100">
+                      <SkeletonBox className="w-40 h-12 rounded-xl" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Manager Information Skeleton */}
+                <div>
+                  <div className="flex items-center mb-4">
+                    <SkeletonBox className="w-4 h-4 rounded mr-2" />
+                    <SkeletonBox className="w-24 h-5 rounded" />
+                  </div>
+                  <div className="space-y-3">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="flex justify-between items-center py-1">
+                        <SkeletonBox className="w-12 h-4 rounded" />
+                        <SkeletonBox className="w-28 h-4 rounded" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </SkeletonCard>
+        </div>
+
+        {/* Right Side - Navigation Cards Skeleton */}
+        <div className="lg:col-span-2 flex flex-col space-y-4 h-full">
+          {/* Workers Card Skeleton */}
+          <SkeletonCard className="flex-1">
+            <div className="p-6">
+              <SkeletonBox className="w-full h-20 rounded" />
+            </div>
+            <div className="p-6 bg-gray-50">
+              <SkeletonBox className="w-32 h-5 rounded" />
+            </div>
+          </SkeletonCard>
+
+          {/* Expenses Card Skeleton */}
+          <SkeletonCard className="flex-1">
+            <div className="p-6">
+              <SkeletonBox className="w-full h-20 rounded" />
+            </div>
+            <div className="p-6 bg-gray-50">
+              <SkeletonBox className="w-32 h-5 rounded" />
+            </div>
+          </SkeletonCard>
+        </div>
+      </div>
+
+      {/* Notes & Reminders Skeleton */}
+      <SkeletonCard>
+        <div className="p-4">
+          <SkeletonBox className="w-full h-16 rounded" />
+        </div>
+        <div className="p-6">
+          <div className="space-y-4">
+            <SkeletonBox className="w-full h-32 rounded" />
+            <SkeletonBox className="w-3/4 h-20 rounded" />
+          </div>
+        </div>
+      </SkeletonCard>
+    </div>
+  </div>
+)
+
 function SiteDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -25,6 +163,7 @@ function SiteDetail() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [showReportForm, setShowReportForm] = useState(false);
   const { user } = useSelector((state) => state.auth);
+  const [fadeIn, setFadeIn] = useState(false);
 
   useEffect(() => {
     const fetchWorkers = async () => {
@@ -61,12 +200,16 @@ function SiteDetail() {
           setManager(manager)
 
           setLoading(false);
+          // Trigger fade-in animation after loading
+          setTimeout(() => setFadeIn(true), 50);
         }
       })
       .catch(err => {
         if (isMounted) {
           console.error("Error while fetching site from DB:", err);
           setLoading(false);
+          // Trigger fade-in animation even on error
+          setTimeout(() => setFadeIn(true), 50);
         }
       });
     return () => {
@@ -127,14 +270,10 @@ function SiteDetail() {
     setShowReportForm(false);
   };
   console.log(site);
-  
 
+  // Show skeleton while loading
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen w-full -mt-12">
-        <Loader message={"Loading site details..."} />
-      </div>
-    );
+    return <SiteDetailSkeleton />;
   }
 
   if (!site) {
@@ -156,7 +295,7 @@ function SiteDetail() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
+      <div className={`min-h-screen bg-gray-50 transition-all duration-700 ${fadeIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
         {/* Back Button */}
         <div className="p-6 flex items-center justify-between">
           {/* Back Button */}
@@ -220,7 +359,7 @@ function SiteDetail() {
 
             {/* Left Side - Site and Manager Details */}
             <div className="lg:col-span-3">
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden h-full">
+              <div className={`bg-white rounded-2xl shadow-lg overflow-hidden h-full transform transition-all duration-500 ${fadeIn ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
 
                 {/* Better Site Header */}
                 <div
@@ -236,13 +375,13 @@ function SiteDetail() {
                         onError={handleImageError}
                       />
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 hidden">
-                        <ImageIcon className="w-12 h-12 text-white/70 mb-1" />
+                        <Image className="w-12 h-12 text-white/70 mb-1" />
                         <p className="text-white/80 text-xs">No image available</p>
                       </div>
                     </>
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
-                      <ImageIcon className="w-12 h-12 text-white/70 mb-1" />
+                      <Image className="w-12 h-12 text-white/70 mb-1" />
                       <p className="text-white/80 text-xs">No image available</p>
                     </div>
                   )}
@@ -286,7 +425,7 @@ function SiteDetail() {
                   <div className="grid md:grid-cols-2 gap-6">
 
                     {/* Site Information */}
-                    <div>
+                    <div className={`transform transition-all duration-500 delay-100 ${fadeIn ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'}`}>
                       <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                         <MapPin className="w-4 h-4 text-blue-600 mr-2" />
                         Site Information
@@ -316,7 +455,7 @@ function SiteDetail() {
                     </div>
 
                     {/* Manager Information */}
-                    <div>
+                    <div className={`transform transition-all duration-500 delay-200 ${fadeIn ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'}`}>
                       <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                         <UserCheck className="w-4 h-4 text-emerald-600 mr-2" />
                         Site Manager
@@ -354,7 +493,8 @@ function SiteDetail() {
               {/* Workers Card */}
               <Link
                 to={`/site/${id}/workers`}
-                className="flex-1 bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-200 transform hover:scale-105 group"
+                className={`flex-1 bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-200 transform hover:scale-105 group ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
+                style={{ transitionDelay: '300ms' }}
               >
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white">
                   <div className="flex items-center justify-between">
@@ -376,7 +516,8 @@ function SiteDetail() {
               {/* Expenses Card */}
               <Link
                 to={`/site/${id}/expenses`}
-                className="flex-1 bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-200 transform hover:scale-105 group"
+                className={`flex-1 bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-200 transform hover:scale-105 group ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
+                style={{ transitionDelay: '400ms' }}
               >
                 <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-6 text-white">
                   <div className="flex items-center justify-between">
@@ -403,7 +544,7 @@ function SiteDetail() {
           )}
 
           {/* Notes & Reminders - Full Width */}
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`} style={{ transitionDelay: '500ms' }}>
             <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-4 text-white">
               <div className="flex items-center justify-between">
                 <div>
@@ -425,7 +566,7 @@ function SiteDetail() {
 
       {/* Image Modal */}
       {selectedImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300">
           <div className="relative max-w-4xl max-h-[90vh]">
             <img
               src={selectedImage}
