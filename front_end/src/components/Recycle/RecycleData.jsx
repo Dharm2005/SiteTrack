@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import DeletedSites from './DeletedSites'
 import DeletedManagers from './DeletedManagers';
 import { useSelector } from 'react-redux';
@@ -6,6 +6,89 @@ import DeletedExpenses from './DeletedExpenses';
 import DeletedWorkers from './DeletedWorkers';
 import DeletedMemos from './DeletedMemos';
 import { useParams } from 'react-router-dom';
+
+// Skeleton Components
+const SkeletonPulse = ({ className }) => (
+  <div className={`bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%] rounded ${className}`} 
+       style={{ animation: 'shimmer 1.5s infinite' }} />
+);
+
+const TableSkeletonRow = () => (
+  <div className="bg-white rounded-xl p-6 mb-4 shadow-sm border border-gray-100" 
+       style={{ animation: 'fadeIn 0.5s ease-out' }}>
+    <div className="flex items-center gap-6">
+      <SkeletonPulse className="w-16 h-16 rounded-lg" />
+      <div className="flex-1 grid grid-cols-7 gap-4 items-center">
+        <div className="space-y-2">
+          <SkeletonPulse className="h-4 w-24" />
+          <SkeletonPulse className="h-3 w-16" />
+        </div>
+        <div className="space-y-2">
+          <SkeletonPulse className="h-4 w-20" />
+          <SkeletonPulse className="h-3 w-14" />
+        </div>
+        <div className="space-y-2">
+          <SkeletonPulse className="h-4 w-28" />
+          <SkeletonPulse className="h-3 w-20" />
+        </div>
+        <div className="space-y-2">
+          <SkeletonPulse className="h-4 w-16" />
+          <SkeletonPulse className="h-3 w-12" />
+        </div>
+        <div className="space-y-2">
+          <SkeletonPulse className="h-4 w-20" />
+        </div>
+        <div className="space-y-2">
+          <SkeletonPulse className="h-4 w-24" />
+        </div>
+        <div className="space-y-2">
+          <SkeletonPulse className="h-4 w-32" />
+          <SkeletonPulse className="h-3 w-24" />
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <SkeletonPulse className="w-10 h-10 rounded-lg" />
+        <SkeletonPulse className="w-10 h-10 rounded-lg" />
+      </div>
+    </div>
+  </div>
+);
+
+const AdminTableSkeletonRow = () => (
+  <div className="bg-white rounded-xl p-6 mb-4 shadow-sm border border-gray-100" 
+       style={{ animation: 'fadeIn 0.5s ease-out' }}>
+    <div className="flex items-center gap-6">
+      <SkeletonPulse className="w-20 h-20 rounded-lg" />
+      <div className="flex-1 grid grid-cols-3 gap-8 items-center">
+        <div className="space-y-3">
+          <SkeletonPulse className="h-5 w-32" />
+          <SkeletonPulse className="h-3 w-48" />
+        </div>
+        <div className="space-y-3">
+          <SkeletonPulse className="h-4 w-24" />
+          <SkeletonPulse className="h-4 w-28" />
+        </div>
+        <div className="space-y-3">
+          <SkeletonPulse className="h-4 w-36" />
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <SkeletonPulse className="w-10 h-10 rounded-lg" />
+        <SkeletonPulse className="w-10 h-10 rounded-lg" />
+      </div>
+    </div>
+  </div>
+);
+
+const TableSkeleton = ({ rows = 3, isAdmin = false }) => (
+  <div>
+    {[...Array(rows)].map((_, i) => (
+      <div key={i} style={{ animationDelay: `${i * 0.1}s` }}>
+        {isAdmin ? <AdminTableSkeletonRow /> : <TableSkeletonRow />}
+      </div>
+    ))}
+  </div>
+);
 
 function RecycleData() {
   const { user } = useSelector((state) => state.auth);
@@ -22,9 +105,65 @@ function RecycleData() {
   };
 
   const [selectedPage, setSelectedPage] = useState(getDefaultPage());
+  const [isLoading, setIsLoading] = useState(true);
+  const [showContent, setShowContent] = useState(false);
+
+  // Handle page change with loading state
+  const handlePageChange = (page) => {
+    setShowContent(false);
+    setIsLoading(true);
+    setSelectedPage(page);
+  };
+
+  // Simulate loading when page changes
+  useEffect(() => {
+    setIsLoading(true);
+    setShowContent(false);
+    
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      // Small delay before showing content for smooth transition
+      setTimeout(() => setShowContent(true), 50);
+    }, 800); // Adjust this duration as needed
+
+    return () => clearTimeout(timer);
+  }, [selectedPage]);
 
   return (
     <div className="px-6 pt-6">
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .content-enter {
+          animation: slideIn 0.6s ease-out forwards;
+        }
+      `}</style>
+
       <nav className="mb-6">
         <div className="flex items-center justify-between">
           {/* Left side - Heading */}
@@ -45,7 +184,7 @@ function RecycleData() {
             {user.role === 'admin' && (
               <div className="grid grid-cols-2 gap-1 w-64">
                 <button
-                  onClick={() => setSelectedPage("sites")}
+                  onClick={() => handlePageChange("sites")}
                   className={`px-6 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out ${selectedPage === 'sites'
                     ? 'bg-white text-blue-600 shadow-md transform scale-[0.98] border border-blue-100'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
@@ -54,7 +193,7 @@ function RecycleData() {
                   Sites
                 </button>
                 <button
-                  onClick={() => setSelectedPage("managers")}
+                  onClick={() => handlePageChange("managers")}
                   className={`px-6 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out ${selectedPage === 'managers'
                     ? 'bg-white text-blue-600 shadow-md transform scale-[0.98] border border-blue-100'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
@@ -67,7 +206,7 @@ function RecycleData() {
             {user.role === 'manager' && (
               <div className="grid grid-cols-3 gap-1 w-80">
                 <button
-                  onClick={() => setSelectedPage("expenses")}
+                  onClick={() => handlePageChange("expenses")}
                   className={`px-4 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out ${selectedPage === 'expenses'
                     ? 'bg-white text-blue-600 shadow-md transform scale-[0.98] border border-blue-100'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
@@ -76,7 +215,7 @@ function RecycleData() {
                   Expenses
                 </button>
                 <button
-                  onClick={() => setSelectedPage("workers")}
+                  onClick={() => handlePageChange("workers")}
                   className={`px-4 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out ${selectedPage === 'workers'
                     ? 'bg-white text-blue-600 shadow-md transform scale-[0.98] border border-blue-100'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
@@ -85,7 +224,7 @@ function RecycleData() {
                   Workers
                 </button>
                 <button
-                  onClick={() => setSelectedPage("memos")}
+                  onClick={() => handlePageChange("memos")}
                   className={`px-4 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out ${selectedPage === 'memos'
                     ? 'bg-white text-blue-600 shadow-md transform scale-[0.98] border border-blue-100'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
@@ -100,20 +239,29 @@ function RecycleData() {
       </nav>
 
       <div>
-        {selectedPage === 'sites' && (
-          <DeletedSites />
-        )}
-        {selectedPage === 'managers' && (
-          <DeletedManagers />
-        )}
-        {selectedPage === 'expenses' && (
-          <DeletedExpenses siteId = {id} />
-        )}
-        {selectedPage === 'workers' && (
-          <DeletedWorkers siteId = {id} />
-        )}
-        {selectedPage === 'memos' && (
-          <DeletedMemos siteId = {id} />
+        {isLoading ? (
+          <TableSkeleton 
+            rows={3} 
+            isAdmin={selectedPage === 'sites' || selectedPage === 'managers'} 
+          />
+        ) : (
+          <div className={showContent ? 'content-enter' : ''}>
+            {selectedPage === 'sites' && (
+              <DeletedSites />
+            )}
+            {selectedPage === 'managers' && (
+              <DeletedManagers />
+            )}
+            {selectedPage === 'expenses' && (
+              <DeletedExpenses siteId={id} />
+            )}
+            {selectedPage === 'workers' && (
+              <DeletedWorkers siteId={id} />
+            )}
+            {selectedPage === 'memos' && (
+              <DeletedMemos siteId={id} />
+            )}
+          </div>
         )}
       </div>
     </div>

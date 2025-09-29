@@ -11,6 +11,154 @@ import { setEarn } from '../../features/workerEarnSlice';
 import AddEarnForm from './AddEarnForm';
 import { updateWorker } from '../../features/workerSlice';
 
+function SettlementSkeleton() {
+  return (
+    <div className="space-y-6 p-4 min-h-screen bg-gray-50">
+      {/* Header Section Skeleton */}
+      <div className="p-4 rounded-xl shadow-sm bg-white animate-pulse">
+        <div className="flex items-center space-x-3">
+          <div className="p-3 rounded-lg bg-gray-200 w-14 h-14"></div>
+          <div className="flex-1">
+            <div className="h-7 bg-gray-200 rounded w-64 mb-2"></div>
+            <div className="flex items-center space-x-4">
+              <div className="h-4 bg-gray-200 rounded w-32"></div>
+              <div className="h-4 w-1 bg-gray-200 rounded-full"></div>
+              <div className="h-4 bg-gray-200 rounded w-28"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Three Column Layout Skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Earnings Section Skeleton */}
+        <div className="rounded-xl shadow-sm overflow-hidden bg-white animate-pulse">
+          <div className="p-3 bg-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <div className="h-5 bg-gray-300 rounded w-32 mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-24"></div>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-300 w-8 h-8"></div>
+            </div>
+          </div>
+
+          <div className="max-h-80 overflow-y-auto">
+            <div className="divide-y divide-gray-100">
+              {[1, 2, 3].map((item) => (
+                <div key={item} className="p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="h-3 bg-gray-200 rounded w-24"></div>
+                    <div className="h-4 bg-gray-200 rounded w-16"></div>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <div className="w-3 h-3 bg-gray-200 rounded mt-0.5"></div>
+                    <div className="h-3 bg-gray-200 rounded w-full"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="p-3 bg-gray-100 border-t border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="h-4 bg-gray-200 rounded w-28"></div>
+              <div className="h-5 bg-gray-200 rounded w-20"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Advances Section Skeleton */}
+        <div className="rounded-xl shadow-sm overflow-hidden bg-white animate-pulse">
+          <div className="p-3 bg-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <div className="h-5 bg-gray-300 rounded w-32 mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-24"></div>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-300 w-8 h-8"></div>
+            </div>
+          </div>
+
+          <div className="max-h-80 overflow-y-auto">
+            <div className="divide-y divide-gray-100">
+              {[1, 2, 3].map((item) => (
+                <div key={item} className="p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="h-3 bg-gray-200 rounded w-24"></div>
+                    <div className="h-4 bg-gray-200 rounded w-16"></div>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <div className="w-3 h-3 bg-gray-200 rounded mt-0.5"></div>
+                    <div className="h-3 bg-gray-200 rounded w-full"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="p-3 bg-gray-100 border-t border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="h-4 bg-gray-200 rounded w-28"></div>
+              <div className="h-5 bg-gray-200 rounded w-20"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Final Payment Section Skeleton */}
+        <div className="rounded-xl shadow-sm overflow-hidden bg-white animate-pulse">
+          <div className="p-3 bg-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <div className="h-5 bg-gray-300 rounded w-32 mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-24"></div>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-300 w-8 h-8"></div>
+            </div>
+          </div>
+
+          <div className="p-4">
+            <div className="text-center mb-4">
+              <div className="h-10 bg-gray-200 rounded w-32 mx-auto mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-28 mx-auto"></div>
+            </div>
+
+            <div className="space-y-2 mb-4">
+              <div className="flex justify-between items-center">
+                <div className="h-3 bg-gray-200 rounded w-24"></div>
+                <div className="h-3 bg-gray-200 rounded w-16"></div>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="h-3 bg-gray-200 rounded w-24"></div>
+                <div className="h-3 bg-gray-200 rounded w-16"></div>
+              </div>
+              <hr className="border-gray-200" />
+              <div className="flex justify-between items-center">
+                <div className="h-4 bg-gray-200 rounded w-24"></div>
+                <div className="h-4 bg-gray-200 rounded w-20"></div>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <div className="text-center mb-4">
+                <div className="h-4 bg-gray-200 rounded w-32 mx-auto mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-48 mx-auto"></div>
+              </div>
+
+              <div className="flex items-center justify-center space-x-3 p-3 bg-white rounded-lg border border-gray-200 mb-4">
+                <div className="h-5 w-5 bg-gray-200 rounded"></div>
+                <div className="h-4 bg-gray-200 rounded w-36"></div>
+              </div>
+
+              <div className="h-12 bg-gray-200 rounded-lg w-full"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
   const { user } = useSelector(state => state.auth)
   const worker = useSelector(state =>
@@ -101,12 +249,7 @@ function WorkerDetail({ workerId, siteId, workerName, isSiteCompleted }) {
   // Show loading state
   if (loading || !dataLoaded) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="flex flex-col items-center space-y-3">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="text-gray-600 text-sm">Loading worker details...</p>
-        </div>
-      </div>
+      <SettlementSkeleton />
     );
   }
 
