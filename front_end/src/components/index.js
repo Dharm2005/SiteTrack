@@ -52,5 +52,12 @@ export {default as Login} from "./Auth/Login"
 export {default as Signup} from "./Auth/Signup"
 export {default as ChangePass} from "./Auth/ChangePass"
 
+export {default as SitesSkeleton} from "./Loaders/SitesSkeleton"
+export {default as SiteDetailSkeleton} from "./Loaders/SiteDetailSkeleton"
+export {default as ExpensesSkeleton} from "./Loaders/ExpensesSkeleton"
+export {default as WorkersSkeleton} from "./Loaders/WorkersSkeleton"
+export {default as ManagersSkeleton} from "./Loaders/ManagersSkeleton"
+export {default as RecycleSkeleton} from "./Loaders/RecycleSkeleton"
+
 export {default as NotFound} from "./Errors/NotFound"
 export {default as ScrollToTop} from "./Layout/ScrollToTop"

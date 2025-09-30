@@ -1,31 +1,8 @@
 import React, { useState, useMemo, useEffect } from "react";
 import Site from "./Site";
+import {SitesSkeleton} from "../index";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-
-// Skeleton loader component for individual site cards
-const SiteSkeleton = () => (
-  <div className="w-full bg-white rounded-lg shadow-sm border border-gray-200 p-6 animate-pulse">
-    <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
-    <div className="space-y-3">
-      <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-      <div className="flex justify-between items-center pt-4">
-        <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-        <div className="h-8 bg-gray-200 rounded w-20"></div>
-      </div>
-    </div>
-  </div>
-);
-
-// Filter skeleton loader
-const FilterSkeleton = () => (
-  <div className="flex items-center space-x-2 bg-gray-100 rounded-xl p-2 animate-pulse">
-    {[1, 2, 3].map((i) => (
-      <div key={i} className="px-4 py-3 rounded-lg bg-gray-200 h-12 w-24"></div>
-    ))}
-  </div>
-);
 
 function Sites() {
   const allSites = useSelector((state) => state.site.sites);
@@ -82,37 +59,17 @@ function Sites() {
 
   // Show loading state
   if (isLoading || isInitialLoad) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-8 px-6">
-        <div className="max-w-7xl mx-auto">
-          {/* Header Skeleton */}
-          <div className="mb-8 flex items-center justify-between">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-200 rounded w-48 mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-32"></div>
-            </div>
-            <FilterSkeleton />
-          </div>
-
-          {/* Sites Grid Skeleton */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(3)].map((_, index) => (
-              <SiteSkeleton key={index} />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    return <SitesSkeleton />;
   }
+
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-6">
       <div className="max-w-7xl mx-auto">
         {/* Header Section with Filter */}
-        <div 
-          className={`mb-8 flex items-center justify-between transition-all duration-700 transform ${
-            showContent ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-          }`}
+        <div
+          className={`mb-8 flex items-center justify-between transition-all duration-700 transform ${showContent ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+            }`}
         >
           <div>
             <h2 className="text-3xl font-bold text-gray-900 mb-2">All Sites</h2>
@@ -131,10 +88,9 @@ function Sites() {
                 onClick={() => setActiveFilter(option.key)}
                 className={`
                   relative px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center space-x-3 transform
-                  ${
-                    activeFilter === option.key
-                      ? "bg-white text-gray-800 shadow-lg scale-105"
-                      : "text-gray-600 hover:text-gray-800 hover:bg-white/50 hover:scale-102"
+                  ${activeFilter === option.key
+                    ? "bg-white text-gray-800 shadow-lg scale-105"
+                    : "text-gray-600 hover:text-gray-800 hover:bg-white/50 hover:scale-102"
                   }
                 `}
                 style={{
@@ -175,14 +131,13 @@ function Sites() {
                 <span
                   className={`
                     w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center transition-all duration-300
-                    ${
-                      activeFilter === option.key
-                        ? option.key === "all"
-                          ? "bg-purple-500 text-white scale-110"
-                          : option.key === "active"
+                    ${activeFilter === option.key
+                      ? option.key === "all"
+                        ? "bg-purple-500 text-white scale-110"
+                        : option.key === "active"
                           ? "bg-blue-500 text-white scale-110"
                           : "bg-green-500 text-white scale-110"
-                        : "bg-gray-400 text-white"
+                      : "bg-gray-400 text-white"
                     }
                   `}
                 >
@@ -197,11 +152,10 @@ function Sites() {
         {filteredSites && filteredSites.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 auto-rows-fr">
             {filteredSites.map((site, index) => (
-              <div 
-                key={site._id} 
-                className={`w-full transition-all duration-500 transform ${
-                  showContent ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-8 opacity-0 scale-95'
-                }`}
+              <div
+                key={site._id}
+                className={`w-full transition-all duration-500 transform ${showContent ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-8 opacity-0 scale-95'
+                  }`}
                 style={{
                   animationDelay: `${index * 150}ms`,
                   animation: showContent ? 'slideInUp 0.6s ease-out forwards' : 'none'
@@ -224,10 +178,9 @@ function Sites() {
           </div>
         ) : (
           /* Empty State with Animation */
-          <div 
-            className={`flex flex-col items-center justify-center py-16 transition-all duration-700 transform ${
-              showContent ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-            }`}
+          <div
+            className={`flex flex-col items-center justify-center py-16 transition-all duration-700 transform ${showContent ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+              }`}
           >
             <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-4 transform transition-all duration-500 hover:scale-110">
               <svg
