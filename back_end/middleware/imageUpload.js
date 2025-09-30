@@ -14,8 +14,8 @@ const storage = multer.diskStorage({
     cb(null, folder);
   },
   filename: function (req, file, cb) {
-    const name = path.parse(file.originalname).name; // 👉 just "myphoto"
-    const ext = path.extname(file.originalname);     // 👉 ".png"
+    const name = path.parse(file.originalname).name; //  just "myphoto"
+    const ext = path.extname(file.originalname);     //  ".png"
     const safeName = name.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_-]/g, "");
 
     cb(null, Date.now() + "-" + safeName + ext);
@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
 })
 
 const fileFilter = (req , file , cb) => {
-  if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' ||file.mimetype === 'image/jpeg'){
+  if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' ||file.mimetype === 'image/jpeg' || file.mimetype === 'image/webp' || file.mimetype === 'image/avif'){
     cb(null,true);
   }else{
     cb(new Error('Not an image! Please upload an image.'), false);

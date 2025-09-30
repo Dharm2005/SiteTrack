@@ -19,16 +19,20 @@ exports.login = async (req, res, next) => {
       })
     }
 
-    const { username, password } = req.body;
+    const { username, password, role } = req.body;
 
     const user = await User.findOne({ username })
     if (!user) {
-      return res.status(400).json({ message: "Invalid username of password" });
+      return res.status(400).json({ message: "Invalid Login information" });
+    }
+
+    if (role !== user.role) {
+      return res.status(400).json({ message: "Invalid Login information" })
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid username of password" });
+      return res.status(400).json({ message: "Invalid Login information" });
     }
 
     const token = jwt.sign(
@@ -102,7 +106,7 @@ exports.signup = async (req, res, next) => {
 exports.changePassword = async (req, res, next) => {
 
   console.log(req.user);
-  
+
 
   try {
     const errors = validationResult(req);

@@ -246,7 +246,7 @@ function SiteDetail() {
   };
 
   const handleBack = () => {
-    navigate(-1); // Go back to previous page
+    navigate('/'); // Go back to previous page
   };
 
   // Handle site image click
@@ -269,7 +269,6 @@ function SiteDetail() {
   const handleCloseReportForm = () => {
     setShowReportForm(false);
   };
-  console.log(site);
 
   // Show skeleton while loading
   if (loading) {

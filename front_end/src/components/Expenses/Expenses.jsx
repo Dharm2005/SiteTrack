@@ -252,7 +252,7 @@ function Expenses() {
   };
 
   const handleBack = () => {
-    navigate(-1);
+    navigate(`/site/${id}`);
   };
 
   const clearDateFilters = () => {

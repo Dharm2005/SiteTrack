@@ -208,7 +208,7 @@ function AddManager({ initialValues }) {
                   type="file"
                   id="managerImage"
                   name="managerImage"
-                  accept="image/jpg,image/jpeg,image/png"
+                  accept="image/jpg,image/jpeg,image/png,image/avif,image/webp"
                   onChange={handleChange}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />

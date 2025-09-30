@@ -211,7 +211,7 @@ function Workers() {
   };
 
   const handleBackClick = () => {
-    navigate(-1);
+    navigate(`/site/${id}`);
   };
 
   // Show skeleton while loading
