@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Loader2, Edit2, Trash2, X, Search, ImageIcon } from 'lucide-react';
+import { Loader2, Edit2, Trash2, X, Search, ImageIcon, MapPin } from 'lucide-react';
 import { deleteManagerFromDB } from '../../services/managerService';
 import { useDispatch } from 'react-redux';
 import { deleteManager } from '../../features/managerSlice';
@@ -7,13 +7,16 @@ import { Link } from 'react-router-dom';
 
 const API_URL = "http://localhost:3000";
 
-function Manager({ id, name, image, mobile, dob, gender, username, createdAt }) {
+function Manager({ id, name, image, mobile, dob, gender, username, sites, createdAt }) {
 
   const dispatch = useDispatch()
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+
+  // Get the number of assigned sites
+  const assignedSitesCount = sites ? sites.length : 0;
 
   // Format date of birth
   const formatDate = (dateString) => {
@@ -71,6 +74,20 @@ function Manager({ id, name, image, mobile, dob, gender, username, createdAt }) 
         } ${isDeleting ? 'pointer-events-none' : ''}`}>
         {/* Header with overlapping large profile image */}
         <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 h-20">
+          {/* Sites Badge - Top Right Corner */}
+          <div className="absolute top-3 right-3">
+            <div className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm ${assignedSitesCount > 0
+                ? 'bg-white/90 text-blue-600'
+                : 'bg-white/70 text-gray-500'
+              }`}>
+              <MapPin className="w-4 h-4" strokeWidth={2.5} />
+              <span className="text-sm font-bold">{assignedSitesCount}</span>
+              <span className="text-xs font-medium">
+                {assignedSitesCount === 1 ? 'Site' : 'Sites'}
+              </span>
+            </div>
+          </div>
+
           <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
             <div
               className="relative w-24 h-24 rounded-full border-4 border-white bg-gray-200 overflow-hidden shadow-lg cursor-pointer hover:border-green-400 transition-all duration-300"
@@ -89,11 +106,10 @@ function Manager({ id, name, image, mobile, dob, gender, username, createdAt }) 
                   No Image
                 </div>
               )}
-              
+
               {image && (
-                <div className={`absolute inset-0 bg-black/20 rounded-full flex items-center justify-center transition-opacity duration-300 ${
-                  isHovering ? 'opacity-100' : 'opacity-0'
-                }`}>
+                <div className={`absolute inset-0 bg-black/20 rounded-full flex items-center justify-center transition-opacity duration-300 ${isHovering ? 'opacity-100' : 'opacity-0'
+                  }`}>
                   <div className="bg-white/80 backdrop-blur-sm rounded-full p-1.5">
                     <ImageIcon className="w-4 h-4 text-gray-700" />
                   </div>

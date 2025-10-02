@@ -29,7 +29,7 @@ export default function NavBar() {
                 </svg>
               </div>
               <span className="font-bold text-xl text-gray-800 group-hover:text-indigo-600 transition-colors duration-300">
-                Construction Sites
+                SiteTrack
               </span>
             </Link>
 
