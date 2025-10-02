@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Manager from './Manager';
-import ManagersSkeleton ,{ SkeletonPulse } from '../Loaders/ManagersSkeleton';
+import ManagersSkeleton, { SkeletonPulse } from '../Loaders/ManagersSkeleton';
 
 function Managers() {
   const allManagers = useSelector((state) => state.manager.managers)
@@ -74,28 +74,48 @@ function Managers() {
 
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">All Managers</h2>
-            {isLoading ? (
-              <SkeletonPulse className="h-5 w-40" />
-            ) : (
-              <p className="text-gray-600">
-                {allManagers?.length ? `${allManagers.length} managers found` : 'No managers available'}
-              </p>
+        <div className="mb-8 flex items-center justify-between transition-all duration-700">
+          {/* Left: Header Text + Add Button */}
+          <div className="flex items-center gap-4">
+            <div className="flex-shrink-0">
+              <h2 className="text-3xl font-bold text-gray-900 mb-1">All Managers</h2>
+              {isLoading ? (
+                <SkeletonPulse className="h-5 w-40" />
+              ) : (
+                <p className="text-gray-600 text-sm">
+                  {allManagers?.length ? `${allManagers.length} managers found` : 'No managers available'}
+                </p>
+              )}
+            </div>
+
+            {/* Add Manager Button */}
+            {!isLoading && allManagers && allManagers.length > 0 && user.role === 'admin' && (
+              <Link
+                to="/add-manager"
+                className="group flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 font-medium rounded-lg hover:bg-blue-100 border border-blue-200 hover:border-blue-300 transition-all duration-200 transform hover:scale-105 shadow-sm hover:shadow-md flex-shrink-0"
+              >
+                <svg
+                  className="w-4 h-4 transition-transform duration-300 group-hover:rotate-90"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                <span>Add Manager</span>
+              </Link>
             )}
           </div>
 
-          {!isLoading && allManagers && allManagers.length > 0 && (
-            user.role === 'admin' ? (
-              <Link
-                to='/add-manager'
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
-              >
-                Add New Manager
-              </Link>
-            ) : null
-          )}
+          {/* Right: Filter Menu (Placeholder for future) */}
+          <div className="flex items-center space-x-2">
+            {/* Filter buttons will go here in the future */}
+          </div>
         </div>
 
         {/* Content Section */}

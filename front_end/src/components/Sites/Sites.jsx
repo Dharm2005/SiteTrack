@@ -1,20 +1,18 @@
 import React, { useState, useMemo, useEffect } from "react";
 import Site from "./Site";
-import {SitesSkeleton} from "../index";
+import { SitesSkeleton } from "../index";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 function Sites() {
   const allSites = useSelector((state) => state.site.sites);
   const { user } = useSelector((state) => state.auth);
-  const isLoading = useSelector((state) => state.site.loading); // Assuming you have loading state in Redux
+  const isLoading = useSelector((state) => state.site.loading);
 
-  // Filter states
   const [activeFilter, setActiveFilter] = useState("all");
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [showContent, setShowContent] = useState(false);
 
-  // Handle initial load animation
   useEffect(() => {
     if (allSites !== undefined) {
       const timer = setTimeout(() => {
@@ -25,7 +23,6 @@ function Sites() {
     }
   }, [allSites]);
 
-  // Filter sites based on selected filter
   const filteredSites = useMemo(() => {
     if (!allSites) return [];
 
@@ -40,7 +37,6 @@ function Sites() {
     }
   }, [allSites, activeFilter]);
 
-  // Count sites by status
   const siteCounts = useMemo(() => {
     if (!allSites) return { all: 0, active: 0, completed: 0 };
 
@@ -57,37 +53,61 @@ function Sites() {
     { key: "completed", label: "Completed", count: siteCounts.completed },
   ];
 
-  // Show loading state
   if (isLoading || isInitialLoad) {
     return <SitesSkeleton />;
   }
 
-
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section with Filter */}
+        {/* Header Section - All in One Line */}
         <div
           className={`mb-8 flex items-center justify-between transition-all duration-700 transform ${showContent ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
             }`}
         >
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">All Sites</h2>
-            <p className="text-gray-600">
-              {filteredSites?.length
-                ? `${filteredSites.length} sites found`
-                : "No sites available"}
-            </p>
+          {/* Left: Header Text + Add Button */}
+          <div className="flex items-center gap-4">
+            <div className="flex-shrink-0">
+              <h2 className="text-3xl font-bold text-gray-900 mb-1">All Sites</h2>
+              <p className="text-gray-600 text-sm">
+                {filteredSites?.length
+                  ? `${filteredSites.length} sites found`
+                  : "No sites available"}
+              </p>
+            </div>
+
+            {/* Add Site Button */}
+            {user.role === "admin" && (
+              <Link
+                to="/add-site"
+                className="group flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 font-medium rounded-lg hover:bg-blue-100 border border-blue-200 hover:border-blue-300 transition-all duration-200 transform hover:scale-105 shadow-sm hover:shadow-md flex-shrink-0"
+              >
+                <svg
+                  className="w-4 h-4 transition-transform duration-300 group-hover:rotate-90"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                <span>Add Site</span>
+              </Link>
+            )}
           </div>
 
-          {/* Filter Menu */}
-          <div className="flex items-center space-x-2 bg-gray-100 rounded-xl p-2">
+          {/* Right: Filter Menu */}
+          <div className="flex items-center space-x-2 bg-gray-100 rounded-xl p-2 flex-shrink-0">
             {filterOptions.map((option, index) => (
               <button
                 key={option.key}
                 onClick={() => setActiveFilter(option.key)}
                 className={`
-                  relative px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center space-x-3 transform
+                  relative px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center space-x-3 transform
                   ${activeFilter === option.key
                     ? "bg-white text-gray-800 shadow-lg scale-105"
                     : "text-gray-600 hover:text-gray-800 hover:bg-white/50 hover:scale-102"
@@ -177,7 +197,6 @@ function Sites() {
             ))}
           </div>
         ) : (
-          /* Empty State with Animation */
           <div
             className={`flex flex-col items-center justify-center py-16 transition-all duration-700 transform ${showContent ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
               }`}
@@ -219,7 +238,6 @@ function Sites() {
         )}
       </div>
 
-      {/* Custom CSS for animations */}
       <style jsx>{`
         @keyframes slideInUp {
           from {
