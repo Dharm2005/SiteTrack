@@ -76,10 +76,14 @@ export const deleteSiteFromDB = async (id) => {
 
 export const updateSiteToDB = async (siteId, siteData) => {
   try {
+    console.log("at update");
+    
     const response = await api.put(`http://localhost:3000/sites/site/${siteId}`,
       siteData,
       { headers: { "Content-Type": "multipart/form-data" } }
     )
+    console.log(response.data);
+    
     return response.data;
   } catch (error) {
     if (error.response) {

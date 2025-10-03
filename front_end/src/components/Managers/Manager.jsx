@@ -4,6 +4,7 @@ import { deleteManagerFromDB } from '../../services/managerService';
 import { useDispatch } from 'react-redux';
 import { deleteManager } from '../../features/managerSlice';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const API_URL = "http://localhost:3000";
 
@@ -46,13 +47,19 @@ function Manager({ id, name, image, mobile, dob, gender, username, sites, create
     const confirmed = window.confirm(`Are you sure to delete "${name || "this manager"}"?`)
     if (confirmed) {
       setIsDeleting(true);
-      setIsAnimatingOut(true);
 
       try {
-        // Add a small delay to show the animation
-        await new Promise(resolve => setTimeout(resolve, 300));
-        await deleteManagerFromDB(id)
+        const res = await deleteManagerFromDB(id)
 
+        if (res.success === false) {
+          toast.error(res.message || "❌ Something went wrong");
+          setIsDeleting(false); // Reset deleting state
+          return;
+        }
+
+        // Only animate if deletion was successful
+        setIsAnimatingOut(true);
+        
         // Wait for fade animation to complete before removing from store
         setTimeout(() => {
           dispatch(deleteManager(id));
@@ -77,8 +84,8 @@ function Manager({ id, name, image, mobile, dob, gender, username, sites, create
           {/* Sites Badge - Top Right Corner */}
           <div className="absolute top-3 right-3">
             <div className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm ${assignedSitesCount > 0
-                ? 'bg-white/90 text-blue-600'
-                : 'bg-white/70 text-gray-500'
+              ? 'bg-white/90 text-blue-600'
+              : 'bg-white/70 text-gray-500'
               }`}>
               <MapPin className="w-4 h-4" strokeWidth={2.5} />
               <span className="text-sm font-bold">{assignedSitesCount}</span>

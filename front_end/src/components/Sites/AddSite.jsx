@@ -128,6 +128,8 @@ function AddSite({ initialValues }) {
       }
 
       let res;
+      console.log(formData);
+      
       if (initialValues) {
         // update
         formData.append("_id", initialValues._id);
@@ -292,8 +294,6 @@ function AddSite({ initialValues }) {
 
 
                 <option key={m._id} value={m._id.toString()}>
-                  {console.log(m)}
-
                   {m.managerName} ({m.userId.username})
                 </option>
               ))}

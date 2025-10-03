@@ -39,8 +39,19 @@ export const deleteManagerFromDB = async (managerId) => {
   try {
     const response = await api.delete(`http://localhost:3000/managers/manager/${managerId}`)
     return response.data;
-  } catch (err) {
-    throw new Error(err.response?.data?.message || "Failed to delete manager");
+  } catch (error) {
+     if (error.response) {
+      return {
+        success: false,
+        status: error.response.status,
+        message: error.response.data.message || "Validation failed",
+      };
+    }
+    return {
+      success: false,
+      status: null,
+      message: "Network error",
+    };
   }
 }
 

@@ -27,33 +27,41 @@ function DeletedSite({ id, name, location, image, deletedAt, onStateChange }) {
 
   const handleRestore = async () => {
     try {
-      const confirm = window.confirm("Are you sure you want to restore this site");
+      const confirm = window.confirm("Are you sure you want to restore this site?");
 
-      if (confirm) {
-        setIsRestoring(true);
+      if (!confirm) return;
 
-        // Add a small delay for better UX
-        await new Promise(resolve => setTimeout(resolve, 300));
+      setIsRestoring(true);
 
-        const restoredSite = await restoreSite(id)
+      // Optional small delay for UX
+      await new Promise(resolve => setTimeout(resolve, 300));
 
-        if (restoredSite) {
-          setIsRemoving(true);
-          toast.success("Site restored successfully")
-          
-          // Wait for exit animation to complete before removing from DOM
-          setTimeout(() => {
-            onStateChange(id);
-          }, 500);
+      const restoredSite = await restoreSite(id);
+
+      if (restoredSite) {
+        setIsRemoving(true);
+
+        // Display site restored message
+        toast.success("Site restored successfully");
+
+        // If backend returned a manager restore message, show it too
+        if (restoredSite.message) {
+          toast.info(restoredSite.message);
         }
+
+        // Wait for exit animation before removing from DOM
+        setTimeout(() => {
+          onStateChange(id);
+        }, 500);
       }
     } catch (error) {
-      console.log("Error restoring site", error);
+      console.error("Error restoring site", error);
       toast.error("Failed to restore site");
     } finally {
       setIsRestoring(false);
     }
-  }
+  };
+
 
   const handlePermanentDelete = async () => {
     try {

@@ -110,26 +110,39 @@ exports.postAddManager = async (req, res, next) => {
 
 exports.deleteManager = async (req, res, next) => {
   try {
-    const managerId = req.params.managerId;
+    const { managerId } = req.params;
+
+    // Find manager with sites
+    const manager = await Manager.findById(managerId).populate("sites");
+
+    if (!manager) {
+      return res.status(404).json({ message: "No manager found" });
+    }
+
+    // Validation: Block deletion if sites array is not empty
+    if (manager.sites && manager.sites.length > 0) {
+      return res.status(400).json({
+        message: "This manager is assigned to one or more sites and cannot be deleted."
+      });
+    }
+
+    // Soft delete the manager
     const updatedManager = await Manager.findByIdAndUpdate(
       managerId,
       {
         isDeleted: true,
-        deletedAt : new Date()
+        deletedAt: new Date()
       },
       { new: true }
-    )
+    );
 
-    if (!updatedManager) {
-      return res.status(404).json({ message: "no manager found" })
-    }
-
-    return res.json(updatedManager)
+    return res.json(updatedManager);
 
   } catch (error) {
-    console.error("Error while deleteing manager", error);
+    console.error("Error while deleting manager", error);
+    return res.status(500).json({ message: "Error while deleting manager", error: error.message });
   }
-}
+};
 
 exports.updateManager = async (req, res, next) => {
   try {

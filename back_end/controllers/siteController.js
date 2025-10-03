@@ -110,6 +110,10 @@ exports.deleteSite = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "Cannot delete a completed site" });
     }
 
+    if (site.manager) {
+      await Manager.findByIdAndUpdate(site.manager, { $pull: { sites: site._id } });
+    }
+
     // Soft delete (mark as deleted)
     site.isDeleted = true;
     site.deletedAt = new Date();
@@ -124,6 +128,8 @@ exports.deleteSite = async (req, res, next) => {
 
 exports.updateSite = async (req, res, next) => {
   try {
+    console.log("reach update backend");
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       if (req.file) {
@@ -144,10 +150,9 @@ exports.updateSite = async (req, res, next) => {
 
     const { siteId } = req.params;
 
-    // ✅ Step 1: Find site
+    // Step 1: Find site
     const site = await Site.findById(siteId);
     if (!site) {
-      
       if (req.file) {
         const filePath = path.join(__dirname, "../uploads/sites", req.file.filename);
         if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
@@ -155,9 +160,7 @@ exports.updateSite = async (req, res, next) => {
       return res.status(404).json({ success: false, message: "Site not found" });
     }
 
-    
     if (site.isCompleted) {
-      
       if (req.file) {
         const filePath = path.join(__dirname, "../uploads/sites", req.file.filename);
         if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
@@ -167,13 +170,18 @@ exports.updateSite = async (req, res, next) => {
 
     const updates = { ...req.body };
 
-    // Map managerId to manager
+    // Store old manager ID before updating
+    const oldManagerId = site.manager?.toString();
+
+    // Step 2: Handle manager change
+    let newManagerId = null;
     if (updates.managerId) {
-      updates.manager = updates.managerId;
+      newManagerId = updates.managerId;
+      updates.manager = newManagerId;
       delete updates.managerId;
     }
 
-    // Handle site image update
+    // tep 3: Handle site image update
     if (req.file) {
       if (site.siteImage) {
         const oldPath = path.join(__dirname, "../uploads/sites", site.siteImage);
@@ -184,8 +192,22 @@ exports.updateSite = async (req, res, next) => {
       updates.siteImage = req.file.filename;
     }
 
-    // ✅ Step 3: Update site
+    // Step 4: Update site document
     const updatedSite = await Site.findByIdAndUpdate(siteId, updates, { new: true });
+
+    console.log("new:" , newManagerId);
+    console.log("old:" , oldManagerId);
+    
+    // Step 5: Sync manager's sites array
+    if (newManagerId && newManagerId !== oldManagerId) {
+      // Remove siteId from old manager (if existed)
+      if (oldManagerId) {
+        await Manager.findByIdAndUpdate(oldManagerId, { $pull: { sites: siteId } });
+      }
+
+      // Add siteId to new manager
+      await Manager.findByIdAndUpdate(newManagerId, { $addToSet: { sites: siteId } });
+    }
 
     return res.status(200).json({
       success: true,

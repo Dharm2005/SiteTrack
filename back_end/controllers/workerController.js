@@ -385,7 +385,6 @@ exports.updateEarn = async (req, res, next) => {
   }
 };
 
-
 exports.settleWorker = async (req, res, next) => {
   try {
     const { workerId } = req.params;

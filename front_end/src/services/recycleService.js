@@ -69,6 +69,20 @@ export const deleteManagerPer = async (managerId) => {
     return response.data;
   } catch (error) {
     console.error("Error while deleting manager permanently", error)
+    if (error.response) {
+      return {
+        success: false,
+        status: error.response.status,
+        sites: error.response.data.sites,
+        message: error.response.data.message,
+      };
+    }
+    return {
+      success: false,
+      status: null,
+      sites: error.response.data.sites || [],
+      message: error.response.data.message || "Network error",
+    }
   }
 }
 

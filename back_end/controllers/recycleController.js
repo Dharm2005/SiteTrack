@@ -83,28 +83,44 @@ exports.deleteSite = async (req, res, next) => {
   try {
     const { siteId } = req.params;
 
+    // Find the site first
     const site = await Site.findById(siteId);
-    if (!site) return res.status(404).json({ message: "Site not found" });
+    if (!site) {
+      return res.status(404).json({ message: "Site not found" });
+    }
 
-    if (site && site.siteImage) {
-      const Path = path.join(__dirname, "../uploads/sites", site.siteImage)
-      if (fs.existsSync(Path)) {
-        fs.unlinkSync(Path)
+    // ✅ Delete site image from uploads folder
+    if (site.siteImage) {
+      const filePath = path.join(__dirname, "../uploads/sites", site.siteImage);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
       }
     }
 
-    const deletedSite = await Site.findByIdAndDelete(siteId)
-    res.json(deletedSite)
+    // ✅ Permanently delete site from DB
+    const deletedSite = await Site.findByIdAndDelete(siteId);
+
+    return res.json({
+      success: true,
+      message: "Site permanently deleted",
+      data: deletedSite
+    });
 
   } catch (err) {
-    res.status(500).json({ message: "Error deleting site permanently", error: err.message });
+    console.error("Error deleting site permanently:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Error deleting site permanently",
+      error: err.message
+    });
   }
-}
+};
 
 exports.restoreSite = async (req, res, next) => {
   try {
     const { siteId } = req.params;
 
+    // Restore the site
     const restoredSite = await Site.findByIdAndUpdate(
       siteId,
       {
@@ -112,36 +128,89 @@ exports.restoreSite = async (req, res, next) => {
         deletedAt: null
       },
       { new: true }
+    );
 
-    )
-    res.json(restoredSite)
+    if (!restoredSite) {
+      return res.status(404).json({ message: "Site not found" });
+    }
+
+    let restoredManagerMessage = null;
+
+    // Re-assign site back to manager if it has a manager
+    if (restoredSite.manager) {
+      const manager = await Manager.findById(restoredSite.manager);
+
+      if (manager) {
+        // If manager was soft-deleted, restore it
+        if (manager.isDeleted) {
+          manager.isDeleted = false;
+          manager.deletedAt = null;
+          await manager.save();
+          restoredManagerMessage = `Manager "${manager.managerName}" was also restored.`;
+        }
+
+        // Ensure site is in manager's sites array
+        await Manager.findByIdAndUpdate(
+          restoredSite.manager,
+          { $addToSet: { sites: restoredSite._id } }
+        );
+      }
+    }
+
+    res.json({
+      success: true,
+      site: restoredSite,
+      message: restoredManagerMessage
+    });
 
   } catch (err) {
-    res.status(500).json({ message: "Error restoring deleted site", error: err.message });
+    res.status(500).json({ 
+      message: "Error restoring deleted site", 
+      error: err.message 
+    });
   }
-}
+};
+
 
 exports.deleteManager = async (req, res, next) => {
   try {
     const { managerId } = req.params;
 
+    // First check if manager exists
     const manager = await Manager.findById(managerId);
-    if (!manager) return res.status(404).json({ message: "manager not found" });
+    if (!manager) {
+      return res.status(404).json({ message: "Manager not found" });
+    }
 
-    if (manager && manager.managerImage) {
-      const Path = path.join(__dirname, "../uploads/managers", manager.managerImage)
+    // Check if any site (active or soft deleted) is still assigned to this manager
+    const assignedSites = await Site.find({ manager: managerId });
+    if (assignedSites.length > 0) {
+      return res.status(400).json({
+        message: "Cannot delete manager. They are still assigned to one or more sites.",
+        sites: assignedSites.map(site => ({ id: site._id, name: site.siteName }))
+      });
+    }
+
+    // Delete manager image if exists
+    if (manager.managerImage) {
+      const Path = path.join(__dirname, "../uploads/managers", manager.managerImage);
       if (fs.existsSync(Path)) {
-        fs.unlinkSync(Path)
+        fs.unlinkSync(Path);
       }
     }
 
-    const deletedManager = await Manager.findByIdAndDelete(managerId)
-    res.json(deletedManager)
+    // Permanently delete manager
+    const deletedManager = await Manager.findByIdAndDelete(managerId);
+    return res.json({ success: true, data: deletedManager });
 
   } catch (err) {
-    res.status(500).json({ message: "Error deleting manager permanently", error: err.message });
+    console.error("Error deleting manager permanently:", err);
+    return res.status(500).json({ 
+      message: "Error deleting manager permanently", 
+      error: err.message 
+    });
   }
-}
+};
 
 exports.restoreManager = async (req, res, next) => {
   try {

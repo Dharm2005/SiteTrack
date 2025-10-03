@@ -78,8 +78,23 @@ function DeletedManager({ id, name, mobile, dob, gender, image, deletedAt, onSta
         // Add a small delay for better UX
         await new Promise(resolve => setTimeout(resolve, 300));
 
-        const deletedManager = await deleteManagerPer(id)
-        if (deletedManager) {
+        const res = await deleteManagerPer(id)
+
+        if (res.success === false) {
+          let errorMsg = res.message || "Something went wrong";
+
+          // If sites exist, append their names to the error message
+          if (res.sites && res.sites.length > 0) {
+            const siteNames = res.sites.map(site => site.name).join(", ");
+            errorMsg += ` (${siteNames})`;
+          }
+
+          toast.error(errorMsg);
+          setIsDeleting(false);
+          return;
+        }
+
+        if (res) {
           setIsRemoving(true);
           toast.success("Manager deleted permanently");
 
