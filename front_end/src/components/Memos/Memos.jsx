@@ -101,7 +101,7 @@ function Memos({ siteId, isCompleted }) {
             counts.dueToday++;
           }
         } catch (error) {
-          console.log(error);
+          console.error(error);
         }
       }
     });

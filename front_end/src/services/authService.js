@@ -13,7 +13,6 @@ export const login = async (data) => {
     console.error("Error while login" , err);
 
     if(err.response){
-      console.log(err);
       
       return {
         success : false,
@@ -39,7 +38,6 @@ export const signup = async (data) => {
   } catch (err) {
     console.error("Error while registration" , err);
     if(err.response){
-      console.log(err);
 
       return {
         success : false,

@@ -51,7 +51,7 @@ exports.getFilteredExpenses = async (req, res, next) => {
     }
     res.status(200).json(expenses)
   } catch (error) {
-    console.log("error while fetching last few expenses");
+    console.error("error while fetching last few expenses");
     res.status(500).json({ err: "Failed to fetch few expenses" });
   }
 }

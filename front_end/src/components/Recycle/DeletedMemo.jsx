@@ -18,7 +18,7 @@ function DeletedMemo({ id, text, type, deletedAt, onStateChange }) {
         minute: '2-digit'
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return 'Invalid date';
     }
   }
@@ -46,7 +46,7 @@ function DeletedMemo({ id, text, type, deletedAt, onStateChange }) {
         }
       }
     } catch (error) {
-      console.log("Error restoring memo", error);
+      console.error("Error restoring memo", error);
       toast.error("Failed to restore memo");
     } finally {
       setIsRestoring(false);
@@ -76,7 +76,7 @@ function DeletedMemo({ id, text, type, deletedAt, onStateChange }) {
         }
       }
     } catch (error) {
-      console.log("Error deleting memo", error);
+      console.error("Error deleting memo", error);
       toast.error("Failed to delete memo permanently");
     } finally {
       setIsDeleting(false);

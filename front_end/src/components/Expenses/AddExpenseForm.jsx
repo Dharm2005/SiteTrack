@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 const API_URL = "http://localhost:3000";
 
 function AddExpenseForm({ siteId, onClose, initialValues }) {
-  console.log(siteId);
 
   // Determine if we're in edit mode
   const isEditMode = !!initialValues;
@@ -238,7 +237,6 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
       }
 
       if (res.success === false) {
-        console.log("Validation/Server error:", res);
         if (res.errors?.length) {
           res.errors.forEach(err => {
             toast.error(`${err.field}: ${err.msg}`);

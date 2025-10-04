@@ -56,8 +56,7 @@ function Memo({ id, siteId, memoType, text, dueDate, createdAt, isSiteCompleted 
       if (diffDays <= 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
       return `${Math.ceil(diffDays / 30)} months ago`;
     } catch (error) {
-      console.log(error);
-
+      console.error(error);
       return '';
     }
   };
@@ -72,7 +71,7 @@ function Memo({ id, siteId, memoType, text, dueDate, createdAt, isSiteCompleted 
       now.setHours(0, 0, 0, 0);
       return due < now;
     } catch (error) {
-      console.log(error);
+      console.error(error);
 
       return false;
     }
@@ -89,7 +88,7 @@ function Memo({ id, siteId, memoType, text, dueDate, createdAt, isSiteCompleted 
       now.setHours(0, 0, 0, 0);
       return due.getTime() === now.getTime();
     } catch (error) {
-      console.log(error);
+      console.error(error);
 
       return false;
     }

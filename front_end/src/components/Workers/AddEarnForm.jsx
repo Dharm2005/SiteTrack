@@ -39,7 +39,6 @@ function AddEarnForm({ workerId, onClose }) {
       const res = await addEarnOfWorker(formData);
 
       if (res.success === false) {
-        console.log("Validation errors:", res.errors);
         if (res.errors && res.errors.length > 0) {
           res.errors.forEach(err => {
             toast.error(`${err.field}: ${err.msg}`); // use "path" from backend
@@ -63,7 +62,7 @@ function AddEarnForm({ workerId, onClose }) {
       if (onClose) onClose();
 
     } catch (error) {
-      console.log("Error while adding new earn", error);
+      console.error("Error while adding new earn", error);
     } finally {
       setIsSubmitting(false);
     }

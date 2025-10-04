@@ -9,7 +9,6 @@ function DeletedMemos({siteId}) {
     const fetchMemos = async () => {
       try {
         const deletedMemosData = await getDeletedMemos(siteId);
-        console.log(deletedMemosData);
         setDeletedMemos(deletedMemosData)
       } catch (error) {
         console.error("Error while fetching deleted memos", error);

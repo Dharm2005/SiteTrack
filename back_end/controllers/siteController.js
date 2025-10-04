@@ -128,7 +128,6 @@ exports.deleteSite = async (req, res, next) => {
 
 exports.updateSite = async (req, res, next) => {
   try {
-    console.log("reach update backend");
     
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -194,9 +193,6 @@ exports.updateSite = async (req, res, next) => {
 
     // Step 4: Update site document
     const updatedSite = await Site.findByIdAndUpdate(siteId, updates, { new: true });
-
-    console.log("new:" , newManagerId);
-    console.log("old:" , oldManagerId);
     
     // Step 5: Sync manager's sites array
     if (newManagerId && newManagerId !== oldManagerId) {

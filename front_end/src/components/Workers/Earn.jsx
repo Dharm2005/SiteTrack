@@ -45,7 +45,6 @@ function Earn({ id, siteId, amount, date, note, createdAt, isSettled, isSiteComp
       const res = await updateEarnToDB(id, siteId, form);
 
       if (res.success === false) {
-        console.log("Validation errors:", res.errors);
         if (res.errors && res.errors.length > 0) {
           res.errors.forEach(err => {
             toast.error(`${err.field}: ${err.msg}`); // use "path" from backend
@@ -60,7 +59,7 @@ function Earn({ id, siteId, amount, date, note, createdAt, isSettled, isSiteComp
       dispatch(updateEarn(earnData));
       setIsEditing(false)
     } catch (error) {
-      console.log("Error while updating earning", error);
+      console.error("Error while updating earning", error);
     } finally {
       setLoading(false)
     }

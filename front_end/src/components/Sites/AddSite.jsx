@@ -128,7 +128,6 @@ function AddSite({ initialValues }) {
       }
 
       let res;
-      console.log(formData);
       
       if (initialValues) {
         // update
@@ -142,7 +141,6 @@ function AddSite({ initialValues }) {
       // 🟢 Handle validation errors
       if (res.success === false) {
         if (res.errors && (res.errors.length > 0)) {
-          console.log("Validation errors:", res.errors);
           res.errors.forEach(err => {
             toast.error(`${err.msg}`);
           });
@@ -156,7 +154,6 @@ function AddSite({ initialValues }) {
       // 🟢 Success case
       const siteData = res.site; // backend sends { message, site }
       if (initialValues) {
-        console.log(siteData);
 
         dispatch(updateSite(siteData));
         toast.success("✅ Site updated successfully!");

@@ -9,7 +9,6 @@ function DeletedExpenses({ siteId }) {
     const fetchExpenses = async () => {
       try {
         const deletedExpenses = await getDeletedExpenses(siteId);
-        console.log(deletedExpenses);
         setDeletedExpenses(deletedExpenses)
       } catch (error) {
         console.error("Error while fetching deleted expenses", error);

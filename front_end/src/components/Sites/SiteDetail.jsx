@@ -58,10 +58,8 @@ function SiteDetail() {
     getSite(id)
       .then(site => {
         if (isMounted) {
-          console.log(site);
           setSite(site);
           const manager = managers.find((m) => m._id === site.manager)
-          console.log(manager);
 
           setManager(manager)
 

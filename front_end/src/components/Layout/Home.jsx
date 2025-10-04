@@ -18,8 +18,6 @@ function Home() {
           getAllSite(),
           getAllManager(),
         ]);
-        console.log(sites);
-        console.log(managers);
         
         dispatch(setSites(sites));
         dispatch(setManagers(managers));

@@ -47,7 +47,6 @@ function AddMemoForm({ siteId, onClose }) {
       const newMemo = await addMemo(formData);
 
       if (newMemo.success === false) {
-        console.log("Validation errors", newMemo);
         if (newMemo.errors?.length) {
           newMemo.errors.forEach(err => {
             toast.error(`${err.field || err.path} : ${err.msg}`);
@@ -69,8 +68,8 @@ function AddMemoForm({ siteId, onClose }) {
       });
 
       if (onClose) onClose();
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      console.log("error while adding memo", error);
       toast.error("❌ Failed to add memo. Please try again.");
     } finally {
       setIsSubmitting(false);

@@ -10,7 +10,6 @@ const API_URL = "http://localhost:3000";
 
 
 function AddWorkerForm({ siteId, onClose, initialValues }) {
-  console.log(siteId);
 
   const [form, setForm] = useState(initialValues || {
     type: 'worker',

@@ -10,7 +10,6 @@ function DeletedSites() {
     const fetchSites = async () => {
       try {
         const deletedSites = await getDeletedSites();
-        console.log(deletedSites);
         setDeletedSites(deletedSites)
       } catch (error) {
         console.error("Error while fetching deleted sites", error);

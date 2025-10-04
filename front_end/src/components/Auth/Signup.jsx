@@ -30,16 +30,13 @@ function Signup() {
 
     try {
       // Remove confirmPassword from the data sent to API
-      const { confirmPassword, ...signupData } = form;
-      console.log(confirmPassword);
+      const { _confirmPassword, ...signupData } = form;
 
       const res = await signup(signupData);
-      console.log(res);
 
       if (res.success === false) {
         
         if (res.errors && res.errors.length > 0) {
-          console.log("Validation/Server error:", res);
           res.errors.forEach(err => toast.error(err))
         } else if (res.message) {
           toast.error(res.message);

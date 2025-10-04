@@ -401,6 +401,6 @@ exports.settleWorker = async (req, res, next) => {
     }
     return res.status(200).json(settledWorker)
   } catch (error) {
-    console.log("Error while settling worker", error);
+    console.error("Error while settling worker", error);
   }
 }

@@ -20,7 +20,7 @@ function DeletedSite({ id, name, location, image, deletedAt, onStateChange }) {
         minute: '2-digit'
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return 'Invalid date';
     }
   }
@@ -86,7 +86,7 @@ function DeletedSite({ id, name, location, image, deletedAt, onStateChange }) {
         }
       }
     } catch (error) {
-      console.log("Error deleting site", error);
+      console.error("Error deleting site", error);
       toast.error("Failed to delete site permanently");
     } finally {
       setIsDeleting(false);

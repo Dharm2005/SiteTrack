@@ -105,9 +105,6 @@ exports.signup = async (req, res, next) => {
 
 exports.changePassword = async (req, res, next) => {
 
-  console.log(req.user);
-
-
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

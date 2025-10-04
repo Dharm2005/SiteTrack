@@ -52,7 +52,7 @@ function DeletedExpense({
         }
       }
     } catch (error) {
-      console.log("Error restoring expense", error);
+      console.error("Error restoring expense", error);
       toast.error("Failed to restore deleted expense");
     } finally {
       setIsRestoring(false);
@@ -82,7 +82,7 @@ function DeletedExpense({
         }
       }
     } catch (error) {
-      console.log("Error deleting expense", error);
+      console.error("Error deleting expense", error);
       toast.error("Failed to delete expense permanently");
     } finally {
       setIsDeleting(false);

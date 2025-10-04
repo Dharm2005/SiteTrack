@@ -85,7 +85,7 @@ function Site({ id, name, location, image, managerId, createdAt, isCompleted }) 
       }
 
     } catch (error) {
-      console.log("error while completing site", error);
+      console.error("error while completing site", error);
       setIsCompleting(false);
     }
   }

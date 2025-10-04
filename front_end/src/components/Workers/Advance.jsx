@@ -45,7 +45,6 @@ function Advance({ id, siteId, amount, date, note, createdAt, isSettled, isSiteC
       const res = await updateAdvanceToDB(id, siteId, form);
 
       if (res.success === false) {
-        console.log("Validation errors:", res.errors);
         if (res.errors && res.errors.length > 0) {
           res.errors.forEach(err => {
             toast.error(`${err.field}: ${err.msg}`); // use "path" from backend

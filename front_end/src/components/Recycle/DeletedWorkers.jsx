@@ -11,7 +11,6 @@ function DeletedWorkers({ siteId }) {
     const fetchWorkers = async () => {
       try {
         const deletedWorkersData = await getDeletedWorkers(siteId);
-        console.log(deletedWorkersData);
         setDeletedWorkers(deletedWorkersData)
       } catch (error) {
         console.error("Error while fetching deleted workers", error);

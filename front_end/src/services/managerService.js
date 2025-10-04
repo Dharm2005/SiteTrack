@@ -110,7 +110,6 @@ export const generatePDF = async (startDate, endDate, siteId) => {
     return response.data;
   } catch (err) {
     console.error("Error while generating report", err);
-    console.log(err.response);
 
     if (err.response) {
       let errorMessage = "Validation failed";

@@ -20,7 +20,7 @@ function DeletedWorker({ id, name, mobile, image, deletedAt, onStateChange }) {
         minute: '2-digit'
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return 'Invalid date';
     }
   }
@@ -48,7 +48,7 @@ function DeletedWorker({ id, name, mobile, image, deletedAt, onStateChange }) {
         }
       }
     } catch (error) {
-      console.log("Error restoring worker", error);
+      console.error("Error restoring worker", error);
       toast.error("Failed to restore worker");
     } finally {
       setIsRestoring(false);
@@ -78,7 +78,7 @@ function DeletedWorker({ id, name, mobile, image, deletedAt, onStateChange }) {
         }
       }
     } catch (error) {
-      console.log("Error deleting worker", error);
+      console.error("Error deleting worker", error);
       toast.error("Failed to delete worker permanently");
     } finally {
       setIsDeleting(false);

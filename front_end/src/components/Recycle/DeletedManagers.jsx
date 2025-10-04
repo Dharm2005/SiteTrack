@@ -10,7 +10,6 @@ function DeletedManagers() {
     const fetchManagers = async () => {
       try {
         const deletedManagers = await getDeletedManagers();
-        console.log(deletedManagers);
         setDeletedManagers(deletedManagers)
       } catch (error) {
         console.error("Error while fetching deleted managers", error);

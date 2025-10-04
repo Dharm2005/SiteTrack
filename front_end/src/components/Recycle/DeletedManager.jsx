@@ -20,7 +20,7 @@ function DeletedManager({ id, name, mobile, dob, gender, image, deletedAt, onSta
         minute: '2-digit'
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return 'Invalid date';
     }
   }
@@ -34,7 +34,7 @@ function DeletedManager({ id, name, mobile, dob, gender, image, deletedAt, onSta
         day: 'numeric'
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return 'Invalid date';
     }
   }
@@ -61,7 +61,7 @@ function DeletedManager({ id, name, mobile, dob, gender, image, deletedAt, onSta
         }
       }
     } catch (error) {
-      console.log("Error restoring manager", error);
+      console.error("Error restoring manager", error);
       toast.error("Failed to restore deleted manager");
     } finally {
       setIsRestoring(false);
@@ -105,7 +105,7 @@ function DeletedManager({ id, name, mobile, dob, gender, image, deletedAt, onSta
         }
       }
     } catch (error) {
-      console.log("Error deleting manager", error);
+      console.error("Error deleting manager", error);
       toast.error("Failed to delete manager permanently");
     } finally {
       setIsDeleting(false);

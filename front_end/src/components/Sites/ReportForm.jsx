@@ -32,12 +32,10 @@ function ReportForm({ siteId, onClose }) {
 
     try {
       const pdfBlob = await generatePDF(form.startDate, form.endDate, siteId);
-      console.log(pdfBlob);
       
 
       if (pdfBlob.success === false) {
         if (pdfBlob.errors && pdfBlob.errors.length > 0) {
-          console.log("Validation/Server error:", pdfBlob);
           pdfBlob.errors.forEach(err => toast.error(err))
         }
         return;

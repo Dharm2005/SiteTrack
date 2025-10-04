@@ -37,14 +37,13 @@ const ChangePass = () => {
     }
 
     try {
-      const { confirmPassword, ...passData } = formData;
-      console.log(confirmPassword);
+      
+      const { _confirmPassword, ...passData } = formData;
 
       const res = await changePassword(passData);
 
       if (res.success === false) {
         if (res.errors && res.errors.length > 0) {
-          console.log("Validation/Server error:", res);
           res.errors.forEach(err => toast.error(err))
         } else if (res.error) {
           toast.error(res.error);

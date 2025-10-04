@@ -127,11 +127,9 @@ function AddManager({ initialValues }) {
         // add new
         res = await addManager(formData);
       }
-      console.log(res);
       
       // 🛑 Handle validation or server errors
       if (res.success === false) {
-        console.log("Validation/Server error:", res);
         if (res.errors?.length) {
           res.errors.forEach(err => {
             toast.error(`${err.field}: ${err.msg}`);

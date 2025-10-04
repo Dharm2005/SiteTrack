@@ -40,7 +40,6 @@ function AddAdvanceForm({ workerId, onClose }) {
       const res = await addAdvanceOfWorker(formData);
 
       if (res.success === false) {
-        console.log("Validation errors:", res.errors);
         if (res.errors && res.errors.length > 0) {
           res.errors.forEach(err => {
             toast.error(`${err.field}: ${err.msg}`); // use "path" from backend
@@ -63,7 +62,7 @@ function AddAdvanceForm({ workerId, onClose }) {
       if (onClose) onClose();
 
     } catch (error) {
-      console.log("Error while adding new advance", error);
+      console.error("Error while adding new advance", error);
     } finally {
       setIsSubmitting(false);
     }

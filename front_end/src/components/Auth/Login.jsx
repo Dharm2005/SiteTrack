@@ -28,13 +28,10 @@ function Login() {
     e.preventDefault();
 
     try {
-      const res = await login(form)
-
-      console.log(res);
+      const res = await login(form);
       
       if (res.success === false) {
         if (res.errors && res.errors.length > 0) {
-          console.log("Validation/Server error:", res);
           res.errors.forEach(err => toast.error(err))
         } else if(res.message){
           toast.error(res.message);
