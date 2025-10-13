@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { deleteWorker } from '../../features/workerSlice';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { ZoomImage } from '../index'
 
 const API_URL = "http://localhost:3000";
 
@@ -137,7 +138,7 @@ function Worker({ id, siteId, name, image, mobile, isSettled, isSiteCompleted })
         <div className="flex justify-center mb-3">
           {image ? (
             <>
-              <img
+              <ZoomImage
                 src={`${API_URL}/uploads/workers/${image}`}
                 alt={name || 'Worker'}
                 className={`w-16 h-16 rounded-full object-cover border-2 ${isSettled ? 'border-gray-300' : 'border-gray-100'

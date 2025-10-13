@@ -61,3 +61,4 @@ export {default as RecycleSkeleton} from "./Loaders/RecycleSkeleton"
 
 export {default as NotFound} from "./Errors/NotFound"
 export {default as ScrollToTop} from "./Layout/ScrollToTop"
+export {default as ZoomImage} from "./Layout/ZoomImage"

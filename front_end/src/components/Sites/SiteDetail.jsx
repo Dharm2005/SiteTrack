@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, MapPin, User, Phone, Calendar, Image, UserCheck, Users, IndianRupee, FileText, Edit, Trash2, X, Download } from 'lucide-react'
+import { ArrowLeft, MapPin, User, Phone, Calendar, Image, UserCheck, Users, IndianRupee, FileText, Edit, Trash2, Download } from 'lucide-react'
 import { getSite } from '../../services/siteService';
 import { Memos } from '../index';
 import { getWorkersBySite } from '../../services/workerService'
@@ -11,12 +11,9 @@ import { getAllManager } from '../../services/managerService';
 import { setManagers } from '../../features/managerSlice';
 import { ReportForm } from '../index';
 import { Link } from 'react-router-dom';
-import { Loader } from '../index';
-import {SiteDetailSkeleton} from '../index';
+import { ZoomImage } from '../index';
+import { SiteDetailSkeleton } from '../index';
 const API_URL = "http://localhost:3000";
-
-// Skeleton Components
-
 
 function SiteDetail() {
   const { id } = useParams();
@@ -26,7 +23,6 @@ function SiteDetail() {
   const dispatch = useDispatch()
   const managers = useSelector(state => state.manager.managers)
   const [manager, setManager] = useState(null)
-  const [selectedImage, setSelectedImage] = useState(null);
   const [showReportForm, setShowReportForm] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const [fadeIn, setFadeIn] = useState(false);
@@ -113,17 +109,6 @@ function SiteDetail() {
     navigate('/'); // Go back to previous page
   };
 
-  // Handle site image click
-  const handleSiteImageClick = () => {
-    setSelectedImage(`${API_URL}/uploads/sites/${site.siteImage}`);
-  };
-
-  // Handle manager image click with event stopping
-  const handleManagerImageClick = (e) => {
-    e.stopPropagation(); // Prevent the site image click from firing
-    setSelectedImage(`${API_URL}/uploads/managers/${manager.managerImage}`);
-  };
-
   // Handle generate report button click
   const handleGenerateReport = () => {
     setShowReportForm(true);
@@ -157,296 +142,269 @@ function SiteDetail() {
   }
 
   return (
-    <>
-      <div className={`min-h-screen bg-gray-50 transition-all duration-700 ${fadeIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+    <div className={`min-h-screen bg-gray-50 transition-all duration-700 ${fadeIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      {/* Back Button */}
+      <div className="p-6 flex items-center justify-between">
         {/* Back Button */}
-        <div className="p-6 flex items-center justify-between">
-          {/* Back Button */}
-          <button
-            onClick={handleBack}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors group"
-          >
-            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            <span className="font-medium">Back</span>
-          </button>
+        <button
+          onClick={handleBack}
+          className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors group"
+        >
+          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+          <span className="font-medium">Back</span>
+        </button>
 
-          {/* Right side container for Recycle Button and Status */}
-          <div className="flex items-center space-x-4">
-            {/* Recycle Bin Button - Only show for managers */}
-            {user.role === 'manager' && (
-              <Link
-                to={`/site/${id}/recycle-bin`}
-                className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-700 rounded-lg border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow transition-all duration-200 ease-in-out group"
+        {/* Right side container for Recycle Button and Status */}
+        <div className="flex items-center space-x-4">
+          {/* Recycle Bin Button - Only show for managers */}
+          {user.role === 'manager' && (
+            <Link
+              to={`/site/${id}/recycle-bin`}
+              className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-700 rounded-lg border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow transition-all duration-200 ease-in-out group"
+            >
+              {/* Recycle Icon */}
+              <svg
+                className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                {/* Recycle Icon */}
-                <svg
-                  className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
-                <span className="text-sm font-medium">Recycle Bin</span>
-              </Link>
-            )}
-
-            {/* Site Status */}
-            <div className="flex items-center">
-              {site.isCompleted ? (
-                <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-100 border border-green-300 rounded-full">
-                  <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-green-800">Completed</span>
-                </div>
-              ) : (
-                <div className="flex items-center space-x-2 px-3 py-1.5 bg-blue-100 border border-blue-300 rounded-full">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-blue-800">Active</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-
-        {/* Main Content */}
-        <div className="px-6 pb-6 max-w-7xl mx-auto">
-
-          {/* Top Section - Site Details and Navigation Cards Side by Side */}
-          <div className="grid lg:grid-cols-5 gap-6 mb-6">
-
-            {/* Left Side - Site and Manager Details */}
-            <div className="lg:col-span-3">
-              <div className={`bg-white rounded-2xl shadow-lg overflow-hidden h-full transform transition-all duration-500 ${fadeIn ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
-
-                {/* Better Site Header */}
-                <div
-                  className="relative bg-gradient-to-br from-blue-500 to-purple-600 h-40 cursor-pointer"
-                  onClick={handleSiteImageClick}
-                >
-                  {site.siteImage ? (
-                    <>
-                      <img
-                        src={`${API_URL}/uploads/sites/${site.siteImage}`}
-                        alt={site.siteName || 'Site Image'}
-                        className="w-full h-full object-cover"
-                        onError={handleImageError}
-                      />
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 hidden">
-                        <Image className="w-12 h-12 text-white/70 mb-1" />
-                        <p className="text-white/80 text-xs">No image available</p>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
-                      <Image className="w-12 h-12 text-white/70 mb-1" />
-                      <p className="text-white/80 text-xs">No image available</p>
-                    </div>
-                  )}
-
-                  {/* Site Name Overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                    <h1 className="text-2xl font-bold text-white">
-                      {site.siteName || 'Unnamed Site'}
-                    </h1>
-                  </div>
-
-                  {/* Manager Image in Top Right Corner */}
-                  {manager && (
-                    <div
-                      className="absolute top-3 right-3 w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform duration-200"
-                      onClick={handleManagerImageClick}
-                    >
-                      {manager.managerImage ? (
-                        <>
-                          <img
-                            src={`${API_URL}/uploads/managers/${manager.managerImage}`}
-                            alt={manager.managerName || 'Manager Image'}
-                            className="w-full h-full object-cover"
-                            onError={handleManagerImageError}
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center bg-emerald-500 hidden">
-                            <User className="w-5 h-5 text-white" />
-                          </div>
-                        </>
-                      ) : (
-                        <div className="absolute inset-0 flex items-center justify-center bg-emerald-500">
-                          <User className="w-5 h-5 text-white" />
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {/* Site and Manager Details */}
-                <div className="p-5 flex-1">
-                  <div className="grid md:grid-cols-2 gap-6">
-
-                    {/* Site Information */}
-                    <div className={`transform transition-all duration-500 delay-100 ${fadeIn ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'}`}>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                        <MapPin className="w-4 h-4 text-blue-600 mr-2" />
-                        Site Information
-                      </h3>
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center text-sm py-1">
-                          <span className="text-gray-600">Location</span>
-                          <span className="font-medium text-gray-900">{site.location || 'Not specified'}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-sm py-1">
-                          <span className="text-gray-600">Created</span>
-                          <span className="font-medium text-gray-900">{formatDate(site.createdAt)}</span>
-                        </div>
-
-                        {/* Generate Report Button */}
-
-                        <div className="pt-3 border-t border-gray-100">
-                          <button
-                            onClick={handleGenerateReport}
-                            className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
-                          >
-                            <Download className="w-5 h-5" />
-                            <span>Generate Report</span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Manager Information */}
-                    <div className={`transform transition-all duration-500 delay-200 ${fadeIn ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'}`}>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                        <UserCheck className="w-4 h-4 text-emerald-600 mr-2" />
-                        Site Manager
-                      </h3>
-                      {manager ? (
-                        <div className="space-y-3">
-                          <div className="flex justify-between items-center text-sm py-1">
-                            <span className="text-gray-600">Name</span>
-                            <span className="font-medium text-gray-900">{manager.managerName || 'Not specified'}</span>
-                          </div>
-                          <div className="flex justify-between items-center text-sm py-1">
-                            <span className="text-gray-600">Mobile</span>
-                            <span className="font-medium text-gray-900">{manager.managerMobile || 'Not specified'}</span>
-                          </div>
-                          <div className="flex justify-between items-center text-sm py-1">
-                            <span className="text-gray-600">Gender</span>
-                            <span className="font-medium text-gray-900">{manager.managerGender || 'Not specified'}</span>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-center py-4 bg-gray-50 rounded-lg">
-                          <User className="w-6 h-6 text-gray-400 mx-auto mb-1" />
-                          <p className="text-gray-500 text-sm">No manager assigned</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Side - Navigation Cards */}
-            <div className="lg:col-span-2 flex flex-col space-y-4 h-full">
-
-              {/* Workers Card */}
-              <Link
-                to={`/site/${id}/workers`}
-                className={`flex-1 bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-200 transform hover:scale-105 group ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
-                style={{ transitionDelay: '300ms' }}
-              >
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-2xl font-bold mb-2">Workers</h3>
-                      <p className="text-blue-100">Manage site workers and their details</p>
-                    </div>
-                    <Users className="w-12 h-12 text-blue-200 group-hover:text-white transition-colors" />
-                  </div>
-                </div>
-                <div className="p-6 bg-blue-50">
-                  <div className="flex items-center justify-between text-blue-800">
-                    <span className="font-medium">View all workers</span>
-                    <ArrowLeft className="w-5 h-5 rotate-180 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-
-              {/* Expenses Card */}
-              <Link
-                to={`/site/${id}/expenses`}
-                className={`flex-1 bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-200 transform hover:scale-105 group ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
-                style={{ transitionDelay: '400ms' }}
-              >
-                <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-6 text-white">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-2xl font-bold mb-2">Expenses</h3>
-                      <p className="text-emerald-100">Track and manage site expenses</p>
-                    </div>
-                    <IndianRupee className="w-12 h-12 text-emerald-200 group-hover:text-white transition-colors" />
-                  </div>
-                </div>
-                <div className="p-6 bg-emerald-50">
-                  <div className="flex items-center justify-between text-emerald-800">
-                    <span className="font-medium">View all expenses</span>
-                    <ArrowLeft className="w-5 h-5 rotate-180 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </div>
-
-          {/* Pdf Form */}
-          {showReportForm && (
-            <ReportForm siteId={id} onClose={handleCloseReportForm} />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+              <span className="text-sm font-medium">Recycle Bin</span>
+            </Link>
           )}
 
-          {/* Notes & Reminders - Full Width */}
-          <div className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`} style={{ transitionDelay: '500ms' }}>
-            <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-4 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-bold mb-1 flex items-center">
-                    <FileText className="w-5 h-5 mr-2" />
-                    Notes & Reminders
-                  </h2>
-                  <p className="text-purple-100 text-sm">Site notes and observations</p>
-                </div>
+          {/* Site Status */}
+          <div className="flex items-center">
+            {site.isCompleted ? (
+              <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-100 border border-green-300 rounded-full">
+                <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-green-800">Completed</span>
               </div>
-            </div>
-            <div className="p-6">
-              <Memos siteId={id} isCompleted={site.isCompleted} />
-            </div>
+            ) : (
+              <div className="flex items-center space-x-2 px-3 py-1.5 bg-blue-100 border border-blue-300 rounded-full">
+                <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-blue-800">Active</span>
+              </div>
+            )}
           </div>
-
         </div>
       </div>
 
-      {/* Image Modal */}
-      {selectedImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300">
-          <div className="relative max-w-4xl max-h-[90vh]">
-            <img
-              src={selectedImage}
-              alt="Full site"
-              className="max-w-full max-h-[90vh] object-contain rounded-lg"
-            />
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-gray-100"
+      {/* Main Content */}
+      <div className="px-6 pb-6 max-w-7xl mx-auto">
+
+        {/* Top Section - Site Details and Navigation Cards Side by Side */}
+        <div className="grid lg:grid-cols-5 gap-6 mb-6">
+
+          {/* Left Side - Site and Manager Details */}
+          <div className="lg:col-span-3">
+            <div className={`bg-white rounded-2xl shadow-lg overflow-hidden h-full transform transition-all duration-500 ${fadeIn ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
+
+              {/* Better Site Header */}
+              <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 h-40">
+                {site.siteImage ? (
+                  <>
+                    <ZoomImage
+                      src={`${API_URL}/uploads/sites/${site.siteImage}`}
+                      alt={site.siteName || "Site Image"}
+                      className="w-full h-full rounded-none" // Tailwind handles sizing
+                      fit="cover" // 👈 ensures it fills the banner
+                      onError={handleImageError}
+                    />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 hidden">
+                      <Image className="w-12 h-12 text-white/70 mb-1" />
+                      <p className="text-white/80 text-xs">No image available</p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
+                    <Image className="w-12 h-12 text-white/70 mb-1" />
+                    <p className="text-white/80 text-xs">No image available</p>
+                  </div>
+                )}
+
+                {/* Site Name Overlay */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                  <h1 className="text-2xl font-bold text-white">
+                    {site.siteName || "Unnamed Site"}
+                  </h1>
+                </div>
+
+                {/* Manager Image in Top Right Corner */}
+                {manager && (
+                  <div className="absolute top-3 right-3 w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-lg">
+                    {manager.managerImage ? (
+                      <>
+                        <ZoomImage
+                          src={`${API_URL}/uploads/managers/${manager.managerImage}`}
+                          alt={manager.managerName || "Manager Image"}
+                          className="w-full h-full"
+                          fit="cover" // 👈 keeps it circular and filled
+                          onError={handleManagerImageError}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-emerald-500 hidden">
+                          <User className="w-5 h-5 text-white" />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center bg-emerald-500">
+                        <User className="w-5 h-5 text-white" />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+
+              {/* Site and Manager Details */}
+              <div className="p-5 flex-1">
+                <div className="grid md:grid-cols-2 gap-6">
+
+                  {/* Site Information */}
+                  <div className={`transform transition-all duration-500 delay-100 ${fadeIn ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'}`}>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <MapPin className="w-4 h-4 text-blue-600 mr-2" />
+                      Site Information
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center text-sm py-1">
+                        <span className="text-gray-600">Location</span>
+                        <span className="font-medium text-gray-900">{site.location || 'Not specified'}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-sm py-1">
+                        <span className="text-gray-600">Created</span>
+                        <span className="font-medium text-gray-900">{formatDate(site.createdAt)}</span>
+                      </div>
+
+                      {/* Generate Report Button */}
+                      <div className="pt-3 border-t border-gray-100">
+                        <button
+                          onClick={handleGenerateReport}
+                          className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                        >
+                          <Download className="w-5 h-5" />
+                          <span>Generate Report</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Manager Information */}
+                  <div className={`transform transition-all duration-500 delay-200 ${fadeIn ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'}`}>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <UserCheck className="w-4 h-4 text-emerald-600 mr-2" />
+                      Site Manager
+                    </h3>
+                    {manager ? (
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center text-sm py-1">
+                          <span className="text-gray-600">Name</span>
+                          <span className="font-medium text-gray-900">{manager.managerName || 'Not specified'}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm py-1">
+                          <span className="text-gray-600">Mobile</span>
+                          <span className="font-medium text-gray-900">{manager.managerMobile || 'Not specified'}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm py-1">
+                          <span className="text-gray-600">Gender</span>
+                          <span className="font-medium text-gray-900">{manager.managerGender || 'Not specified'}</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4 bg-gray-50 rounded-lg">
+                        <User className="w-6 h-6 text-gray-400 mx-auto mb-1" />
+                        <p className="text-gray-500 text-sm">No manager assigned</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side - Navigation Cards */}
+          <div className="lg:col-span-2 flex flex-col space-y-4 h-full">
+
+            {/* Workers Card */}
+            <Link
+              to={`/site/${id}/workers`}
+              className={`flex-1 bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-200 transform hover:scale-105 group ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
+              style={{ transitionDelay: '300ms' }}
             >
-              <X className="w-5 h-5 text-gray-800" />
-            </button>
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-2xl font-bold mb-2">Workers</h3>
+                    <p className="text-blue-100">Manage site workers and their details</p>
+                  </div>
+                  <Users className="w-12 h-12 text-blue-200 group-hover:text-white transition-colors" />
+                </div>
+              </div>
+              <div className="p-6 bg-blue-50">
+                <div className="flex items-center justify-between text-blue-800">
+                  <span className="font-medium">View all workers</span>
+                  <ArrowLeft className="w-5 h-5 rotate-180 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </Link>
+
+            {/* Expenses Card */}
+            <Link
+              to={`/site/${id}/expenses`}
+              className={`flex-1 bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-200 transform hover:scale-105 group ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
+              style={{ transitionDelay: '400ms' }}
+            >
+              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-2xl font-bold mb-2">Expenses</h3>
+                    <p className="text-emerald-100">Track and manage site expenses</p>
+                  </div>
+                  <IndianRupee className="w-12 h-12 text-emerald-200 group-hover:text-white transition-colors" />
+                </div>
+              </div>
+              <div className="p-6 bg-emerald-50">
+                <div className="flex items-center justify-between text-emerald-800">
+                  <span className="font-medium">View all expenses</span>
+                  <ArrowLeft className="w-5 h-5 rotate-180 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
-      )}
 
-    </>
+        {/* Pdf Form */}
+        {showReportForm && (
+          <ReportForm siteId={id} onClose={handleCloseReportForm} />
+        )}
+
+        {/* Notes & Reminders - Full Width */}
+        <div className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`} style={{ transitionDelay: '500ms' }}>
+          <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-4 text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold mb-1 flex items-center">
+                  <FileText className="w-5 h-5 mr-2" />
+                  Notes & Reminders
+                </h2>
+                <p className="text-purple-100 text-sm">Site notes and observations</p>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <Memos siteId={id} isCompleted={site.isCompleted} />
+          </div>
+        </div>
+
+      </div>
+    </div>
   );
 }
 

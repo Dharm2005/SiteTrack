@@ -1,1 +1,27 @@
 @import "tailwindcss";
+
+/* Dark overlay for zoomed images */
+[data-rmiz-modal-overlay] {
+  background-color: rgba(0, 0, 0, 0.9) !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Optional: Smooth transition for the overlay */
+[data-rmiz-modal-overlay="hidden"] {
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
+[data-rmiz-modal-overlay="visible"] {
+  background-color: rgba(0, 0, 0, 0.9) !important;
+  transition: background-color 0.3s ease;
+}
+
+/* Optional: Add smooth scaling animation */
+[data-rmiz-modal-content] {
+  transition: transform 0.3s ease;
+}
+
+/* Optional: Style the zoomed image */
+[data-rmiz-modal-img] {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
