@@ -211,7 +211,7 @@ function SiteDetail() {
               <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 h-40">
                 {site.siteImage ? (
                   <>
-                    <ZoomImage
+                     <ZoomImage
                       src={`${API_URL}/uploads/sites/${site.siteImage}`}
                       alt={site.siteName || "Site Image"}
                       className="w-full h-full rounded-none" // Tailwind handles sizing

@@ -102,46 +102,46 @@ function Site({ id, name, location, image, managerId, createdAt, isCompleted }) 
       } ${isDeleting ? 'pointer-events-none' : ''}`}>
       {/* Large Image Section */}
       <div className="relative h-64 bg-gradient-to-br from-blue-500 to-purple-600 overflow-hidden">
-  {image ? (
-    <>
-      <div className="relative w-full h-full">
-        <ZoomImage
-          src={`${API_URL}/uploads/sites/${image}`}
-          alt={name || 'Site Image'}
-          className="w-full h-full object-cover"
-          onError={handleImageError}
-        />
-      </div>
-      {/* Fallback icon - hidden by default */}
-      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 hidden">
-        <ImageIcon className="w-20 h-20 text-white/70" />
-      </div>
-    </>
-  ) : (
-    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
-      <ImageIcon className="w-20 h-20 text-white/70" />
-    </div>
-  )}
+        {image ? (
+          <>
+            <div className="relative w-full h-full">
+              <ZoomImage
+                src={`${API_URL}/uploads/sites/${image}`}
+                alt={name || 'Site Image'}
+                className="w-full h-full object-cover"
+                onError={handleImageError}
+              />
+            </div>
+            {/* Fallback icon - hidden by default */}
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 hidden">
+              <ImageIcon className="w-20 h-20 text-white/70" />
+            </div>
+          </>
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
+            <ImageIcon className="w-20 h-20 text-white/70" />
+          </div>
+        )}
 
-  {/* Overlay gradient */}
-  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent pointer-events-none"></div>
+        {/* Overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent pointer-events-none"></div>
 
-  {/* Site name overlay */}
-  <div className="absolute bottom-6 left-6 right-6 pointer-events-none">
-    <h3 className="text-white text-2xl font-bold truncate drop-shadow-lg">
-      {name || 'Unnamed Site'}
-    </h3>
-  </div>
+        {/* Site name overlay */}
+        <div className="absolute bottom-6 left-6 right-6 pointer-events-none">
+          <h3 className="text-white text-2xl font-bold truncate drop-shadow-lg">
+            {name || 'Unnamed Site'}
+          </h3>
+        </div>
 
-  {/* Deleting Overlay */}
-  {isDeleting && (
-    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-      <div className="bg-white bg-opacity-90 rounded-full p-4">
-        <Loader2 className="w-8 h-8 text-red-600 animate-spin" />
+        {/* Deleting Overlay */}
+        {isDeleting && (
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
+            <div className="bg-white bg-opacity-90 rounded-full p-4">
+              <Loader2 className="w-8 h-8 text-red-600 animate-spin" />
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  )}
-</div>
 
       {/* Compact Details Section */}
       <div className="p-6">
@@ -223,54 +223,54 @@ function Site({ id, name, location, image, managerId, createdAt, isCompleted }) 
           </Link>
 
           {!isCompleted ? (
-          <>
-            {user.role === 'admin' ? (
-              <>
-                {/* Edit Button Icon */}
-                <Link
-                  to={`/edit-site/${id}`}
-                  className={`p-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-md ${isDeleting ? 'opacity-50 pointer-events-none' : ''
-                    }`}
-                  title="Edit Site"
-                >
-                  <Edit className="w-5 h-5" />
-                </Link>
+            <>
+              {user.role === 'admin' ? (
+                <>
+                  {/* Edit Button Icon */}
+                  <Link
+                    to={`/edit-site/${id}`}
+                    className={`p-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-md ${isDeleting ? 'opacity-50 pointer-events-none' : ''
+                      }`}
+                    title="Edit Site"
+                  >
+                    <Edit className="w-5 h-5" />
+                  </Link>
 
-                {/* Delete Button Icon */}
-                <button
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className={`p-3 transition-all duration-200 transform hover:scale-105 shadow-md rounded-xl ${isDeleting
-                    ? 'bg-red-300 text-red-600 cursor-not-allowed'
-                    : 'bg-red-100 hover:bg-red-200 text-red-700'
-                    }`}
-                  title="Delete Site"
-                >
-                  {isDeleting ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Trash2 className="w-5 h-5" />
-                  )}
-                </button>
+                  {/* Delete Button Icon */}
+                  <button
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className={`p-3 transition-all duration-200 transform hover:scale-105 shadow-md rounded-xl ${isDeleting
+                      ? 'bg-red-300 text-red-600 cursor-not-allowed'
+                      : 'bg-red-100 hover:bg-red-200 text-red-700'
+                      }`}
+                    title="Delete Site"
+                  >
+                    {isDeleting ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-5 h-5" />
+                    )}
+                  </button>
 
-                <button
-                  onClick={handleComplete}
-                  disabled={isCompleting || isDeleting}
-                  className={`p-3 transition-all duration-200 transform hover:scale-105 shadow-md rounded-xl ${isCompleting || isDeleting
-                    ? 'bg-emerald-300 text-emerald-600 cursor-not-allowed'
-                    : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-700'
-                    }`}
-                  title="Mark as Completed"
-                >
-                  {isCompleting ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <CheckCircle className="w-5 h-5" />
-                  )}
-                </button>
-              </>
-            ) : (<></>)}
-          </>
+                  <button
+                    onClick={handleComplete}
+                    disabled={isCompleting || isDeleting}
+                    className={`p-3 transition-all duration-200 transform hover:scale-105 shadow-md rounded-xl ${isCompleting || isDeleting
+                      ? 'bg-emerald-300 text-emerald-600 cursor-not-allowed'
+                      : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-700'
+                      }`}
+                    title="Mark as Completed"
+                  >
+                    {isCompleting ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <CheckCircle className="w-5 h-5" />
+                    )}
+                  </button>
+                </>
+              ) : (<></>)}
+            </>
           ) : (<></>)}
 
         </div>

@@ -6,12 +6,14 @@ const ZoomImage = ({ src, alt, className = "", onError, fit = "contain" }) => {
   return (
     <Zoom
       zoomMargin={40}
-      // Add these props to control the wrapper styling
-      wrapElement="div"
+      wrapElement="span"
       wrapStyle={{
-        width: "100%",
-        height: "100%",
-        display: "block"
+        display: "inline-block",
+        lineHeight: 0,
+        width: "auto",
+        height: "auto",
+        maxWidth: "100%",
+        maxHeight: "100%",
       }}
     >
       <img

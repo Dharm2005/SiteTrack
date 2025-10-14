@@ -25,3 +25,15 @@
 [data-rmiz-modal-img] {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
+
+[data-rmiz-wrap] {
+  display: inline-block !important;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+[data-rmiz-wrap] img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}

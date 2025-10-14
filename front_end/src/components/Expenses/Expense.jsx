@@ -203,12 +203,14 @@ function Expense({ id, siteId, expenseType, stoneType, billImage, quantity, unit
             <div className="relative flex-shrink-0">
               {billImage ? (
                 <div className="relative">
+                  <div className="w-10 h-10 relative flex-shrink-0">
                   <ZoomImage
                     src={`${API_URL}/uploads/bills/${billImage}`}
                     alt={`${expenseType} bill`}
                     className="w-10 h-10 rounded-lg object-cover border-2 border-gray-100 shadow-sm"
                     onError={handleImageError}
                   />
+                  </div>
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm hidden">
                     <Package className="w-5 h-5 text-white" />
                   </div>
