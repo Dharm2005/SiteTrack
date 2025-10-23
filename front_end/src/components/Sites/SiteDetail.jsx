@@ -56,11 +56,8 @@ function SiteDetail() {
         if (isMounted) {
           setSite(site);
           const manager = managers.find((m) => m._id === site.manager)
-
           setManager(manager)
-
           setLoading(false);
-          // Trigger fade-in animation after loading
           setTimeout(() => setFadeIn(true), 50);
         }
       })
@@ -68,7 +65,6 @@ function SiteDetail() {
         if (isMounted) {
           console.error("Error while fetching site from DB:", err);
           setLoading(false);
-          // Trigger fade-in animation even on error
           setTimeout(() => setFadeIn(true), 50);
         }
       });
@@ -77,7 +73,6 @@ function SiteDetail() {
     };
   }, [dispatch, id, managers]);
 
-  // Format the date if it exists
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
@@ -93,33 +88,28 @@ function SiteDetail() {
     }
   };
 
-  // Handle missing image
   const handleImageError = (e) => {
     e.target.style.display = 'none';
     e.target.nextSibling.style.display = 'flex';
   };
 
-  // Handle missing manager image
   const handleManagerImageError = (e) => {
     e.target.style.display = 'none';
     e.target.nextSibling.style.display = 'flex';
   };
 
   const handleBack = () => {
-    navigate('/'); // Go back to previous page
+    navigate('/');
   };
 
-  // Handle generate report button click
   const handleGenerateReport = () => {
     setShowReportForm(true);
   };
 
-  // Handle close report form
   const handleCloseReportForm = () => {
     setShowReportForm(false);
   };
 
-  // Show skeleton while loading
   if (loading) {
     return <SiteDetailSkeleton />;
   }
@@ -142,259 +132,241 @@ function SiteDetail() {
   }
 
   return (
-    <div className={`min-h-screen bg-gray-50 transition-all duration-700 ${fadeIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-      {/* Back Button */}
-      <div className="p-6 flex items-center justify-between">
-        {/* Back Button */}
-        <button
-          onClick={handleBack}
-          className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors group"
-        >
-          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-          <span className="font-medium">Back</span>
-        </button>
+    <div className={`min-h-screen bg-gray-50 transition-all duration-700 ${fadeIn ? 'opacity-100' : 'opacity-0'}`}>
 
-        {/* Right side container for Recycle Button and Status */}
-        <div className="flex items-center space-x-4">
-          {/* Recycle Bin Button - Only show for managers */}
-          {user.role === 'manager' && (
-            <Link
-              to={`/site/${id}/recycle-bin`}
-              className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-700 rounded-lg border border-gray-200 hover:border-gray-300 shadow-sm hover:shadow transition-all duration-200 ease-in-out group"
+      {/* Header Bar */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Back Button */}
+            <button
+              onClick={handleBack}
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors group"
             >
-              {/* Recycle Icon */}
-              <svg
-                className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
-              <span className="text-sm font-medium">Recycle Bin</span>
-            </Link>
-          )}
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+              <span className="font-medium">Back to Sites</span>
+            </button>
 
-          {/* Site Status */}
-          <div className="flex items-center">
-            {site.isCompleted ? (
-              <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-100 border border-green-300 rounded-full">
-                <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium text-green-800">Completed</span>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-2 px-3 py-1.5 bg-blue-100 border border-blue-300 rounded-full">
-                <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium text-blue-800">Active</span>
-              </div>
-            )}
+            <div className="flex items-center space-x-4">
+              {/* Status Badge */}
+              {site.isCompleted ? (
+                <div className="flex items-center space-x-2 px-4 py-2 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-green-700">Completed</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium text-blue-700">Active</span>
+                </div>
+              )}
+
+              {/* Recycle Bin Button */}
+              {user.role === 'manager' && (
+                <Link
+                  to={`/site/${id}/recycle-bin`}
+                  className="flex items-center space-x-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-700 rounded-lg border border-gray-200 transition-all group"
+                >
+                  <svg className="w-4 h-4 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <span className="text-sm font-medium">Recycle Bin</span>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="px-6 pb-6 max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-6 py-8">
 
-        {/* Top Section - Site Details and Navigation Cards Side by Side */}
-        <div className="grid lg:grid-cols-5 gap-6 mb-6">
+        {/* UPPER PART - Split 80/20 */}
+        <div className={`grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8 transform transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
 
-          {/* Left Side - Site and Manager Details */}
-          <div className="lg:col-span-3">
-            <div className={`bg-white rounded-2xl shadow-lg overflow-hidden h-full transform transition-all duration-500 ${fadeIn ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
-
-              {/* Better Site Header */}
-              <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 h-40">
+          {/* LEFT SIDE - 80% (4 columns) - Site Image */}
+          <div className="lg:col-span-4">
+            <div className="bg-white rounded-2xl shadow-sm overflow-hidden h-full">
+              <div className="relative h-[500px]">
                 {site.siteImage ? (
                   <>
-                     <ZoomImage
+                    <ZoomImage
                       src={`${API_URL}/uploads/sites/${site.siteImage}`}
                       alt={site.siteName || "Site Image"}
-                      className="w-full h-full rounded-none" // Tailwind handles sizing
-                      fit="cover" // 👈 ensures it fills the banner
+                      className="w-full h-full object-cover"
+                      fit="cover"
                       onError={handleImageError}
                     />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 hidden">
-                      <Image className="w-12 h-12 text-white/70 mb-1" />
-                      <p className="text-white/80 text-xs">No image available</p>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 hidden">
+                      <Image className="w-16 h-16 text-gray-300 mb-2" />
+                      <p className="text-gray-400">No image available</p>
                     </div>
                   </>
                 ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
-                    <Image className="w-12 h-12 text-white/70 mb-1" />
-                    <p className="text-white/80 text-xs">No image available</p>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100">
+                    <Image className="w-16 h-16 text-gray-300 mb-2" />
+                    <p className="text-gray-400">No image available</p>
                   </div>
                 )}
 
-                {/* Site Name Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                  <h1 className="text-2xl font-bold text-white">
+                {/* Gradient Overlay with Site Name */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h1 className="text-3xl font-bold text-white mb-2">
                     {site.siteName || "Unnamed Site"}
                   </h1>
-                </div>
-
-                {/* Manager Image in Top Right Corner */}
-                {manager && (
-                  <div className="absolute top-3 right-3 w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-lg">
-                    {manager.managerImage ? (
-                      <>
-                        <ZoomImage
-                          src={`${API_URL}/uploads/managers/${manager.managerImage}`}
-                          alt={manager.managerName || "Manager Image"}
-                          className="w-full h-full"
-                          fit="cover" // 👈 keeps it circular and filled
-                          onError={handleManagerImageError}
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center bg-emerald-500 hidden">
-                          <User className="w-5 h-5 text-white" />
-                        </div>
-                      </>
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-emerald-500">
-                        <User className="w-5 h-5 text-white" />
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-
-              {/* Site and Manager Details */}
-              <div className="p-5 flex-1">
-                <div className="grid md:grid-cols-2 gap-6">
-
-                  {/* Site Information */}
-                  <div className={`transform transition-all duration-500 delay-100 ${fadeIn ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'}`}>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                      <MapPin className="w-4 h-4 text-blue-600 mr-2" />
-                      Site Information
-                    </h3>
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center text-sm py-1">
-                        <span className="text-gray-600">Location</span>
-                        <span className="font-medium text-gray-900">{site.location || 'Not specified'}</span>
-                      </div>
-                      <div className="flex justify-between items-center text-sm py-1">
-                        <span className="text-gray-600">Created</span>
-                        <span className="font-medium text-gray-900">{formatDate(site.createdAt)}</span>
-                      </div>
-
-                      {/* Generate Report Button */}
-                      <div className="pt-3 border-t border-gray-100">
-                        <button
-                          onClick={handleGenerateReport}
-                          className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
-                        >
-                          <Download className="w-5 h-5" />
-                          <span>Generate Report</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Manager Information */}
-                  <div className={`transform transition-all duration-500 delay-200 ${fadeIn ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'}`}>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                      <UserCheck className="w-4 h-4 text-emerald-600 mr-2" />
-                      Site Manager
-                    </h3>
-                    {manager ? (
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center text-sm py-1">
-                          <span className="text-gray-600">Name</span>
-                          <span className="font-medium text-gray-900">{manager.managerName || 'Not specified'}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-sm py-1">
-                          <span className="text-gray-600">Mobile</span>
-                          <span className="font-medium text-gray-900">{manager.managerMobile || 'Not specified'}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-sm py-1">
-                          <span className="text-gray-600">Gender</span>
-                          <span className="font-medium text-gray-900">{manager.managerGender || 'Not specified'}</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center py-4 bg-gray-50 rounded-lg">
-                        <User className="w-6 h-6 text-gray-400 mx-auto mb-1" />
-                        <p className="text-gray-500 text-sm">No manager assigned</p>
-                      </div>
-                    )}
+                  <div className="flex items-center text-white/90">
+                    <MapPin className="w-4 h-4 mr-2" />
+                    <span>{site.location || 'Location not specified'}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Right Side - Navigation Cards */}
-          <div className="lg:col-span-2 flex flex-col space-y-4 h-full">
+          {/* RIGHT SIDE - 20% (1 column) - All Details */}
+          <div className="lg:col-span-1 flex flex-col space-y-2.5">
 
-            {/* Workers Card */}
-            <Link
-              to={`/site/${id}/workers`}
-              className={`flex-1 bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-200 transform hover:scale-105 group ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
-              style={{ transitionDelay: '300ms' }}
-            >
-              <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-2xl font-bold mb-2">Workers</h3>
-                    <p className="text-blue-100">Manage site workers and their details</p>
-                  </div>
-                  <Users className="w-12 h-12 text-blue-200 group-hover:text-white transition-colors" />
+            {/* Site Details Card */}
+            <div className="bg-gradient-to-br from-blue-50/50 to-white rounded-xl shadow-sm p-3 border border-blue-100/50">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2 flex items-center">
+                <div className="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center mr-2">
+                  <MapPin className="w-3.5 h-3.5 text-white" />
+                </div>
+                Site Details
+              </h3>
+              <div className="space-y-1.5">
+                <div className="bg-white rounded-lg p-2 border border-blue-50">
+                  <p className="text-xs text-gray-500 mb-0.5">Created</p>
+                  <p className="text-sm font-semibold text-gray-900">{formatDate(site.createdAt)}</p>
+                </div>
+                <div className="bg-white rounded-lg p-2 border border-blue-50">
+                  <p className="text-xs text-gray-500 mb-0.5">Status</p>
+                  <p className="text-sm font-semibold text-gray-900">{site.isCompleted ? 'Completed' : 'Active'}</p>
                 </div>
               </div>
-              <div className="p-6 bg-blue-50">
-                <div className="flex items-center justify-between text-blue-800">
-                  <span className="font-medium">View all workers</span>
-                  <ArrowLeft className="w-5 h-5 rotate-180 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </Link>
+            </div>
 
-            {/* Expenses Card */}
-            <Link
-              to={`/site/${id}/expenses`}
-              className={`flex-1 bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-200 transform hover:scale-105 group ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
-              style={{ transitionDelay: '400ms' }}
-            >
-              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-6 text-white">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-2xl font-bold mb-2">Expenses</h3>
-                    <p className="text-emerald-100">Track and manage site expenses</p>
+            {/* Manager Details Card */}
+            <div className="bg-gradient-to-br from-orange-50/50 to-white rounded-xl shadow-sm p-3 border border-orange-100/50">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2 flex items-center">
+                <div className="w-6 h-6 bg-orange-500 rounded-lg flex items-center justify-center mr-2">
+                  <UserCheck className="w-3.5 h-3.5 text-white" />
+                </div>
+                Manager
+              </h3>
+
+              {manager ? (
+                <div className="space-y-1.5">
+                  <div className="bg-white rounded-lg p-2 border border-orange-50">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
+                        {manager.managerImage ? (
+                          <>
+                            <ZoomImage
+                              src={`${API_URL}/uploads/managers/${manager.managerImage}`}
+                              alt={manager.managerName || "Manager"}
+                              className="w-full h-full object-cover"
+                              fit="cover"
+                              onError={handleManagerImageError}
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-orange-500 hidden">
+                              <User className="w-5 h-5 text-white" />
+                            </div>
+                          </>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-orange-500">
+                            <User className="w-5 h-5 text-white" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 truncate">{manager.managerName || 'N/A'}</p>
+                        <p className="text-xs text-gray-500">{manager.managerGender || 'N/A'}</p>
+                      </div>
+                    </div>
                   </div>
-                  <IndianRupee className="w-12 h-12 text-emerald-200 group-hover:text-white transition-colors" />
+
+                  <div className="bg-white rounded-lg p-2 border border-orange-50">
+                    <div className="flex items-center text-xs text-gray-600">
+                      <div className="w-5 h-5 bg-orange-100 rounded-md flex items-center justify-center mr-1.5">
+                        <Phone className="w-3 h-3 text-orange-600" />
+                      </div>
+                      <span className="truncate font-medium">{manager.managerMobile || 'Not specified'}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="p-6 bg-emerald-50">
-                <div className="flex items-center justify-between text-emerald-800">
-                  <span className="font-medium">View all expenses</span>
-                  <ArrowLeft className="w-5 h-5 rotate-180 group-hover:translate-x-1 transition-transform" />
+              ) : (
+                <div className="bg-white rounded-lg p-2 border border-orange-50">
+                  <div className="text-center py-1.5">
+                    <User className="w-5 h-5 text-gray-300 mx-auto mb-0.5" />
+                    <p className="text-xs text-gray-400">No manager assigned</p>
+                  </div>
                 </div>
-              </div>
-            </Link>
+              )}
+            </div>
+
+            {/* Navigation Links */}
+            <div className="space-y-1.5">
+              {/* Workers Link */}
+              <Link
+                to={`/site/${id}/workers`}
+                className="block bg-gradient-to-r from-[#14b8a6] to-[#0d9488] rounded-xl shadow-sm p-2.5 hover:shadow-md hover:from-[#0d9488] hover:to-[#0f766e] transition-all group"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                      <Users className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-sm font-semibold text-white">Workers</span>
+                  </div>
+                  <ArrowLeft className="w-4 h-4 text-white/80 rotate-180 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
+              
+              {/* Expenses Link */}
+              <Link
+                to={`/site/${id}/expenses`}
+                className="block bg-gradient-to-r from-[#c084fc] to-[#a855f7] rounded-xl shadow-sm p-2.5 hover:shadow-md hover:from-[#a855f7] hover:to-[#9333ea] transition-all group"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                      <IndianRupee className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-sm font-semibold text-white">Expenses</span>
+                  </div>
+                  <ArrowLeft className="w-4 h-4 text-white/80 rotate-180 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
+            </div>
+
+            {/* Generate Report Button */}
+            <button
+              onClick={handleGenerateReport}
+              className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-[#7dd3fc] to-[#38bdf8] hover:from-[#38bdf8] hover:to-[#0ea5e9] text-white px-4 py-2.5 rounded-xl font-semibold transition-all shadow-sm hover:shadow-md"
+            >
+              <Download className="w-4 h-4" />
+              <span className="text-sm">Generate Report</span>
+            </button>
           </div>
         </div>
 
-        {/* Pdf Form */}
+        {/* Report Form Modal */}
         {showReportForm && (
           <ReportForm siteId={id} onClose={handleCloseReportForm} />
         )}
 
-        {/* Notes & Reminders - Full Width */}
-        <div className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`} style={{ transitionDelay: '500ms' }}>
-          <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-4 text-white">
+        {/* LOWER PART - Notes & Reminders (Full Width) */}
+        <div className={`bg-white rounded-xl shadow-sm overflow-hidden transform transition-all duration-500 delay-200 ${fadeIn ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+          <div className="p-6 border-b border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold mb-1 flex items-center">
-                  <FileText className="w-5 h-5 mr-2" />
+                <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                  <FileText className="w-5 h-5 mr-2 text-purple-600" />
                   Notes & Reminders
                 </h2>
-                <p className="text-purple-100 text-sm">Site notes and observations</p>
+                <p className="text-gray-600 text-sm mt-1">Site notes and observations</p>
               </div>
             </div>
           </div>
