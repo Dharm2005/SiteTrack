@@ -187,7 +187,7 @@ function SiteDetail() {
 
           {/* LEFT SIDE - Site Image (2 columns) */}
           <div className="lg:col-span-2">
-            <div className="relative h-64 rounded-xl overflow-hidden">
+            <div className="relative h-66 rounded-xl overflow-hidden">
               {site.siteImage ? (
                 <>
                   <ZoomImage

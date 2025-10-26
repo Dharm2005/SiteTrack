@@ -114,7 +114,7 @@ function ReportForm({ siteId, onClose }) {
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {/* Quick Info Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
@@ -160,7 +160,7 @@ function ReportForm({ siteId, onClose }) {
 
         {/* Date Range Section */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-3">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Select Date Range *
           </label>
 
@@ -200,7 +200,7 @@ function ReportForm({ siteId, onClose }) {
 
           {/* Date Range Summary */}
           {form.startDate && form.endDate && (
-            <div className="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
+            <div className="mt-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
               <p className="text-sm text-purple-800 flex items-center">
                 <BarChart3 className="w-4 h-4 mr-2" />
                 <strong>Report Period:</strong>
@@ -216,7 +216,7 @@ function ReportForm({ siteId, onClose }) {
 
         {/* Quick Date Presets */}
         <div>
-          <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+          <p className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
             <Clock className="w-4 h-4 mr-2" />
             Quick Select:
           </p>
@@ -271,7 +271,7 @@ function ReportForm({ siteId, onClose }) {
         )}
 
         {/* Action Buttons */}
-        <div className="flex space-x-4 pt-4">
+        <div className="flex space-x-4 pt-2">
           {/* Generate Report Button */}
           <button
             type="submit"
