@@ -180,8 +180,11 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
     }
 
     if (initialValues && initialValues.billImage) {
-      const imageUrl = `${API_URL}/uploads/bills/${initialValues.billImage}`
-      setImagePreview(imageUrl)
+      const imageUrl = initialValues.billImage.startsWith("http")
+      ? initialValues.billImage
+      : `${API_URL}/uploads/bills/${initialValues.billImage}`;
+
+      setImagePreview(imageUrl);
     }
 
   }, [initialValues])

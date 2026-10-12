@@ -205,7 +205,11 @@ function Expense({ id, siteId, expenseType, stoneType, billImage, quantity, unit
                 <div className="relative">
                   <div className="w-10 h-10 relative flex-shrink-0">
                   <ZoomImage
-                    src={`${API_URL}/uploads/bills/${billImage}`}
+                    src={
+                      billImage?.startsWith("http")
+                        ? billImage
+                        : `${API_URL}/uploads/bills/${billImage}`
+                    }
                     alt={`${expenseType} bill`}
                     className="w-10 h-10 rounded-lg object-cover border-2 border-gray-100 shadow-sm"
                     onError={handleImageError}

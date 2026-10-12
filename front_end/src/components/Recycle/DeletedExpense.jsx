@@ -200,16 +200,31 @@ function DeletedExpense({
               {/* Expense Image/Icon */}
               <div className="relative flex-shrink-0">
                 {billImage ? (
-                  <div className="relative group/image cursor-pointer" onClick={() => setSelectedImage(`${API_URL}/uploads/bills/${billImage}`)}>
+                  <div
+                    className="relative group/image cursor-pointer"
+                    onClick={() =>
+                      setSelectedImage(
+                        billImage.startsWith("http")
+                          ? billImage
+                          : `${API_URL}/uploads/bills/${billImage}`
+                      )
+                    }
+                  >
                     <img
-                      src={`${API_URL}/uploads/bills/${billImage}`}
+                      src={
+                        billImage.startsWith("http")
+                          ? billImage
+                          : `${API_URL}/uploads/bills/${billImage}`
+                      }
                       alt={`${expenseType} bill`}
                       className="w-10 h-10 rounded-lg object-cover border-2 border-gray-100 shadow-sm"
                       onError={handleImageError}
                     />
+
                     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm hidden">
                       <Package className="w-5 h-5 text-white" />
                     </div>
+
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-lg opacity-0 group-hover/image:opacity-100 transition-opacity">
                       <ImageIcon className="w-3 h-3 text-white" />
                     </div>

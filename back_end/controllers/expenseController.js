@@ -1,8 +1,21 @@
 const Expense = require('../models/Expense');
 const Site = require('../models/Site');
-const path = require('path');
-const fs = require('fs');
+const path = require('path');   // remove after setting cloudinary
+const fs = require('fs');   // remove after setting cloudinary
 const { validationResult } = require('express-validator');
+const cloudinary = require("../util/cloudinary");
+
+
+// reusable function to delete image when needed
+const deleteCloudinaryImage = async (publicId) => {
+  if (!publicId) return;
+
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    console.error("Error deleting image from Cloudinary:", error);
+  }
+};
 
 exports.getExpensesBySite = async (req, res, next) => {
   try {
@@ -58,15 +71,13 @@ exports.getFilteredExpenses = async (req, res, next) => {
 
 exports.postAddExpense = async (req, res, next) => {
   try {
-
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
 
+    if (!errors.isEmpty()) {
+      // Multer already uploaded the image to Cloudinary.
+      // Delete it because validation failed.
       if (req.file) {
-        const filePath = path.join(__dirname, "../uploads/bills", req.file.filename);
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
+        await deleteCloudinaryImage(req.file.filename);
       }
 
       return res.status(400).json({
@@ -78,44 +89,57 @@ exports.postAddExpense = async (req, res, next) => {
       });
     }
 
-    let { expenseType, quantity, unit, totalCost, arrivalDate, vehicleNumber, supplierName, details, siteId, stoneType } = req.body;
-    const billImage = req.file ? req.file.filename : null;
+    let {
+      expenseType,
+      quantity,
+      unit,
+      totalCost,
+      arrivalDate,
+      vehicleNumber,
+      supplierName,
+      details,
+      siteId,
+      stoneType
+    } = req.body;
+
+    // Cloudinary image information
+    const billImage = req.file ? req.file.path : null;
+    const billImagePublicId = req.file ? req.file.filename : null;
 
     const site = await Site.findById(siteId);
+
     if (!site) {
-      // delete uploaded image if site is not found
-      if (billImage) {
-        const filePath = path.join(__dirname, "../uploads/bills", billImage);
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
+      if (billImagePublicId) {
+        await deleteCloudinaryImage(billImagePublicId);
       }
-      return res.status(404).json({ message: "Site not found" });
+
+      return res.status(404).json({
+        message: "Site not found"
+      });
     }
 
     if (site.isCompleted) {
-      // delete uploaded image if site is completed
-      if (billImage) {
-        const filePath = path.join(__dirname, "../uploads/bills", billImage);
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
+      if (billImagePublicId) {
+        await deleteCloudinaryImage(billImagePublicId);
       }
-      return res.status(400).json({ message: "Cannot add expenses to a completed site" });
+
+      return res.status(400).json({
+        message: "Cannot add expenses to a completed site"
+      });
     }
 
-    // Parse sites correctly
     if (stoneType && typeof stoneType === "string") {
       try {
-        stoneType = JSON.parse(stoneType); // in case frontend sends JSON string
+        stoneType = JSON.parse(stoneType);
       } catch (err) {
-        stoneType = [stoneType]; // fallback if it's just a single string
+        stoneType = [stoneType];
       }
     }
 
     const expense = new Expense({
       expenseType,
       billImage,
+      billImagePublicId,
       quantity,
       unit,
       totalCost,
@@ -128,13 +152,25 @@ exports.postAddExpense = async (req, res, next) => {
     });
 
     const savedExpense = await expense.save();
-    res.status(201).json({
+
+    return res.status(201).json({
       message: "Expense added successfully",
       expense: savedExpense
     });
+
   } catch (error) {
+    // If something fails after Cloudinary upload,
+    // remove the uploaded image so we don't leave an orphan.
+    if (req.file) {
+      await deleteCloudinaryImage(req.file.filename);
+    }
+
     console.error("Error adding expense:", error);
-    res.status(500).json({ message: "Error adding expense", error: error.message });
+
+    return res.status(500).json({
+      message: "Error adding expense",
+      error: error.message
+    });
   }
 };
 
@@ -181,12 +217,10 @@ exports.deleteExpense = async (req, res, next) => {
 exports.updateExpense = async (req, res, next) => {
   try {
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
       if (req.file) {
-        const filePath = path.join(__dirname, "../uploads/bills", req.file.filename);
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
+        await deleteCloudinaryImage(req.file.filename);
       }
 
       return res.status(400).json({
@@ -201,53 +235,77 @@ exports.updateExpense = async (req, res, next) => {
     const { expenseId } = req.params;
     const updates = { ...req.body };
 
-    // ✅ Step 1: Check site first
     const siteId = req.body.siteId;
+
     if (!siteId) {
-      return res.status(400).json({ message: "SiteId is required" });
+      if (req.file) {
+        await deleteCloudinaryImage(req.file.filename);
+      }
+
+      return res.status(400).json({
+        message: "SiteId is required"
+      });
     }
 
     const site = await Site.findById(siteId);
+
     if (!site) {
-      return res.status(404).json({ message: "Site not found" });
+      if (req.file) {
+        await deleteCloudinaryImage(req.file.filename);
+      }
+
+      return res.status(404).json({
+        message: "Site not found"
+      });
     }
 
     if (site.isCompleted) {
       if (req.file) {
-        const filePath = path.join(__dirname, "../uploads/bills", req.file.filename);
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
+        await deleteCloudinaryImage(req.file.filename);
       }
-      return res.status(400).json({ message: "Cannot update expenses for a completed site" });
+
+      return res.status(400).json({
+        message: "Cannot update expenses for a completed site"
+      });
     }
 
-    // ✅ Step 2: Prevent siteId update
     delete updates.siteId;
 
-    // ✅ Step 3: Handle stoneType
     if (updates.stoneType) {
       try {
         const parsedStoneType = JSON.parse(updates.stoneType);
-        updates.stoneType = Array.isArray(parsedStoneType) ? parsedStoneType : [];
+
+        updates.stoneType = Array.isArray(parsedStoneType)
+          ? parsedStoneType
+          : [];
+
       } catch (error) {
         updates.stoneType = [];
       }
     }
 
-    // ✅ Step 4: Handle billImage
-    if (req.file) {
-      const oldExpense = await Expense.findById(expenseId);
-      if (oldExpense && oldExpense.billImage) {
-        const oldPath = path.join(__dirname, "../uploads/bills", oldExpense.billImage);
-        if (fs.existsSync(oldPath)) {
-          fs.unlinkSync(oldPath);
-        }
+    // Find the existing expense
+    const oldExpense = await Expense.findById(expenseId);
+
+    if (!oldExpense) {
+      if (req.file) {
+        await deleteCloudinaryImage(req.file.filename);
       }
-      updates.billImage = req.file.filename;
+
+      return res.status(404).json({
+        message: "No expense found for update"
+      });
     }
 
-    // ✅ Step 5: Update expense
+    // Keep track of old image
+    const oldBillImagePublicId = oldExpense.billImagePublicId;
+
+    // If a new image was uploaded
+    if (req.file) {
+      updates.billImage = req.file.path;
+      updates.billImagePublicId = req.file.filename;
+    }
+
     const updatedExpense = await Expense.findByIdAndUpdate(
       expenseId,
       updates,
@@ -255,15 +313,39 @@ exports.updateExpense = async (req, res, next) => {
     );
 
     if (!updatedExpense) {
-      return res.status(404).json({ message: "No expense found for update" });
+      if (req.file) {
+        await deleteCloudinaryImage(req.file.filename);
+      }
+
+      return res.status(404).json({
+        message: "No expense found for update"
+      });
+    }
+
+    // New image successfully saved in DB.
+    // Delete the old Cloudinary image.
+    if (req.file && oldBillImagePublicId) {
+      await deleteCloudinaryImage(oldBillImagePublicId);
     }
 
     return res.json({
       message: "Expense updated successfully",
       expense: updatedExpense
     });
+
   } catch (error) {
+
+    // If a new image was uploaded but something failed,
+    // remove the new image from Cloudinary.
+    if (req.file) {
+      await deleteCloudinaryImage(req.file.filename);
+    }
+
     console.error("Error while updating expense in DB", error);
-    res.status(500).json({ message: "Error updating expense", error: error.message });
+
+    return res.status(500).json({
+      message: "Error updating expense",
+      error: error.message
+    });
   }
 };

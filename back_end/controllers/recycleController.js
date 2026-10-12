@@ -4,6 +4,7 @@ const Worker = require('../models/Worker')
 const Memo = require('../models/Memo')
 const Expense = require('../models/Expense')
 
+const cloudinary = require("../util/cloudinary");
 const fs = require("fs");
 const path = require("path");
 
@@ -171,7 +172,6 @@ exports.restoreSite = async (req, res, next) => {
   }
 };
 
-
 exports.deleteManager = async (req, res, next) => {
   try {
     const { managerId } = req.params;
@@ -237,22 +237,52 @@ exports.deleteExpense = async (req, res, next) => {
     const { expenseId } = req.params;
 
     const expense = await Expense.findById(expenseId);
-    if (!expense) return res.status(404).json({ message: "Expense not found" });
 
-    if (expense && expense.billImage) {
-      const Path = path.join(__dirname, "../uploads/bills", expense.billImage)
-      if (fs.existsSync(Path)) {
-        fs.unlinkSync(Path)
+    if (!expense) {
+      return res.status(404).json({
+        message: "Expense not found"
+      });
+    }
+
+    // New images → Cloudinary
+    if (expense.billImagePublicId) {
+      try {
+        await cloudinary.uploader.destroy(expense.billImagePublicId);
+      } catch (error) {
+        console.error(
+          "Error deleting expense image from Cloudinary:",
+          error
+        );
       }
     }
 
-    const deletedExpense = await Expense.findByIdAndDelete(expenseId)
-    res.json(deletedExpense)
+    // Old images → local uploads folder
+    else if (expense.billImage) {
+      const filePath = path.join(
+        __dirname,
+        "../uploads/bills",
+        expense.billImage
+      );
+
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    // Permanently delete from MongoDB
+    const deletedExpense = await Expense.findByIdAndDelete(expenseId);
+
+    return res.json(deletedExpense);
 
   } catch (err) {
-    res.status(500).json({ message: "Error deleting Expense permanently", error: err.message });
+    console.error("Error deleting Expense permanently:", err);
+
+    return res.status(500).json({
+      message: "Error deleting Expense permanently",
+      error: err.message
+    });
   }
-}
+};
 
 exports.restoreExpense = async (req, res, next) => {
   try {

@@ -17,7 +17,11 @@ const expenseSchema = new mongoose.Schema(
       ], // flexible categories
     },
     billImage: {
-      type: String, // store filename from multer
+      type: String,  // used by the frontend to display the image.
+      default: null,
+    },
+    billImagePublicId: {
+      type: String,  // used by the backend to delete the image from Cloudinary.
       default: null,
     },
     quantity: {
