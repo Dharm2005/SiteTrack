@@ -5,6 +5,18 @@ const Earn = require('../models/Earn');
 const path = require('path');
 const fs = require('fs');
 const { validationResult } = require('express-validator');
+const cloudinary = require("../util/cloudinary");
+
+// reusable function to delete image when needed
+const deleteCloudinaryImage = async (publicId) => {
+  if (!publicId) return;
+
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    console.error("Error deleting image from Cloudinary:", error);
+  }
+};
 
 exports.getWorkersBySite = async (req, res, next) => {
   try {
@@ -35,11 +47,7 @@ exports.postAddWorker = async (req, res, next) => {
     if (!errors.isEmpty()) {
 
       if (req.file) {
-        const filePath = path.join(__dirname, "../uploads/workers", req.file.filename);
-
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath)
-        }
+        await deleteCloudinaryImage(req.file.filename);
       }
 
       return res.status(400).json({
@@ -52,11 +60,14 @@ exports.postAddWorker = async (req, res, next) => {
     }
 
     let { workerName, workerMobile, site } = req.body;
-    const workerImage = req.file ? req.file.filename : null;
+
+    const workerImage = req.file ? req.file.path : null;
+    const workerImagePublicId = req.file ? req.file.filename : null;
 
     const worker = new Worker({
       workerName,
       workerImage,
+      workerImagePublicId,
       workerMobile,
       site,
     });
@@ -73,18 +84,18 @@ exports.deleteWorker = async (req, res, next) => {
   try {
     const { workerId, siteId } = req.params;
 
-    // Step 1: Find the site
+    // Find the site
     const site = await Site.findById(siteId);
     if (!site) {
       return res.status(404).json({ success: false, message: "Site not found" });
     }
 
-    // Step 2: Prevent deletion if site is completed
+    // Prevent deletion if site is completed
     if (site.isCompleted) {
       return res.status(400).json({ success: false, message: "Cannot delete worker from a completed site" });
     }
 
-    // Step 3: Soft delete the worker
+    // Soft delete the worker
     const updatedWorker = await Worker.findByIdAndUpdate(
       workerId,
       { isDeleted: true, deletedAt: new Date() },
@@ -106,11 +117,12 @@ exports.deleteWorker = async (req, res, next) => {
 exports.updateWorker = async (req, res, next) => {
   try {
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
       if (req.file) {
-        const filePath = path.join(__dirname, "../uploads/workers", req.file.filename);
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        await deleteCloudinaryImage(req.file.filename);
       }
+
       return res.status(400).json({
         success: false,
         message: "Validation failed",
@@ -119,54 +131,108 @@ exports.updateWorker = async (req, res, next) => {
     }
 
     const { workerId } = req.params;
-    const { site } = req.body; // ✅ get siteId from body
+    const { site } = req.body; // get siteId from body
     const updates = { ...req.body };
 
-    // Step 1: Check if site is completed
+    // Check if site is completed
     if (site) {
       const currSite = await Site.findById(site);
       if (!currSite) {
+
         if (req.file) {
-          const filePath = path.join(__dirname, "../uploads/workers", req.file.filename);
-          if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+          await deleteCloudinaryImage(req.file.filename);
         }
         return res.status(404).json({ success: false, message: "Site not found" });
       }
 
       if (currSite.isCompleted) {
         if (req.file) {
-          const filePath = path.join(__dirname, "../uploads/workers", req.file.filename);
-          if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+          await deleteCloudinaryImage(req.file.filename);
         }
+
         return res.status(400).json({ success: false, message: "Cannot update worker of a completed site" });
       }
     }
 
-    // Step 2: Handle worker image update
-    if (req.file) {
-      const oldWorker = await Worker.findById(workerId);
-      if (oldWorker && oldWorker.workerImage) {
-        const oldPath = path.join(__dirname, "../uploads/workers", oldWorker.workerImage);
-        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    // Handle worker image update
+    const oldWorker = await Worker.findById(workerId);
+
+    if (!oldWorker) {
+      if (req.file) {
+        await deleteCloudinaryImage(req.file.filename);
       }
-      updates.workerImage = req.file.filename;
+
+      return res.status(404).json({
+        success: false,
+        message: "No worker found for update",
+      });
     }
+
+    const oldWorkerImage = oldWorker.workerImage;
+    const oldWorkerImagePublicId = oldWorker.workerImagePublicId;
+
+    if (req.file) {
+      // Save the new Cloudinary URL and public ID
+      updates.workerImage = req.file.path;
+      updates.workerImagePublicId = req.file.filename;
+    }
+
 
     // Step 3: Remove siteId from updates to avoid changing it
     delete updates.site;
 
     // Step 4: Update worker
-    const updatedWorker = await Worker.findByIdAndUpdate(workerId, updates, { new: true });
+    const updatedWorker = await Worker.findByIdAndUpdate(
+      workerId,
+      updates,
+      { new: true, runValidators: true }
+    );
 
     if (!updatedWorker) {
-      return res.status(404).json({ success: false, message: "No worker found for update" });
+      if (req.file) {
+        await deleteCloudinaryImage(req.file.filename);
+      }
+
+      return res.status(404).json({
+        success: false,
+        message: "No worker found for update",
+      });
     }
 
-    return res.status(200).json({ success: true, message: "Worker updated", worker: updatedWorker });
+    // Only clean up the old image after MongoDB has updated successfully
+    if (req.file && oldWorkerImagePublicId) {
+      await deleteCloudinaryImage(oldWorkerImagePublicId);
+    } else if (req.file && oldWorkerImage && !oldWorkerImagePublicId) {
+      // This was an older worker image stored locally
+      const oldPath = path.join(
+        __dirname,
+        "../uploads/workers",
+        oldWorkerImage
+      );
+
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Worker updated",
+      worker: updatedWorker,
+    });
 
   } catch (error) {
+    if (req.file) {
+      await deleteCloudinaryImage(req.file.filename);
+    }
+
     console.error("Error updating worker:", error);
-    return res.status(500).json({ success: false, message: "Error updating worker", error: error.message });
+
+    return res.status(500).json({
+      success: false,
+      message: "Error updating worker",
+      error: error.message,
+    });
   }
 };
 
@@ -193,7 +259,6 @@ exports.getAdvancesByWorker = async (req, res, next) => {
     res.status(500).json({ err: "Failed to fetch advances" });
   }
 }
-
 
 exports.addWorkerAdvance = async (req, res, next) => {
   try {

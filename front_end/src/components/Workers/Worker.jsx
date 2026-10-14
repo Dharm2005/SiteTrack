@@ -141,7 +141,11 @@ function Worker({ id, siteId, name, image, mobile, isSettled, isSiteCompleted })
               <div className="w-16 h-16 relative flex-shrink-0">
 
                 <ZoomImage
-                  src={`${API_URL}/uploads/workers/${image}`}
+                  src={
+                    image?. startsWith("http")
+                      ? image
+                      : `${API_URL}/uploads/workers/${image}`
+                  }
                   alt={name || 'Worker'}
                   className={`w-16 h-16 rounded-full object-cover border-2 ${isSettled ? 'border-gray-300' : 'border-gray-100'
                     }`}

@@ -119,7 +119,11 @@ function DeletedWorker({ id, name, mobile, image, deletedAt, onStateChange }) {
             <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 shadow-sm border-2 border-white ring-1 ring-gray-200 flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
               {image ? (
                 <img
-                  src={`${API_URL}/uploads/workers/${image}`}
+                  src={
+                    image?. startsWith("http")
+                      ? image
+                      : `${API_URL}/uploads/workers/${image}`
+                  }
                   alt={name}
                   className="w-full h-full object-cover"
                   onError={(e) => {

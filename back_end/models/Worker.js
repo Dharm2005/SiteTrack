@@ -7,6 +7,11 @@ const workerSchema = new mongoose.Schema({
   },
   workerImage: {
     type: String,
+    default: null
+  },
+  workerImagePublicId: {
+    type: String,
+    default: null
   },
   workerMobile: {
     type: String,

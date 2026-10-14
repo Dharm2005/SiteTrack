@@ -68,8 +68,11 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
     }
 
     if (initialValues && initialValues.workerImage) {
-      const imageUrl = `${API_URL}/uploads/workers/${initialValues.workerImage}`
-      setImagePreview(imageUrl)
+      const imageUrl = initialValues.workerImage.startsWith("http")
+      ? initialValues.workerImage
+      : `${API_URL}/uploads/workers/${initialValues.workerImage}`
+
+      setImagePreview(imageUrl);
     }
 
   }, [initialValues])
@@ -88,7 +91,7 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
         formData.append("workerImage", form.workerImage);
       }
 
-      // ✅ Always send siteId, for create or edit
+      //  send siteId, for create or edit
       if (siteId) {
         formData.append("site", siteId);
       }

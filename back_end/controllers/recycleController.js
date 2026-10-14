@@ -311,6 +311,19 @@ exports.deleteWorker = async (req, res, next) => {
     const worker = await Worker.findById(workerId);
     if (!worker) return res.status(404).json({ message: "Worker not found" });
 
+    // New images → Cloudinary
+    if (worker.workerImagePublicId) {
+      try {
+        await cloudinary.uploader.destroy(worker.workerImagePublicId);
+      } catch (error) {
+        console.error(
+          "Error deleting worker image from Cloudinary:",
+          error
+        );
+      }
+    }
+
+    // Old images → local uploads folder
     if (worker && worker.workerImage) {
       const Path = path.join(__dirname, "../uploads/workers", worker.workerImage)
       if (fs.existsSync(Path)) {

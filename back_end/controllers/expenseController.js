@@ -178,18 +178,18 @@ exports.deleteExpense = async (req, res, next) => {
   try {
     const { siteId, expenseId } = req.params;
 
-    // ✅ Step 1: Check if site exists
+    // Check if site exists
     const site = await Site.findById(siteId);
     if (!site) {
       return res.status(404).json({ message: "Site not found" });
     }
 
-    // ✅ Step 2: Block deletion if site is completed
+    // Block deletion if site is completed
     if (site.isCompleted) {
       return res.status(400).json({ message: "Cannot delete expenses for a completed site" });
     }
 
-    // ✅ Step 3: Soft delete the expense
+    // Soft delete the expense
     const updatedExpense = await Expense.findByIdAndUpdate(
       expenseId,
       {
