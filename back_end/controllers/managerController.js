@@ -4,12 +4,24 @@ const User = require('../models/User')
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
+const cloudinary = require("../util/cloudinary");
 
 const PDFDocument = require("pdfkit");
 const Worker = require("../models/Worker");
 const Advance = require("../models/Advance");
 const Earn = require("../models/Earn");
 const Expense = require("../models/Expense");
+
+// reusable function to delete image when needed
+const deleteCloudinaryImage = async (publicId) => {
+  if (!publicId) return;
+
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    console.error("Error deleting image from Cloudinary:", error);
+  }
+};
 
 exports.getManagers = async (req, res, next) => {
   try {
@@ -51,11 +63,10 @@ exports.postAddManager = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
 
+      // Multer already uploaded the image to Cloudinary.
+      // Delete it because validation failed.
       if (req.file) {
-        const filePath = path.join(__dirname, "../uploads/managers", req.file.filename)
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
+        await deleteCloudinaryImage(req.file.filename);
       }
 
       return res.status(400).json({
@@ -68,11 +79,14 @@ exports.postAddManager = async (req, res, next) => {
     }
 
     const { managerName, managerMobile, managerDob, managerGender } = req.body;
-    const managerImage = req.file ? req.file.filename : null;
+    // Cloudinary image information
+    const managerImage = req.file ? req.file.path : null;
+    const managerImagePublicId = req.file ? req.file.filename : null;
 
     const manager = new Manager({
       managerName,
       managerImage,
+      managerImagePublicId,
       managerMobile,
       managerDob,
       managerGender,
@@ -144,63 +158,84 @@ exports.deleteManager = async (req, res, next) => {
   }
 };
 
+
 exports.updateManager = async (req, res, next) => {
+  let newImagePublicId = null;
+
   try {
-
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
 
+    if (!errors.isEmpty()) {
       if (req.file) {
-        const filePath = path.join(__dirname, "../uploads/managers", req.file.filename)
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
+        await deleteCloudinaryImage(req.file.filename);
       }
 
       return res.status(400).json({
-        message: "Validation faild",
+        message: "Validation failed",
         errors: errors.array().map(err => ({
           field: err.path,
           msg: err.msg
         }))
-      })
+      });
     }
 
     const { managerId } = req.params;
     const updates = { ...req.body };
 
-    if (req.file) {
-      const oldManager = await Manager.findById(managerId)
+    const oldManager = await Manager.findById(managerId);
 
-      if (oldManager && oldManager.managerImage) {
-        const oldPath = path.join(__dirname, "../uploads/managers", oldManager.managerImage)
-        if (fs.existsSync(oldPath)) {
-          fs.unlinkSync(oldPath)
-        }
+    if (!oldManager) {
+      if (req.file) {
+        await deleteCloudinaryImage(req.file.filename);
       }
 
-      updates.managerImage = req.file.filename;
+      return res.status(404).json({
+        message: "Manager not found for update"
+      });
+    }
+
+    if (req.file) {
+      newImagePublicId = req.file.filename;
+
+      updates.managerImage = req.file.path;
+      updates.managerImagePublicId = req.file.filename;
     }
 
     const updatedManager = await Manager.findByIdAndUpdate(
       managerId,
       updates,
-      { new: true }
-    )
+      { new: true, runValidators: true }
+    );
 
-    if (!updatedManager) {
-      return res.status(404).json({ message: "manager not found for update" })
+    // Delete the old image only after the database update succeeds.
+    if (
+      req.file &&
+      oldManager.managerImagePublicId &&
+      oldManager.managerImagePublicId !== newImagePublicId
+    ) {
+      await deleteCloudinaryImage(oldManager.managerImagePublicId);
     }
 
-    res.status(201).json({
-      message: "manager added successsfully",
+    return res.status(200).json({
+      message: "Manager updated successfully",
       manager: updatedManager
     });
 
   } catch (error) {
-    console.error("Error while updating manager");
+    console.error("Error while updating manager:", error);
+
+    // Clean up the newly uploaded image if the update failed.
+    if (newImagePublicId) {
+      await deleteCloudinaryImage(newImagePublicId);
+    }
+
+    return res.status(500).json({
+      message: "Error while updating manager",
+      error: error.message
+    });
   }
-}
+};
+
 
 exports.generateReport = async (req, res) => {
 

@@ -191,7 +191,19 @@ exports.deleteManager = async (req, res, next) => {
       });
     }
 
-    // Delete manager image if exists
+    // New images → Cloudinary
+    if (manager.managerImagePublicId) {
+      try {
+        await cloudinary.uploader.destroy(manager.managerImagePublicId);
+      } catch (error) {
+        console.error(
+          "Error deleting manager image from Cloudinary:",
+          error
+        );
+      }
+    }
+
+    // Old images → local uploads folder
     if (manager.managerImage) {
       const Path = path.join(__dirname, "../uploads/managers", manager.managerImage);
       if (fs.existsSync(Path)) {

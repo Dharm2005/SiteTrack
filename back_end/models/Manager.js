@@ -8,6 +8,11 @@ const managerSchema = new mongoose.Schema({
   },
   managerImage: {
     type: String,
+    default: null,
+  },
+  managerImagePublicId: {
+    type: String,
+    default: null,
   },
   managerMobile: {
     type: String,

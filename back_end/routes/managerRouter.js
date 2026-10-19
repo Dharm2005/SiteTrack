@@ -10,7 +10,8 @@ managerRouter.get('/managers',isAdminOrManager, managerController.getManagers)
 
 managerRouter.get('/manager/:managerId', managerController.getManagerById)
 
-managerRouter.post('/add-manager',
+managerRouter.post(
+  "/add-manager",
   isAdmin,
   upload.single("managerImage"),
   [
@@ -31,7 +32,8 @@ managerRouter.post('/add-manager',
       .isIn(["male", "female"])
       .withMessage("Gender must be either male or female")
   ],
-  managerController.postAddManager)
+  managerController.postAddManager
+);
 
 managerRouter.delete('/manager/:managerId',isAdmin, managerController.deleteManager)
 

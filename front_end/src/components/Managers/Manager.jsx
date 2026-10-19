@@ -97,8 +97,12 @@ function Manager({ id, name, image, mobile, dob, gender, username, sites, create
           <div className="relative w-24 h-24 rounded-full border-4 border-white bg-gray-200 overflow-hidden shadow-lg">
             {image ? (
               <ZoomImage
-                src={`${API_URL}/uploads/managers/${image}`}
-                alt={name}
+                src={
+                  image?. startsWith("http")
+                    ? image
+                    : `${API_URL}/uploads/managers/${image}`
+                }
+                alt={name || 'Manager'}
                 className="w-full h-full object-cover"
               />
             ) : (

@@ -97,7 +97,9 @@ function AddManager({ initialValues }) {
       })
 
       if (initialValues.managerImage) {
-        const imageUrl = `${API_URL}/uploads/managers/${initialValues.managerImage}`
+        const imageUrl = initialValues.managerImage.startsWith("http")
+        ? initialValues.managerImage
+        : `${API_URL}/uploads/managers/${initialValues.managerImage}`
         setImagePreview(imageUrl)
       }
     }
