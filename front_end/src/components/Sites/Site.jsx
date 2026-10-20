@@ -106,7 +106,11 @@ function Site({ id, name, location, image, managerId, createdAt, isCompleted }) 
           <>
             <div className="relative w-full h-full">
               <ZoomImage
-                src={`${API_URL}/uploads/sites/${image}`}
+                src={
+                  image?. startsWith("http")
+                    ? image
+                    : `${API_URL}/uploads/sites/${image}`
+                }
                 alt={name || 'Site Image'}
                 className="w-full h-full object-cover"
                 onError={handleImageError}

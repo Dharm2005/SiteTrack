@@ -3,6 +3,19 @@ const Manager = require('../models/Manager')
 const fs = require("fs");
 const path = require("path");
 const { validationResult } = require('express-validator');
+const cloudinary = require("../util/cloudinary");
+
+// reusable function to delete image when needed
+const deleteCloudinaryImage = async (publicId) => {
+  if (!publicId) return;
+
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    console.error("Error deleting image from Cloudinary:", error);
+  }
+};
+
 
 exports.getSites = async (req, res, next) => {
   try {
@@ -30,11 +43,10 @@ exports.postAddSite = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
 
+      // Multer already uploaded the image to Cloudinary.
+      // Delete it because validation failed.
       if (req.file) {
-        const filePath = path.join(__dirname, "../uploads/sites", req.file.filename);
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
+        await deleteCloudinaryImage(req.file.filename);
       }
 
       return res.status(400).json({
@@ -47,12 +59,14 @@ exports.postAddSite = async (req, res, next) => {
     }
 
     const { siteName, location, managerId } = req.body;
-    const siteImage = req.file ? req.file.filename : null;
+    const siteImage = req.file ? req.file.path : null;
+    const siteImagePublicId = req.file ? req.file.filename : null;
 
     const site = new Site({
       siteName,
       location,
       siteImage,
+      siteImagePublicId,
       manager: managerId,
       createdBy: req.user.userId
     })
@@ -62,6 +76,11 @@ exports.postAddSite = async (req, res, next) => {
 
     res.status(201).json({ message: "Site created successfully", site });
   } catch (err) {
+
+    if (req.file) {
+      await deleteCloudinaryImage(req.file.filename);
+    }
+
     res.status(500).json({ message: "Error creating sites", error: err.message });
   }
 }
@@ -132,10 +151,7 @@ exports.updateSite = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       if (req.file) {
-        const filePath = path.join(__dirname, "../uploads/sites", req.file.filename);
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
+        await deleteCloudinaryImage(req.file.filename);
       }
 
       return res.status(400).json({
@@ -153,16 +169,14 @@ exports.updateSite = async (req, res, next) => {
     const site = await Site.findById(siteId);
     if (!site) {
       if (req.file) {
-        const filePath = path.join(__dirname, "../uploads/sites", req.file.filename);
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        await deleteCloudinaryImage(req.file.filename);
       }
       return res.status(404).json({ success: false, message: "Site not found" });
     }
 
     if (site.isCompleted) {
       if (req.file) {
-        const filePath = path.join(__dirname, "../uploads/sites", req.file.filename);
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        await deleteCloudinaryImage(req.file.filename);
       }
       return res.status(400).json({ success: false, message: "Cannot update a completed site" });
     }
@@ -181,18 +195,23 @@ exports.updateSite = async (req, res, next) => {
     }
 
     // tep 3: Handle site image update
+    // Step 3: Handle site image update
     if (req.file) {
-      if (site.siteImage) {
-        const oldPath = path.join(__dirname, "../uploads/sites", site.siteImage);
-        if (fs.existsSync(oldPath)) {
-          fs.unlinkSync(oldPath);
-        }
-      }
-      updates.siteImage = req.file.filename;
+      updates.siteImage = req.file.path;
+      updates.siteImagePublicId = req.file.filename;
     }
 
     // Step 4: Update site document
     const updatedSite = await Site.findByIdAndUpdate(siteId, updates, { new: true });
+
+    // Delete the old image only after the database update succeeds
+    if (
+      req.file &&
+      site.siteImagePublicId &&
+      site.siteImagePublicId !== req.file.filename
+    ) {
+      await deleteCloudinaryImage(site.siteImagePublicId);
+    }
     
     // Step 5: Sync manager's sites array
     if (newManagerId && newManagerId !== oldManagerId) {
@@ -212,6 +231,11 @@ exports.updateSite = async (req, res, next) => {
     });
 
   } catch (error) {
+
+    if (req.file) {
+      await deleteCloudinaryImage(req.file.filename);
+    }
+
     console.error("Error updating site:", error);
     return res.status(500).json({ success: false, message: "Error updating site", error: error.message });
   }

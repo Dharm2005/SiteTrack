@@ -107,7 +107,9 @@ function AddSite({ initialValues }) {
       });
 
       if (initialValues.siteImage) {
-        const imageUrl = `${API_URL}/uploads/sites/${initialValues.siteImage}`
+        const imageUrl = initialValues.siteImage.startsWith("http")
+        ? initialValues.siteImage
+        : `${API_URL}/uploads/sites/${initialValues.siteImage}`
         setImagePreview(imageUrl);
       }
     }

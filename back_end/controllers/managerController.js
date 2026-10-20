@@ -118,6 +118,10 @@ exports.postAddManager = async (req, res, next) => {
   } catch (err) {
     console.error(err);
 
+    if (req.file) {
+      await deleteCloudinaryImage(req.file.filename);
+    }
+
     res.status(500).json({ message: "Error creating manager", error: err.message });
   }
 }

@@ -90,7 +90,19 @@ exports.deleteSite = async (req, res, next) => {
       return res.status(404).json({ message: "Site not found" });
     }
 
-    // ✅ Delete site image from uploads folder
+    // New images → Cloudinary
+    if (site.siteImagePublicId) {
+      try {
+        await cloudinary.uploader.destroy(site.siteImagePublicId);
+      } catch (error) {
+        console.error(
+          "Error deleting site image from Cloudinary:",
+          error
+        );
+      }
+    }
+
+    // Old images → local uploads folder
     if (site.siteImage) {
       const filePath = path.join(__dirname, "../uploads/sites", site.siteImage);
       if (fs.existsSync(filePath)) {

@@ -11,7 +11,11 @@ const siteSchema = mongoose.Schema({
   },
   siteImage: {
     type: String,
-    // required : true
+    default: null,
+  },
+  siteImagePublicId: {
+    type: String,
+    default: null,
   },
   manager: {
     type: mongoose.Schema.ObjectId,
