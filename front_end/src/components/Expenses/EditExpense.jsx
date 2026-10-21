@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {getExpenseById} from '../../services/expenseService'
 import AddExpenseForm from './AddExpenseForm'
 
 function EditExpense() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [expenseData, setExpenseData] = useState(null);
 
   useEffect(() => {
@@ -25,8 +26,9 @@ function EditExpense() {
   if (!expenseData) return <p>Loading...</p>
   return (
     <AddExpenseForm
-      siteId={expenseData.siteId}
+      siteId = {expenseData.siteId}
       initialValues = {expenseData}
+      onClose = {() => navigate(`/site/${expenseData.siteId}/expenses`)}
     />
   )
 }

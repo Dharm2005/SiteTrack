@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { getWorkerById } from '../../services/workerService';
 import AddWorkerForm from './AddWorkerForm'
 
 function EditWorker() {
   const {id} = useParams();
-  
+  const navigate = useNavigate();
+
   const [workerData , setWorkerData] = useState(null);
 
   useEffect(() => {
@@ -25,8 +26,9 @@ function EditWorker() {
 
   return (
     <AddWorkerForm
-      siteId={workerData.site}
+      siteId = {workerData.site}
       initialValues = {workerData}
+      onClose = {() => navigate(`/site/${workerData.site}/workers`)}
     />
   )
 }

@@ -129,7 +129,7 @@ function Signup() {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm text-blue-700">
-                    <strong>Note:</strong> Registration is allow as admin user only.
+                    <strong>Note:</strong> Only Admins can sign up. Manager accounts are created by an Admin when adding a Manager.
                   </p>
                 </div>
               </div>

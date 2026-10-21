@@ -18,18 +18,68 @@ export default function NavBar() {
     {isAuthenticated ? (
       <nav className="px-4 py-3 lg:px-8">
         <div className="flex items-center justify-between max-w-screen-xl mx-auto">
-          {/* Logo */}
+          
+          {/* SiteTrack Logo */}
           <Link
             to="/"
             className="flex items-center transition-all duration-300 hover:scale-105 group"
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-3 shadow-sm group-hover:shadow-md transition-shadow duration-300">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center mr-3 shadow-sm group-hover:shadow-md transition-shadow duration-300 overflow-hidden">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 64 64"
+                className="w-full h-full"
+                fill="none"
+                aria-label="SiteTrack logo"
+                role="img"
+              >
+                <defs>
+                  <linearGradient id="siteTrackGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#FFB43B" />
+                    <stop offset="48%" stopColor="#FF5B87" />
+                    <stop offset="100%" stopColor="#852CFF" />
+                  </linearGradient>
+                </defs>
+
+                {/* Gradient background */}
+                <rect width="64" height="64" rx="12" fill="url(#siteTrackGradient)" />
+
+                {/* Buildings */}
+                <path d="M9 51V31L22 24V51H9Z" fill="white" />
+                <path d="M24 51V17L39 9V51H24Z" fill="white" />
+                <path d="M41 51V28L54 35V51H41Z" fill="white" />
+
+                {/* Building windows */}
+                <g fill="#A34AF1">
+                  <rect x="13" y="35" width="3" height="4" rx="0.5" />
+                  <rect x="13" y="43" width="3" height="4" rx="0.5" />
+                  <rect x="29" y="19" width="4" height="4" rx="0.5" />
+                  <rect x="29" y="27" width="4" height="4" rx="0.5" />
+                  <rect x="29" y="35" width="4" height="4" rx="0.5" />
+                  <rect x="29" y="43" width="4" height="4" rx="0.5" />
+                  <rect x="45" y="36" width="3" height="4" rx="0.5" />
+                  <rect x="45" y="43" width="3" height="4" rx="0.5" />
+                </g>
+
+                {/* Construction crane */}
+                <g
+                  stroke="white"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M7 14H43" />
+                  <path d="M14 14L26 7L43 14" />
+                  <path d="M26 7V48" />
+                  <path d="M21 20H31M21 26H31" />
+                  <path d="M39 14V25L35 29" />
+                  <path d="M7 55H57" />
+                </g>
               </svg>
             </div>
+
             <span className="font-bold text-xl text-gray-800 group-hover:text-indigo-600 transition-colors duration-300">
-              SiteTrack
+              Site< span className="text-purple-600">Track</span>
             </span>
           </Link>
 
@@ -214,17 +264,67 @@ export default function NavBar() {
       /* 🔵 Unauthenticated Navbar (Fixed colors + logic) */
       <nav className="px-4 py-3 lg:px-8">
         <div className="flex items-center justify-between max-w-screen-xl mx-auto">
+          
           <Link
             to="/"
             className="flex items-center transition-all duration-300 hover:scale-105 group"
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-3 shadow-sm group-hover:shadow-md transition-shadow duration-300">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center mr-3 shadow-sm group-hover:shadow-md transition-shadow duration-300 overflow-hidden">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 64 64"
+                className="w-full h-full"
+                fill="none"
+                aria-label="SiteTrack logo"
+                role="img"
+              >
+                <defs>
+                  <linearGradient id="siteTrackGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#FFB43B" />
+                    <stop offset="48%" stopColor="#FF5B87" />
+                    <stop offset="100%" stopColor="#852CFF" />
+                  </linearGradient>
+                </defs>
+
+                {/* Gradient background */}
+                <rect width="64" height="64" rx="12" fill="url(#siteTrackGradient)" />
+
+                {/* Buildings */}
+                <path d="M9 51V31L22 24V51H9Z" fill="white" />
+                <path d="M24 51V17L39 9V51H24Z" fill="white" />
+                <path d="M41 51V28L54 35V51H41Z" fill="white" />
+
+                {/* Building windows */}
+                <g fill="#A34AF1">
+                  <rect x="13" y="35" width="3" height="4" rx="0.5" />
+                  <rect x="13" y="43" width="3" height="4" rx="0.5" />
+                  <rect x="29" y="19" width="4" height="4" rx="0.5" />
+                  <rect x="29" y="27" width="4" height="4" rx="0.5" />
+                  <rect x="29" y="35" width="4" height="4" rx="0.5" />
+                  <rect x="29" y="43" width="4" height="4" rx="0.5" />
+                  <rect x="45" y="36" width="3" height="4" rx="0.5" />
+                  <rect x="45" y="43" width="3" height="4" rx="0.5" />
+                </g>
+
+                {/* Construction crane */}
+                <g
+                  stroke="white"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M7 14H43" />
+                  <path d="M14 14L26 7L43 14" />
+                  <path d="M26 7V48" />
+                  <path d="M21 20H31M21 26H31" />
+                  <path d="M39 14V25L35 29" />
+                  <path d="M7 55H57" />
+                </g>
               </svg>
             </div>
+
             <span className="font-bold text-xl text-gray-800 group-hover:text-indigo-600 transition-colors duration-300">
-              SiteTrack
+              Site< span className="text-purple-600">Track</span>
             </span>
           </Link>
 
