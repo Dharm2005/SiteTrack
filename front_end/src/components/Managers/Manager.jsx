@@ -51,7 +51,7 @@ function Manager({ id, name, image, mobile, dob, gender, username, sites, create
         const res = await deleteManagerFromDB(id)
 
         if (res.success === false) {
-          toast.error(res.message || "❌ Something went wrong");
+          toast.error(res.message || "Something went wrong");
           setIsDeleting(false); // Reset deleting state
           return;
         }

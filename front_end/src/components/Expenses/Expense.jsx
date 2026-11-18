@@ -131,7 +131,7 @@ function Expense({ id, siteId, expenseType, stoneType, billImage, quantity, unit
       const res = await deleteExpenseFromDB(id, siteId);
 
       if (res.success === false) {
-        toast.error(res.message || "❌ Something went wrong");
+        toast.error(res.message || "Something went wrong");
         setIsDeleting(false); // reset deleting state
         return;
       }
@@ -149,7 +149,7 @@ function Expense({ id, siteId, expenseType, stoneType, billImage, quantity, unit
 
     } catch (error) {
       console.error("Error while deleting expense", error);
-      toast.error("❌ Failed to delete expense. Please try again.");
+      toast.error("Failed to delete expense. Please try again.");
       setIsDeleting(false);
       setIsAnimatingOut(false);
     }

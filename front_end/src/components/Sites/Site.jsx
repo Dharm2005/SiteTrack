@@ -63,7 +63,7 @@ function Site({ id, name, location, image, managerId, createdAt, isCompleted }) 
 
     } catch (error) {
       console.error("Error while deleting site", error);
-      toast.error("❌ Failed to delete site. Please try again.");
+      toast.error("Failed to delete site. Please try again.");
       // Reset states on error
       setIsDeleting(false);
       setIsAnimatingOut(false);

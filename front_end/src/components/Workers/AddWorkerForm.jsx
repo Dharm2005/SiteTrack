@@ -117,11 +117,11 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
       const workerData = res.worker;
       if (initialValues) {
         dispatch(updateWorker(workerData));
-        toast.success("✅ Worker edited successfully!");
+        toast.success("Worker edited successfully!");
         navigate(`/site/${siteId}/workers`);
       } else {
         dispatch(addNewWorker(workerData));
-        toast.success("✅ New worker added successfully!");
+        toast.success("New worker added successfully!");
       }
 
       // Reset form
@@ -138,7 +138,7 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
 
     } catch (error) {
       console.error("Error while submitting worker", error);
-      toast.error("❌ Failed to submit worker. Please try again.");
+      toast.error("Failed to submit worker. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

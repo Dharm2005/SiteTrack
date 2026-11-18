@@ -245,7 +245,7 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
             toast.error(`${err.field}: ${err.msg}`);
           });
         } else {
-          toast.error(res.message || "❌ Something went wrong");
+          toast.error(res.message || "Something went wrong");
         }
         return; // stop execution
       }
@@ -253,12 +253,12 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
       const expenseData = res.expense;
       if (initialValues) {
         dispatch(updateExpense(expenseData))
-        toast.success("✅ Expense updated successfully!");
+        toast.success("Expense updated successfully!");
         navigate(`/site/${siteId}/expenses`)
       } else {
 
         dispatch(addNewExpense(expenseData));
-        toast.success("✅ New expense added successfully!");
+        toast.success("New expense added successfully!");
         // Reset form
         setForm({
           expenseType: 'other',
@@ -280,7 +280,7 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
       if (onClose) onClose();
     } catch (error) {
       console.error(`error while ${isEditMode ? 'updating' : 'adding new'} expense`, error);
-      toast.error(`❌ Failed to ${isEditMode ? 'update' : 'add'} expense. Please try again.`);
+      toast.error(`Failed to ${isEditMode ? 'update' : 'add'} expense. Please try again.`);
     } finally {
       setIsSubmitting(false);
     }

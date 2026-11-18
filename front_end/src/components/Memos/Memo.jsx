@@ -112,7 +112,7 @@ function Memo({ id, siteId, memoType, text, dueDate, createdAt, isSiteCompleted 
         const res = await completeMemoInDB(id, siteId, { isCompleted: true })
 
         if (res.success === false) {
-        toast.error(res.message || "❌ Something went wrong");
+        toast.error(res.message || "Something went wrong");
         return;
       }
 
@@ -139,7 +139,7 @@ function Memo({ id, siteId, memoType, text, dueDate, createdAt, isSiteCompleted 
       const res = await deleteMemoFromDB(id, siteId);
 
       if (res.success === false) {
-        toast.error(res.message || "❌ Something went wrong");
+        toast.error(res.message || "Something went wrong");
         setIsDeleting(false); // reset state so button works again
         return;
       }
@@ -156,7 +156,7 @@ function Memo({ id, siteId, memoType, text, dueDate, createdAt, isSiteCompleted 
 
     } catch (error) {
       console.error("Error while deleting memo", error);
-      toast.error("❌ Failed to delete memo. Please try again.");
+      toast.error("Failed to delete memo. Please try again.");
       // Reset states on error
       setIsDeleting(false);
       setIsAnimatingOut(false);

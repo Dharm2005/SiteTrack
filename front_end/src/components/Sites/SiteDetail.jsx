@@ -191,7 +191,11 @@ function SiteDetail() {
               {site.siteImage ? (
                 <>
                   <ZoomImage
-                    src={`${API_URL}/uploads/sites/${site.siteImage}`}
+                    src={
+                      site.siteImage?. startsWith("http")
+                        ? site.siteImage
+                        : `${API_URL}/uploads/sites/${site.siteImage}`
+                    }
                     alt={site.siteName || "Site Image"}
                     className="w-full h-full object-cover"
                     fit="cover"
@@ -267,7 +271,11 @@ function SiteDetail() {
                         {manager.managerImage ? (
                           <>
                             <ZoomImage
-                              src={`${API_URL}/uploads/managers/${manager.managerImage}`}
+                              src={
+                                manager.managerImage?. startsWith("http")
+                                  ? manager.managerImage
+                                  : `${API_URL}/uploads/managers/${manager.managerImage}`
+                              }
                               alt={manager.managerName || "Manager"}
                               className="w-full h-full object-cover"
                               fit="cover"

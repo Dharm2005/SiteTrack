@@ -137,7 +137,7 @@ function AddManager({ initialValues }) {
             toast.error(`${err.field}: ${err.msg}`);
           });
         } else {
-          toast.error(res.message || "❌ Something went wrong");
+          toast.error(res.message || "Something went wrong");
         }
         return; // stop execution
       }
@@ -145,16 +145,16 @@ function AddManager({ initialValues }) {
       // ✅ Success case
       if (initialValues) {
         dispatch(updateManager(res.manager));
-        toast.success("✅ Manager updated successfully!");
+        toast.success("Manager updated successfully!");
       } else {
         dispatch(addNewManager(res.manager));
-        toast.success("✅ New manager added successfully!");
+        toast.success("New manager added successfully!");
       }
 
       navigate("/all-manager");
     } catch (error) {
       console.error("Unexpected error while adding/updating manager", error);
-      toast.error("❌ Unexpected error while saving manager!");
+      toast.error("Unexpected error while saving manager!");
     }
   };
 

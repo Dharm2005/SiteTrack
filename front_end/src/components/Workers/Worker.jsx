@@ -45,7 +45,7 @@ function Worker({ id, siteId, name, image, mobile, isSettled, isSiteCompleted })
       const res = await deleteWorkerFromDB(id, siteId);
 
       if (res.success === false) {
-        toast.error(res.message || "❌ Something went wrong");
+        toast.error(res.message || "Something went wrong");
         setIsDeleting(false); // Reset deleting state
         return;
       }
@@ -64,7 +64,7 @@ function Worker({ id, siteId, name, image, mobile, isSettled, isSiteCompleted })
 
     } catch (error) {
       console.error("Error while deleting worker", error);
-      toast.error("❌ Failed to delete worker. Please try again.");
+      toast.error("Failed to delete worker. Please try again.");
       // Reset states on error
       setIsDeleting(false);
       setIsAnimatingOut(false);

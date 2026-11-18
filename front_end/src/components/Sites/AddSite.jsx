@@ -158,16 +158,16 @@ function AddSite({ initialValues }) {
       if (initialValues) {
 
         dispatch(updateSite(siteData));
-        toast.success("✅ Site updated successfully!");
+        toast.success("Site updated successfully!");
       } else {
         dispatch(addNewSite(siteData));
-        toast.success("✅ New site added successfully!");
+        toast.success("New site added successfully!");
       }
 
       navigate("/");
     } catch (error) {
       console.error("Unexpected error while submitting site", error);
-      toast.error("❌ Something went wrong!");
+      toast.error("Something went wrong!");
     }
   };
 

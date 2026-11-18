@@ -52,13 +52,13 @@ function AddMemoForm({ siteId, onClose }) {
             toast.error(`${err.field || err.path} : ${err.msg}`);
           })
         } else {
-          toast.error(newMemo.message || "❌ Something went wrong")
+          toast.error(newMemo.message || "Something went wrong")
         }
         return;
       }
 
       dispatch(addNewMemo(newMemo.memo))
-      toast.success("✅ New memo added successfully!");
+      toast.success("New memo added successfully!");
 
       setForm({
         memoType: 'note',
@@ -70,7 +70,7 @@ function AddMemoForm({ siteId, onClose }) {
       if (onClose) onClose();
       // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      toast.error("❌ Failed to add memo. Please try again.");
+      toast.error("Failed to add memo. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
