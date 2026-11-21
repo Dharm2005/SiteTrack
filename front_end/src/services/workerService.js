@@ -164,7 +164,7 @@ export const getEarnByWorker = async (workerId) => {
 
 export const addEarnOfWorker = async (earnData) => {
   try {
-    const response = await api.post("${API_BASE_URL}/workers/worker/add-earn", earnData, {
+    const response = await api.post(`${API_BASE_URL}/workers/worker/add-earn`, earnData, {
       headers: { "Content-Type": "multipart/form-data" },
     })
     return response.data;
