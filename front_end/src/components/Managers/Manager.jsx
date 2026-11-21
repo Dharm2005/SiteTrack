@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {ZoomImage} from '../index'
 
-const API_URL = "http://localhost:3000";
+import API_BASE_URL from "../../config";
 
 function Manager({ id, name, image, mobile, dob, gender, username, sites, createdAt }) {
 
@@ -100,7 +100,7 @@ function Manager({ id, name, image, mobile, dob, gender, username, sites, create
                 src={
                   image?. startsWith("http")
                     ? image
-                    : `${API_URL}/uploads/managers/${image}`
+                    : `${API_BASE_URL}/uploads/managers/${image}`
                 }
                 alt={name || 'Manager'}
                 className="w-full h-full object-cover"

@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ZoomImage } from '../index'
 
-const API_URL = "http://localhost:3000";
+import API_BASE_URL from "../../config";
 
 function Expense({ id, siteId, expenseType, stoneType, billImage, quantity, unit, totalCost, arrivalDate, vehicleNumber, supplierName, details, createdAt, searchTerm, isSiteCompleted }) {
 
@@ -208,7 +208,7 @@ function Expense({ id, siteId, expenseType, stoneType, billImage, quantity, unit
                     src={
                       billImage?.startsWith("http")
                         ? billImage
-                        : `${API_URL}/uploads/bills/${billImage}`
+                        : `${API_BASE_URL}/uploads/bills/${billImage}`
                     }
                     alt={`${expenseType} bill`}
                     className="w-10 h-10 rounded-lg object-cover border-2 border-gray-100 shadow-sm"

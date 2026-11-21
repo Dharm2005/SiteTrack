@@ -13,7 +13,7 @@ import { ReportForm } from '../index';
 import { Link } from 'react-router-dom';
 import { ZoomImage } from '../index';
 import { SiteDetailSkeleton } from '../index';
-const API_URL = "http://localhost:3000";
+import API_BASE_URL from "../../config";
 
 function SiteDetail() {
   const { id } = useParams();
@@ -194,7 +194,7 @@ function SiteDetail() {
                     src={
                       site.siteImage?. startsWith("http")
                         ? site.siteImage
-                        : `${API_URL}/uploads/sites/${site.siteImage}`
+                        : `${API_BASE_URL}/uploads/sites/${site.siteImage}`
                     }
                     alt={site.siteName || "Site Image"}
                     className="w-full h-full object-cover"
@@ -274,7 +274,7 @@ function SiteDetail() {
                               src={
                                 manager.managerImage?. startsWith("http")
                                   ? manager.managerImage
-                                  : `${API_URL}/uploads/managers/${manager.managerImage}`
+                                  : `${API_BASE_URL}/uploads/managers/${manager.managerImage}`
                               }
                               alt={manager.managerName || "Manager"}
                               className="w-full h-full object-cover"

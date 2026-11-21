@@ -7,7 +7,7 @@ import { deleteSite, updateSite } from '../../features/siteSlice'
 import { toast } from 'react-toastify';
 import ZoomImage from '../Layout/ZoomImage';
 
-const API_URL = "http://localhost:3000";
+import API_BASE_URL from "../../config";
 
 function Site({ id, name, location, image, managerId, createdAt, isCompleted }) {
   const { user } = useSelector(state => state.auth);
@@ -109,7 +109,7 @@ function Site({ id, name, location, image, managerId, createdAt, isCompleted }) 
                 src={
                   image?. startsWith("http")
                     ? image
-                    : `${API_URL}/uploads/sites/${image}`
+                    : `${API_BASE_URL}/uploads/sites/${image}`
                 }
                 alt={name || 'Site Image'}
                 className="w-full h-full object-cover"

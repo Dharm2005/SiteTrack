@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { addManager, updateManagerToDB } from '../../services/managerService';
 import { addNewManager, updateManager } from '../../features/managerSlice';
 
-const API_URL = "http://localhost:3000";
+import API_BASE_URL from "../../config";
 
 function AddManager({ initialValues }) {
   const [form, setForm] = useState(initialValues || {
@@ -99,7 +99,7 @@ function AddManager({ initialValues }) {
       if (initialValues.managerImage) {
         const imageUrl = initialValues.managerImage.startsWith("http")
         ? initialValues.managerImage
-        : `${API_URL}/uploads/managers/${initialValues.managerImage}`
+        : `${API_BASE_URL}/uploads/managers/${initialValues.managerImage}`
         setImagePreview(imageUrl)
       }
     }

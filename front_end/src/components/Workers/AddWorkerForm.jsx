@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { addNewWorker, updateWorker } from '../../features/workerSlice';
 import { User, Phone, Upload, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-const API_URL = "http://localhost:3000";
+import API_BASE_URL from "../../config";
 
 
 function AddWorkerForm({ siteId, onClose, initialValues }) {
@@ -70,7 +70,7 @@ function AddWorkerForm({ siteId, onClose, initialValues }) {
     if (initialValues && initialValues.workerImage) {
       const imageUrl = initialValues.workerImage.startsWith("http")
       ? initialValues.workerImage
-      : `${API_URL}/uploads/workers/${initialValues.workerImage}`
+      : `${API_BASE_URL}/uploads/workers/${initialValues.workerImage}`
 
       setImagePreview(imageUrl);
     }

@@ -10,7 +10,7 @@ import { updateSiteToDB } from '../../services/siteService';
 import { getAllManager } from '../../services/managerService';
 import { setManagers } from '../../features/managerSlice';
 
-const API_URL = "http://localhost:3000";
+import API_BASE_URL from "../../config";
 
 
 function AddSite({ initialValues }) {
@@ -109,7 +109,7 @@ function AddSite({ initialValues }) {
       if (initialValues.siteImage) {
         const imageUrl = initialValues.siteImage.startsWith("http")
         ? initialValues.siteImage
-        : `${API_URL}/uploads/sites/${initialValues.siteImage}`
+        : `${API_BASE_URL}/uploads/sites/${initialValues.siteImage}`
         setImagePreview(imageUrl);
       }
     }

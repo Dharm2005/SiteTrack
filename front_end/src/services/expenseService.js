@@ -1,8 +1,9 @@
 import api from "./api";
+import API_BASE_URL from "../config";
 
 export const getExpensesBySite = async (id) => {
   try {
-    const response = await api.get(`http://localhost:3000/expenses/expense/${id}`);
+    const response = await api.get(`${API_BASE_URL}/expenses/expense/${id}`);
     return response.data;
   } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to fetch expenses");
@@ -11,7 +12,7 @@ export const getExpensesBySite = async (id) => {
 
 export const getExpenseById = async (id) => {
   try {
-    const response = await api.get(`http://localhost:3000/expenses/expense/data/${id}`);
+    const response = await api.get(`${API_BASE_URL}/expenses/expense/data/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error while fetching expense", error);
@@ -20,7 +21,7 @@ export const getExpenseById = async (id) => {
 
 export const getFilteredExpenses = async (id, startDate, endDate) => {
   try {
-    const response = await api.get(`http://localhost:3000/expenses/expense/${id}/filter?from=${startDate}&to=${endDate}`);
+    const response = await api.get(`${API_BASE_URL}/expenses/expense/${id}/filter?from=${startDate}&to=${endDate}`);
     return response.data;
   } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to fetch filtered expenses");
@@ -29,7 +30,7 @@ export const getFilteredExpenses = async (id, startDate, endDate) => {
 
 export const addExpens = async (materialData) => {
   try {
-    const response = await api.post("http://localhost:3000/expenses/add-expense", materialData, {
+    const response = await api.post(`${API_BASE_URL}/expenses/add-expense`, materialData, {
       headers: { "Content-Type": "multipart/form-data" },
     })
     return response.data;
@@ -53,7 +54,7 @@ export const addExpens = async (materialData) => {
 
 export const deleteExpenseFromDB = async (expenseId, siteId) => {
   try {
-    const response = await api.delete(`http://localhost:3000/expenses/${siteId}/expense/${expenseId}`)
+    const response = await api.delete(`${API_BASE_URL}/expenses/${siteId}/expense/${expenseId}`)
     return response.data
   } catch (error) {
     console.error("Error while deleting expense", error);
@@ -76,7 +77,7 @@ export const deleteExpenseFromDB = async (expenseId, siteId) => {
 
 export const updateExpenseToDB = async (expenseId, expenseData) => {
   try {
-    const response = await api.put(`http://localhost:3000/expenses/expense/${expenseId}`,
+    const response = await api.put(`${API_BASE_URL}/expenses/expense/${expenseId}`,
       expenseData,
       { headers: { "Content-Type": "multipart/form-data" } }
     )

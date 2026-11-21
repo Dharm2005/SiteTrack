@@ -1,8 +1,9 @@
 import api from "./api";
+import API_BASE_URL from "../config";
 
 export const addWorker = async (workerData) => {
   try {
-    const response = await api.post("http://localhost:3000/workers/add-worker", workerData, {
+    const response = await api.post(`${API_BASE_URL}/workers/add-worker`, workerData, {
       headers: { "Content-Type": "multipart/form-data" },
     })
 
@@ -27,7 +28,7 @@ export const addWorker = async (workerData) => {
 
 export const getWorkersBySite = async (id) => {
   try {
-    const response = await api.get(`http://localhost:3000/workers/worker/${id}`);
+    const response = await api.get(`${API_BASE_URL}/workers/worker/${id}`);
     return response.data;
   } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to fetch workers");
@@ -36,7 +37,7 @@ export const getWorkersBySite = async (id) => {
 
 export const getWorkerById = async (id) => {
   try {
-    const response = await api.get(`http://localhost:3000/workers/worker/data/${id}`);
+    const response = await api.get(`${API_BASE_URL}/workers/worker/data/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error while fetching worker by id", error);
@@ -45,7 +46,7 @@ export const getWorkerById = async (id) => {
 
 export const deleteWorkerFromDB = async (workerId, siteId) => {
   try {
-    const response = await api.delete(`http://localhost:3000/workers/${siteId}/worker/${workerId}`)
+    const response = await api.delete(`${API_BASE_URL}/workers/${siteId}/worker/${workerId}`)
     return response.data;
   } catch (error) {
     console.error("Error while deleting worker" , error);
@@ -69,7 +70,7 @@ export const deleteWorkerFromDB = async (workerId, siteId) => {
 
 export const updateWorkerToDB = async (workerId, workerData) => {
   try {
-    const response = await api.put(`http://localhost:3000/workers/worker/${workerId}`,
+    const response = await api.put(`${API_BASE_URL}/workers/worker/${workerId}`,
       workerData,
       { headers: { "Content-Type": "multipart/form-data" } }
     )
@@ -94,7 +95,7 @@ export const updateWorkerToDB = async (workerId, workerData) => {
 
 export const getAdvancesByWorker = async (workerId) => {
   try {
-    const response = await api.get(`http://localhost:3000/workers/worker/${workerId}/advance`);
+    const response = await api.get(`${API_BASE_URL}/workers/worker/${workerId}/advance`);
     return response.data;
   } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to fetch advances");
@@ -103,7 +104,7 @@ export const getAdvancesByWorker = async (workerId) => {
 
 export const addAdvanceOfWorker = async (advanceData) => {
   try {
-    const response = await api.post(`http://localhost:3000/workers/worker/add-advance`, 
+    const response = await api.post(`${API_BASE_URL}/workers/worker/add-advance`, 
       advanceData, 
       {headers: { "Content-Type": "multipart/form-data" },}
     )
@@ -128,7 +129,7 @@ export const addAdvanceOfWorker = async (advanceData) => {
 
 export const updateAdvanceToDB = async (advanceId, siteId, advanceData) => {
   try {
-    const response = await api.put(`http://localhost:3000/workers/${siteId}/worker/advance/${advanceId}`,
+    const response = await api.put(`${API_BASE_URL}/workers/${siteId}/worker/advance/${advanceId}`,
       advanceData,
       { headers: { "Content-Type": "multipart/form-data" } }
     )
@@ -154,7 +155,7 @@ export const updateAdvanceToDB = async (advanceId, siteId, advanceData) => {
 
 export const getEarnByWorker = async (workerId) => {
   try {
-    const response = await api.get(`http://localhost:3000/workers/worker/${workerId}/earn`);
+    const response = await api.get(`${API_BASE_URL}/workers/worker/${workerId}/earn`);
     return response.data;
   } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to fetch earn");
@@ -163,7 +164,7 @@ export const getEarnByWorker = async (workerId) => {
 
 export const addEarnOfWorker = async (earnData) => {
   try {
-    const response = await api.post("http://localhost:3000/workers/worker/add-earn", earnData, {
+    const response = await api.post("${API_BASE_URL}/workers/worker/add-earn", earnData, {
       headers: { "Content-Type": "multipart/form-data" },
     })
     return response.data;
@@ -187,7 +188,7 @@ export const addEarnOfWorker = async (earnData) => {
 
 export const updateEarnToDB = async (earnId, siteId, earnData) => {
   try {
-    const response = await api.put(`http://localhost:3000/workers/${siteId}/worker/earn/${earnId}`,
+    const response = await api.put(`${API_BASE_URL}/workers/${siteId}/worker/earn/${earnId}`,
       earnData,
       { headers: { "Content-Type": "multipart/form-data" } }
     )
@@ -213,7 +214,7 @@ export const updateEarnToDB = async (earnId, siteId, earnData) => {
 
 export const settledWorkerInDB = async (workerId, workerData) => {
   try {
-    const response = await api.put(`http://localhost:3000/workers/worker/${workerId}/settle`,
+    const response = await api.put(`${API_BASE_URL}/workers/worker/${workerId}/settle`,
       workerData,
       { headers: { "Content-Type": "application/json" } }
     )

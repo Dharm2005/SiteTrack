@@ -1,8 +1,9 @@
 import api from "./api";
+import API_BASE_URL from "../config";
 
 export const getMemosBySite = async (id) => {
   try {
-    const response = await api.get(`http://localhost:3000/memos/memo/${id}`)
+    const response = await api.get(`${API_BASE_URL}/memos/memo/${id}`)
     return response.data;
   } catch (error) {
     console.error("Eerror while fetching memos", error);
@@ -12,7 +13,7 @@ export const getMemosBySite = async (id) => {
 export const addMemo = async (memoData) => {
 
   try {
-    const response = await api.post("http://localhost:3000/memos/add-memo", memoData, {
+    const response = await api.post(`${API_BASE_URL}/memos/add-memo`, memoData, {
       headers: { "Content-Type": "multipart/form-data" },
     })
     return response.data;
@@ -36,7 +37,7 @@ export const addMemo = async (memoData) => {
 
 export const deleteMemoFromDB = async (memoId, siteId) => {
   try {
-    const response = await api.delete(`http://localhost:3000/memos/${siteId}/memo/${memoId}`);
+    const response = await api.delete(`${API_BASE_URL}/memos/${siteId}/memo/${memoId}`);
     return response.data
   } catch (error) {
     console.error("Error while deleting memo from DB", error);
@@ -59,7 +60,7 @@ export const deleteMemoFromDB = async (memoId, siteId) => {
 
 export const completeMemoInDB = async (memoId, siteId, memoData) => {
   try {
-    const response = await api.put(`http://localhost:3000/memos/${siteId}/memo/${memoId}`,
+    const response = await api.put(`${API_BASE_URL}/memos/${siteId}/memo/${memoId}`,
       memoData,
       { headers: { "Content-Type": "application/json" } }
     )

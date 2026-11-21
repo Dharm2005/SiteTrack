@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { deleteWorkerPer, restoreWorker } from '../../services/recycleService';
 import { toast } from 'react-toastify';
 
-const API_URL = "http://localhost:3000";
+import API_BASE_URL from "../../config";
 
 function DeletedWorker({ id, name, mobile, image, deletedAt, onStateChange }) {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -122,7 +122,7 @@ function DeletedWorker({ id, name, mobile, image, deletedAt, onStateChange }) {
                   src={
                     image?. startsWith("http")
                       ? image
-                      : `${API_URL}/uploads/workers/${image}`
+                      : `${API_BASE_URL}/uploads/workers/${image}`
                   }
                   alt={name}
                   className="w-full h-full object-cover"

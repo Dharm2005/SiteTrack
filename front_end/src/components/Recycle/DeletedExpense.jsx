@@ -6,7 +6,7 @@ import {
 import { deleteExpensePer, restoreExpense } from '../../services/recycleService';
 import { toast } from 'react-toastify';
 
-const API_URL = "http://localhost:3000";
+import API_BASE_URL from "../../config";
 
 function DeletedExpense({
   id,
@@ -206,7 +206,7 @@ function DeletedExpense({
                       setSelectedImage(
                         billImage.startsWith("http")
                           ? billImage
-                          : `${API_URL}/uploads/bills/${billImage}`
+                          : `${API_BASE_URL}/uploads/bills/${billImage}`
                       )
                     }
                   >
@@ -214,7 +214,7 @@ function DeletedExpense({
                       src={
                         billImage.startsWith("http")
                           ? billImage
-                          : `${API_URL}/uploads/bills/${billImage}`
+                          : `${API_BASE_URL}/uploads/bills/${billImage}`
                       }
                       alt={`${expenseType} bill`}
                       className="w-10 h-10 rounded-lg object-cover border-2 border-gray-100 shadow-sm"

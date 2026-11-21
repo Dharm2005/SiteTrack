@@ -1,9 +1,10 @@
 import axios from "axios";
 import api from "./api"
+import API_BASE_URL from "../config";
 
 export const login = async (data) => {
   try{
-    const response = await axios.post("http://localhost:3000/auth/login" , 
+    const response = await axios.post(`${API_BASE_URL}/auth/login` , 
       data ,
       {headers : { "Content-Type": "application/json" }}
     )
@@ -30,7 +31,7 @@ export const login = async (data) => {
 
 export const signup = async (data) => {
   try {
-    const response = await axios.post("http://localhost:3000/auth/signup",
+    const response = await axios.post(`${API_BASE_URL}/auth/signup`,
       data,
       {headers : {"Content-Type" : "application/json"}}
     )
@@ -55,7 +56,7 @@ export const signup = async (data) => {
 
 export const changePassword = async (data) => {
   try {
-    const response = await api.post("http://localhost:3000/auth/change-password",
+    const response = await api.post(`${API_BASE_URL}/auth/change-password`,
       data,
       {headers : {"Content-Type" : "application/json"}}
     )

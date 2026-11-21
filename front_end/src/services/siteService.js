@@ -1,8 +1,9 @@
 import api from "./api";
+import API_BASE_URL from "../config";
 
 export const getAllSite = async () => {
   try {
-    const response = await api.get("http://localhost:3000/sites/")
+    const response = await api.get(`${API_BASE_URL}/sites/`)
     return response.data;
   } catch (error) {
     console.error("Error while fetching all sites", error)
@@ -11,7 +12,7 @@ export const getAllSite = async () => {
 
 export const addSite = async (siteData) => {
   try {
-    const response = await api.post("http://localhost:3000/sites/add-site", siteData, {
+    const response = await api.post(`${API_BASE_URL}/sites/add-site`, siteData, {
       headers: { "Content-Type": "multipart/form-data" },
     })
     return response.data;
@@ -35,7 +36,7 @@ export const addSite = async (siteData) => {
 
 export const getSite = async (id) => {
   try {
-    const response = await api.get(`http://localhost:3000/sites/site/${id}`);
+    const response = await api.get(`${API_BASE_URL}/sites/site/${id}`);
     return response.data;
   } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to fetch site");
@@ -44,7 +45,7 @@ export const getSite = async (id) => {
 
 export const markSiteCompleted = async (id) => {
   try {
-    const response = await api.patch(`http://localhost:3000/sites/site/${id}`);
+    const response = await api.patch(`${API_BASE_URL}/sites/site/${id}`);
     return response.data;
   } catch (err) {
     throw new Error(err.response?.data?.message || "Failed to complete site");
@@ -53,7 +54,7 @@ export const markSiteCompleted = async (id) => {
 
 export const deleteSiteFromDB = async (id) => {
   try {
-    const response = await api.delete(`http://localhost:3000/sites/site/${id}`);
+    const response = await api.delete(`${API_BASE_URL}/sites/site/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error while delete site" , error);
@@ -77,7 +78,7 @@ export const deleteSiteFromDB = async (id) => {
 export const updateSiteToDB = async (siteId, siteData) => {
   try {
     
-    const response = await api.put(`http://localhost:3000/sites/site/${siteId}`,
+    const response = await api.put(`${API_BASE_URL}/sites/site/${siteId}`,
       siteData,
       { headers: { "Content-Type": "multipart/form-data" } }
     )

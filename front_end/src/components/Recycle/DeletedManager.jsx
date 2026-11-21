@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { deleteManagerPer, restoreManager } from '../../services/recycleService';
 import { toast } from 'react-toastify';
 
-const API_URL = "http://localhost:3000";
+import API_BASE_URL from "../../config";
 
 function DeletedManager({ id, name, mobile, dob, gender, image, deletedAt, onStateChange }) {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -149,7 +149,7 @@ function DeletedManager({ id, name, mobile, dob, gender, image, deletedAt, onSta
                   src={
                     image?. startsWith("http")
                       ? image
-                      : `${API_URL}/uploads/managers/${image}`
+                      : `${API_BASE_URL}/uploads/managers/${image}`
                   }
                   alt={name}
                   className="w-full h-full object-cover"

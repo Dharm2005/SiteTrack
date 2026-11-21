@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { deleteSitePer, restoreSite } from '../../services/recycleService'
 import { toast } from 'react-toastify';
 
-const API_URL = "http://localhost:3000";
+import API_BASE_URL from "../../config";
 
 function DeletedSite({ id, name, location, image, deletedAt, onStateChange }) {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -130,7 +130,7 @@ function DeletedSite({ id, name, location, image, deletedAt, onStateChange }) {
                   src={
                     image?. startsWith("http")
                       ? image
-                      : `${API_URL}/uploads/sites/${image}`
+                      : `${API_BASE_URL}/uploads/sites/${image}`
                   }
                   alt={name}
                   className="w-full h-full object-cover"

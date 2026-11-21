@@ -7,7 +7,7 @@ import { addNewExpense, updateExpense } from '../../features/expenseSlice';
 import { Package, Upload, X, IndianRupee, Calendar, Truck, Hash, Scale, Tag, FileText, User, Edit } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const API_URL = "http://localhost:3000";
+import API_BASE_URL from "../../config";
 
 function AddExpenseForm({ siteId, onClose, initialValues }) {
 
@@ -182,7 +182,7 @@ function AddExpenseForm({ siteId, onClose, initialValues }) {
     if (initialValues && initialValues.billImage) {
       const imageUrl = initialValues.billImage.startsWith("http")
       ? initialValues.billImage
-      : `${API_URL}/uploads/bills/${initialValues.billImage}`;
+      : `${API_BASE_URL}/uploads/bills/${initialValues.billImage}`;
 
       setImagePreview(imageUrl);
     }

@@ -1,8 +1,9 @@
 import api from "./api";
+import API_BASE_URL from "../config";
 
 export const getDeletedSites = async () => {
   try {
-    const response = await api.get("http://localhost:3000/recycle/getDeletedSites")
+    const response = await api.get(`${API_BASE_URL}/recycle/getDeletedSites`)
     return response.data;
   } catch (error) {
     console.error("Error while fetching all sites", error)
@@ -11,7 +12,7 @@ export const getDeletedSites = async () => {
 
 export const getDeletedManagers = async () => {
   try {
-    const response = await api.get("http://localhost:3000/recycle/getDeletedManagers")
+    const response = await api.get(`${API_BASE_URL}/recycle/getDeletedManagers`)
     return response.data;
   } catch (error) {
     console.error("Error while fetching all managers", error)
@@ -20,7 +21,7 @@ export const getDeletedManagers = async () => {
 
 export const getDeletedWorkers = async (siteId) => {
   try {
-    const response = await api.get(`http://localhost:3000/recycle/getDeletedWorkers/${siteId}`)
+    const response = await api.get(`${API_BASE_URL}/recycle/getDeletedWorkers/${siteId}`)
     return response.data;
   } catch (error) {
     console.error("Error while fetching all workers", error)
@@ -29,7 +30,7 @@ export const getDeletedWorkers = async (siteId) => {
 
 export const getDeletedMemos = async (siteId) => {
   try {
-    const response = await api.get(`http://localhost:3000/recycle/getDeletedMemos/${siteId}`)
+    const response = await api.get(`${API_BASE_URL}/recycle/getDeletedMemos/${siteId}`)
     return response.data;
   } catch (error) {
     console.error("Error while fetching all memos", error)
@@ -38,7 +39,7 @@ export const getDeletedMemos = async (siteId) => {
 
 export const getDeletedExpenses = async (siteId) => {
   try {
-    const response = await api.get(`http://localhost:3000/recycle/getDeletedExpenses/${siteId}`)
+    const response = await api.get(`${API_BASE_URL}/recycle/getDeletedExpenses/${siteId}`)
     return response.data;
   } catch (error) {
     console.error("Error while fetching all expenses", error)
@@ -47,7 +48,7 @@ export const getDeletedExpenses = async (siteId) => {
 
 export const deleteSitePer = async (siteId) => {
   try {
-    const response = await api.delete(`http://localhost:3000/recycle/site/delete/${siteId}`)
+    const response = await api.delete(`${API_BASE_URL}/recycle/site/delete/${siteId}`)
     return response.data;
   } catch (error) {
     console.error("Error while deleting site permanently", error)
@@ -56,7 +57,7 @@ export const deleteSitePer = async (siteId) => {
 
 export const restoreSite = async (siteId) => {
   try {
-    const response = await api.patch(`http://localhost:3000/recycle/site/restore/${siteId}`)
+    const response = await api.patch(`${API_BASE_URL}/recycle/site/restore/${siteId}`)
     return response.data;
   } catch (error) {
     console.error("Error while restoring deleted site", error)
@@ -65,7 +66,7 @@ export const restoreSite = async (siteId) => {
 
 export const deleteManagerPer = async (managerId) => {
   try {
-    const response = await api.delete(`http://localhost:3000/recycle/manager/delete/${managerId}`)
+    const response = await api.delete(`${API_BASE_URL}/recycle/manager/delete/${managerId}`)
     return response.data;
   } catch (error) {
     console.error("Error while deleting manager permanently", error)
@@ -88,7 +89,7 @@ export const deleteManagerPer = async (managerId) => {
 
 export const restoreManager = async (managerId) => {
   try {
-    const response = await api.patch(`http://localhost:3000/recycle/manager/restore/${managerId}`)
+    const response = await api.patch(`${API_BASE_URL}/recycle/manager/restore/${managerId}`)
     return response.data;
   } catch (error) {
     console.error("Error while restoring deleted manager", error)
@@ -97,7 +98,7 @@ export const restoreManager = async (managerId) => {
 
 export const deleteExpensePer = async (expenseId) => {
   try {
-    const response = await api.delete(`http://localhost:3000/recycle/expense/delete/${expenseId}`)
+    const response = await api.delete(`${API_BASE_URL}/recycle/expense/delete/${expenseId}`)
     return response.data;
   } catch (error) {
     console.error("Error while deleting manager permanently", error)
@@ -106,7 +107,7 @@ export const deleteExpensePer = async (expenseId) => {
 
 export const restoreExpense = async (expenseId) => {
   try {
-    const response = await api.patch(`http://localhost:3000/recycle/expense/restore/${expenseId}`)
+    const response = await api.patch(`${API_BASE_URL}/recycle/expense/restore/${expenseId}`)
     return response.data;
   } catch (error) {
     console.error("Error while restoring deleted manager", error)
@@ -115,7 +116,7 @@ export const restoreExpense = async (expenseId) => {
 
 export const deleteWorkerPer = async (workerId) => {
   try {
-    const response = await api.delete(`http://localhost:3000/recycle/worker/delete/${workerId}`)
+    const response = await api.delete(`${API_BASE_URL}/recycle/worker/delete/${workerId}`)
     return response.data;
   } catch (error) {
     console.error("Error while deleting worker permanently", error)
@@ -124,7 +125,7 @@ export const deleteWorkerPer = async (workerId) => {
 
 export const restoreWorker = async (workerId) => {
   try {
-    const response = await api.patch(`http://localhost:3000/recycle/worker/restore/${workerId}`)
+    const response = await api.patch(`${API_BASE_URL}/recycle/worker/restore/${workerId}`)
     return response.data;
   } catch (error) {
     console.error("Error while restoring deleted worker", error)
@@ -133,7 +134,7 @@ export const restoreWorker = async (workerId) => {
 
 export const deleteMemoPer = async (memoId) => {
   try {
-    const response = await api.delete(`http://localhost:3000/recycle/memo/delete/${memoId}`)
+    const response = await api.delete(`${API_BASE_URL}/recycle/memo/delete/${memoId}`)
     return response.data;
   } catch (error) {
     console.error("Error while deleting memo permanently", error)
@@ -142,7 +143,7 @@ export const deleteMemoPer = async (memoId) => {
 
 export const restoreMemo = async (memoId) => {
   try {
-    const response = await api.patch(`http://localhost:3000/recycle/memo/restore/${memoId}`)
+    const response = await api.patch(`${API_BASE_URL}/recycle/memo/restore/${memoId}`)
     return response.data;
   } catch (error) {
     console.error("Error while restoring deleted memo", error)

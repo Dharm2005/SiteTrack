@@ -1,9 +1,9 @@
 import api from "./api";
-
+import API_BASE_URL from "../config";
 
 export const getAllManager = async () => {
   try {
-    const response = await api.get("http://localhost:3000/managers/managers")
+    const response = await api.get(`${API_BASE_URL}/managers/managers`)
     return response.data;
   }
   catch (err) {
@@ -13,7 +13,7 @@ export const getAllManager = async () => {
 
 export const addManager = async (managerData) => {
   try {
-    const response = await api.post("http://localhost:3000/managers/add-manager", managerData, {
+    const response = await api.post(`${API_BASE_URL}/managers/add-manager`, managerData, {
       headers: { "Content-Type": "multipart/form-data" },
     })
     return response.data;
@@ -37,7 +37,7 @@ export const addManager = async (managerData) => {
 
 export const deleteManagerFromDB = async (managerId) => {
   try {
-    const response = await api.delete(`http://localhost:3000/managers/manager/${managerId}`)
+    const response = await api.delete(`${API_BASE_URL}/managers/manager/${managerId}`)
     return response.data;
   } catch (error) {
      if (error.response) {
@@ -57,7 +57,7 @@ export const deleteManagerFromDB = async (managerId) => {
 
 export const updateManagerToDB = async (managerId, managerData) => {
   try {
-    const response = await api.put(`http://localhost:3000/managers/manager/${managerId}`,
+    const response = await api.put(`${API_BASE_URL}/managers/manager/${managerId}`,
       managerData,
       { headers: { "Content-Type": "multipart/form-data" } }
     )
@@ -82,7 +82,7 @@ export const updateManagerToDB = async (managerId, managerData) => {
 
 export const getManagerById = async (managerId) => {
   try {
-    const response = await api.get(`http://localhost:3000/managers/manager/${managerId}`);
+    const response = await api.get(`${API_BASE_URL}/managers/manager/${managerId}`);
     return response.data;
   } catch (error) {
     console.error("Error while fetching manager", error);
@@ -92,7 +92,7 @@ export const getManagerById = async (managerId) => {
 export const generatePDF = async (startDate, endDate, siteId) => {
   try {
     const response = await api.post(
-      "http://localhost:3000/managers/reports",
+      `${API_BASE_URL}/managers/reports`,
       { startDate, endDate, siteId },
       {
         responseType: 'blob',
